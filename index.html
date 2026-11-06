@@ -142,6 +142,40 @@ details[open] summary:after{transform:rotate(45deg)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 #nc{display:inline-block}#nc.bump{animation:pop .4s}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.reveal,.hero .wrap>*{opacity:1;transform:none}}
+
+/* ===== MAP & MINIGAMES ===== */
+#map{width:100%;height:auto;display:block;background:#1a1613;border:1px solid var(--line);border-radius:14px;margin-bottom:18px;touch-action:manipulation}
+.pin{cursor:pointer}.pin .halo{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+.pin:hover .dot{fill:#e0453a}
+.pin.locked{cursor:not-allowed;opacity:.35}.pin.locked .halo,.pin.done .halo{display:none}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.mg{position:fixed;inset:0;z-index:150;background:rgba(5,4,3,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.mg.show{opacity:1}
+.mgbox{background:var(--paper);color:var(--ink);border-radius:16px;padding:24px;width:min(580px,94vw);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:translateY(20px) scale(.97);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.mg.show .mgbox{transform:none}
+.mgbox h3{font-family:Oswald;margin:0 0 6px;font-size:24px}.mgbox .hint{font-size:14px;color:#6b5f52;margin:0 0 14px}
+.mgbtn{background:var(--ink);color:var(--paper);border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'PT Serif';font-size:15px;margin:6px 6px 0 0;transition:transform .15s,background .2s}
+.mgbtn:hover{transform:translateY(-1px);background:#000}.mgbtn.x{background:transparent;color:var(--ink);border:1px solid #b5a88f}
+.scr{position:relative;border-radius:10px;overflow:hidden;background:#f6f0e2;padding:20px;font-family:'Courier Prime';font-size:15px;line-height:1.6;user-select:none}
+.scr canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.lens{position:relative;height:150px;border-radius:10px;overflow:hidden;background:#f6f0e2;cursor:none;touch-action:none;user-select:none}
+.lens div{position:absolute;inset:0;padding:18px;font-family:'Courier Prime';font-size:15px;line-height:1.7}
+.lens .blur{filter:blur(5px)}.lens .clear{clip-path:circle(0 at 0 0);background:#fbf7ec}
+.lens .ring{position:absolute;width:110px;height:110px;border:4px solid #4a3f33;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 0 0 2000px rgba(0,0,0,0),inset 0 0 20px rgba(0,0,0,.2);display:none}
+.flipw{perspective:900px;height:180px;cursor:pointer}
+.flip{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.flip.on{transform:rotateY(180deg)}
+.flip>div{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:22px;font-family:'Courier Prime';background:#e8c9a0;border:2px dashed #8a6a45;display:flex;flex-direction:column;justify-content:center}
+.flip .back{transform:rotateY(180deg);background:#dcbf98}
+.flip b{font-family:Oswald;font-size:22px}
+.junk{position:relative;height:280px;border-radius:10px;overflow:hidden;background:repeating-linear-gradient(90deg,#6b543c 0 46px,#5d4834 46px 50px)}
+.junk span{position:absolute;cursor:pointer;user-select:none;transition:transform .15s}
+.junk span:hover{transform:scale(1.15)}
+.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.hold{position:relative;overflow:hidden;width:100%;padding:16px;border-radius:10px;border:0;background:var(--ink);color:var(--paper);font-family:Oswald;font-size:17px;letter-spacing:1px;cursor:pointer;user-select:none;touch-action:none}
+.hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--red);z-index:0}.hold span{position:relative}
+.inv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.inv span{background:#e4d9c0;padding:8px 12px;border-radius:8px;font-family:'Courier Prime';font-size:14px}
+.hot.mgh:after{content:" ✦";color:var(--red)}
 </style>
 </head>
 <body>
@@ -218,7 +252,7 @@ details[open] summary:after{transform:rotate(45deg)}
     <p style="margin-top:20px"><button class="btn" onclick="tab('map')">На выезд</button></p>
    </div>
   </div>
-  <div class="panel" id="p-map"><div class="locs" id="locs"></div><div id="scene"></div></div>
+  <div class="panel" id="p-map"><div id="mapw"></div><div class="locs" id="locs"></div><div id="scene"></div></div>
   <div class="panel" id="p-sus"><p class="muted">Каждый вопрос — 20 минут. Найденные улики открывают новые вопросы.</p><div class="sus" id="sus"></div></div>
   <div class="panel" id="p-notes"><div id="notes"></div></div>
   <div class="panel" id="p-accuse">
@@ -256,14 +290,14 @@ const CLUES={
  skirt:{t:"Замок склада",d:"Дверь склада заперта, следов взлома нет. Ключи только у двоих: у зам. главного инженера Сомова и у кладовщика — тот с 1 ноября в отпуске в Сочи."}
 };
 const LOCS=[
- {id:"office",n:"Кабинет 214",s:"Место преступления",cost:60,txt:"Кабинет пахнет остывшим табаком. На столе — чашка, папки, печатная машинка «Ятрань». Окно закрыто изнутри.",hots:[["Осмотреть чашку","cup"],["Подоконник","cup2"],["Опись вещей погибшего","nokey"],["Заглянуть в печатную машинку","type"],["Перебрать папки на столе",null,"Отчёты по плану. Ничего необычного."]]},
+ {id:"office",n:"Кабинет 214",s:"Место преступления",cost:60,txt:"Кабинет пахнет остывшим табаком. На столе — чашка, папки, печатная машинка «Ятрань». Окно закрыто изнутри.",hots:[["Осмотреть чашку","cup",null,"hold"],["Подоконник","cup2"],["Опись вещей погибшего","nokey",null,"inv"],["Заглянуть в печатную машинку","type",null,"scratch"],["Перебрать папки на столе",null,"Отчёты по плану. Ничего необычного."]]},
  {id:"gate",n:"Проходная завода",s:"Вахта, журналы",cost:45,txt:"Вахтёрша Зинаида Ивановна вяжет носок и неохотно отрывается от дела.",hots:[["Журнал проходной","pass"],["Расспросить вахтёршу","loud"]]},
- {id:"lab",n:"Химлаборатория",s:"Корпус Б",cost:60,txt:"Колбы, вытяжной шкаф, запертый на висячий замок сейф с реактивами. Лаборантка нервничает.",hots:[["Журнал выдачи реактивов","lab"],["Поговорить с лаборанткой",null,"«Глеб Викторович сказал — для гальваники. Я не посмела спорить с начальством... Меня теперь посадят?»"],["Спросить о цехе гальваники",null,"«Гальваника с октября на ремонте, там даже ванны слиты»."]]},
- {id:"store",n:"Склад №3",s:"Задний двор",cost:45,need:"watch",txt:"Двор, заваленный ящиками. От склада идёт проход прямо к корпусу А, минуя проходную.",hots:[["Проверить дверь склада","skirt"],["Осмотреть пол у выхода","key"]]},
+ {id:"lab",n:"Химлаборатория",s:"Корпус Б",cost:60,txt:"Колбы, вытяжной шкаф, запертый на висячий замок сейф с реактивами. Лаборантка нервничает.",hots:[["Журнал выдачи реактивов","lab",null,"lens"],["Поговорить с лаборанткой",null,"«Глеб Викторович сказал — для гальваники. Я не посмела спорить с начальством... Меня теперь посадят?»"],["Спросить о цехе гальваники",null,"«Гальваника с октября на ремонте, там даже ванны слиты»."]]},
+ {id:"store",n:"Склад №3",s:"Задний двор",cost:45,need:"watch",txt:"Двор, заваленный ящиками. От склада идёт проход прямо к корпусу А, минуя проходную.",hots:[["Проверить дверь склада","skirt"],["Осмотреть пол у выхода","key",null,"find"]]},
  {id:"guard",n:"Сторожка",s:"Ночной сторож",cost:30,txt:"Пётр Ильич, сторож, пьёт чай из подстаканника и охотно рассказывает о вчерашней ночи.",hots:[["Расспросить о вечере 14-го","watch"]]},
  {id:"secr",n:"Приёмная",s:"Стол секретаря",cost:30,txt:"Аккуратный стол, фикус, стопка писем. Секретарь Лида Кравец отпросилась домой.",hots:[["Открыть ящик стола","letters"]]},
  {id:"home",n:"Квартира Лебедевых",s:"ул. Гагарина, 12",cost:75,txt:"Двухкомнатная квартира. Вдова держится холодно. На серванте — папка с документами.",hots:[["Папка с документами","insurance"],["Поговорить с соседкой","neighbor"]]},
- {id:"hostel",n:"Квартира Сомова",s:"Заводской дом",cost:75,need:"type",txt:"Холостяцкая квартира. На вешалке — пиджак и фетровая шляпа.",hots:[["Обыскать карманы пиджака","ticket"],["Осмотреть шляпу",null,"Обычная серая фетровая шляпа. На полях — складская пыль."]]}
+ {id:"hostel",n:"Квартира Сомова",s:"Заводской дом",cost:75,need:"type",txt:"Холостяцкая квартира. На вешалке — пиджак и фетровая шляпа.",hots:[["Обыскать карманы пиджака","ticket",null,"flip"],["Осмотреть шляпу",null,"Обычная серая фетровая шляпа. На полях — складская пыль."]]}
 ];
 const SUS=[
  {id:"somov",n:"Глеб Сомов",r:"Зам. главного инженера",qs:[["Где вы были вечером 14-го?",null,"«Ушёл в семь, а в девять был в кино, в “Октябре”. Можете проверить»."],["Какие у вас были отношения с Лебедевым?",null,"«Рабочие. Он был человек сложный, но я его уважал»."],["Вы пили с ним чай вечером?","cup2","«Я? Я ушёл в семь, вам же сказали на проходной»."],["Ключ Лебедева нашли у выхода со склада.","key","«При чём тут я? Ключи от склада есть и у кладовщика». — Кладовщик в отпуске с 1 ноября. Сомов молчит."],["Зачем вы брали цианид в лаборатории?","lab","«Для гальваники, по плану». — Гальваника на ремонте. — «...Я... не знал»."],["Ваш билет в кино — за 12-е число.","ticket","Сомов бледнеет. «Перепутал билеты, бывает»."],["Лебедев писал на вас в министерство.","type","Долгая пауза. «Я требую адвоката»."]]},
@@ -284,14 +318,74 @@ function closeGame(){const g=$("game");g.classList.remove("show");setTimeout(()=
 function tab(p){document.querySelectorAll(".tabs button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==p));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id=="p-"+p))}
 document.querySelectorAll(".tabs button[data-p]").forEach(b=>b.onclick=()=>tab(b.dataset.p));
 function visit(id){const L=LOCS.find(l=>l.id==id);if(L.need&&!S.clues.includes(L.need)){toast("Пока нет причины туда ехать");return}
- if(!S.visited.includes(id)){if(!spend(L.cost))return;S.visited.push(id);save();render()}showScene(id)}
+ if(!S.visited.includes(id)){if(!spend(L.cost))return;S.visited.push(id);save();render()}travel(id,()=>showScene(id))}
 function showScene(id){const L=LOCS.find(l=>l.id==id);
- $("scene").innerHTML=`<div class="scene"><h3>${L.n}</h3><p>${L.txt}</p><div>${L.hots.map((h,i)=>`<span class="hot ${h[1]&&S.clues.includes(h[1])?'got':''}" onclick="hot('${id}',${i})">${h[0]}</span>`).join("")}</div><p id="hn" style="margin-top:14px;font-style:italic"></p></div>`;
+ $("scene").innerHTML=`<div class="scene"><h3>${L.n}</h3><p>${L.txt}</p><div>${L.hots.map((h,i)=>`<span class="hot ${h[1]&&S.clues.includes(h[1])?'got':''} ${h[3]&&!S.clues.includes(h[1])?'mgh':''}" onclick="hot('${id}',${i})">${h[0]}</span>`).join("")}</div><p id="hn" style="margin-top:14px;font-style:italic"></p></div>`;
  $("scene").scrollIntoView({behavior:"smooth"})}
-function hot(id,i){const h=LOCS.find(l=>l.id==id).hots[i];if(h[1]){addClue(h[1]);showScene(id);$("hn").textContent=CLUES[h[1]].d}else $("hn").textContent=h[2]}
+function hot(id,i){const h=LOCS.find(l=>l.id==id).hots[i];if(h[1]){const fin=()=>{addClue(h[1]);showScene(id);$("hn").textContent=CLUES[h[1]].d};if(h[3]&&!S.clues.includes(h[1]))MG[h[3]](fin);else fin()}else $("hn").textContent=h[2]}
 function ask(s,i){const k=s+i;const q=SUS.find(x=>x.id==s).qs[i];if(!S.asked.includes(k)){if(!spend(20))return;S.asked.push(k);save();if(q[3])addClue(q[3]);render()}}
+
+/* ===== MAP ===== */
+const POS={prok:[140,250],office:[610,170],secr:[560,130],gate:[520,290],lab:[720,240],store:[740,120],guard:[460,330],home:[250,440],hostel:[300,130]};
+let carAt=null,anim=false;
+function renderMap(){const w=$("mapw");if(!w)return;const at=POS[carAt||S.pos||"prok"];
+ const pins=LOCS.map(l=>{const [x,y]=POS[l.id],lk=l.need&&!S.clues.includes(l.need),dn=S.visited.includes(l.id);
+  return `<g class="pin ${lk?'locked':''} ${dn?'done':''}" onclick="visit('${l.id}')"><circle class="halo" cx="${x}" cy="${y}" r="9" fill="#b3261e"/><circle class="dot" cx="${x}" cy="${y}" r="9" fill="${dn?'#6b6156':'#b3261e'}" stroke="#efe6d2" stroke-width="2"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" fill="#fff">${lk?'🔒':dn?'✓':''}</text><text x="${x}" y="${y-16}" text-anchor="middle" font-family="PT Serif" font-size="13" fill="#e9e1d1">${l.n}</text></g>`}).join("");
+ w.innerHTML=`<svg id="map" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
+ <defs><pattern id="gr" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#241f1b" stroke-width="1"/></pattern></defs>
+ <rect width="900" height="500" fill="url(#gr)"/>
+ <path d="M0 395 C200 360 330 470 520 430 S780 380 900 410 L900 500 L0 500Z" fill="#1d2a33"/>
+ <text x="660" y="470" font-family="PT Serif" font-style="italic" font-size="14" fill="#4f6675">р. Зарека</text>
+ <rect x="430" y="80" width="370" height="280" rx="8" fill="#211c18" stroke="#3a332c" stroke-dasharray="6 5"/>
+ <text x="450" y="104" font-family="Oswald" font-size="15" fill="#6b6156" letter-spacing="2">ЗАВОД «ИМПУЛЬС»</text>
+ <g stroke="#3a332c" stroke-width="10" fill="none" stroke-linecap="round"><path d="M140 250 H430"/><path d="M300 130 V420 L250 440"/><path d="M520 290 V360"/><path d="M60 250 H140"/><path d="M300 130 H200"/></g>
+ <g stroke="#5a4f44" stroke-width="1.5" fill="none" stroke-dasharray="6 6"><path d="M140 250 H430"/><path d="M300 130 V420 L250 440"/></g>
+ <rect x="120" y="230" width="40" height="40" rx="4" fill="#2e2722" stroke="#6b6156"/><text x="140" y="290" text-anchor="middle" font-family="PT Serif" font-size="12" fill="#8a7f70">Прокуратура</text>
+ ${pins}
+ <g id="car" transform="translate(${at[0]},${at[1]})"><circle r="12" fill="#e9c46a" opacity=".25"/><circle r="6" fill="#e9c46a" stroke="#14110f" stroke-width="2"/></g>
+ </svg>`}
+function travel(id,cb){const from=POS[S.pos||"prok"],to=POS[id];S.pos=id;save();if(from===to){cb();return}
+ const car=document.getElementById("car");if(!car||matchMedia("(prefers-reduced-motion:reduce)").matches){renderMap();cb();return}
+ const t0=performance.now(),D=900;anim=true;
+ (function step(t){let k=Math.min(1,(t-t0)/D);k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+  car.setAttribute("transform",`translate(${from[0]+(to[0]-from[0])*k},${from[1]+(to[1]-from[1])*k})`);
+  if(k<1)requestAnimationFrame(step);else{anim=false;renderMap();cb()}})(t0)}
+
+/* ===== MINIGAMES ===== */
+function mgOpen(html){const m=document.createElement("div");m.className="mg";m.innerHTML=`<div class="mgbox">${html}<div style="margin-top:14px"><button class="mgbtn x" data-close>Отложить</button></div></div>`;
+ document.body.appendChild(m);requestAnimationFrame(()=>m.classList.add("show"));m.querySelector("[data-close]").onclick=()=>mgClose(m);m.onclick=e=>{if(e.target===m)mgClose(m)};return m}
+function mgClose(m){m.classList.remove("show");setTimeout(()=>m.remove(),300)}
+function mgWin(m,cb){m.querySelector(".mgbox").style.boxShadow="0 0 0 3px #b3261e,0 30px 80px rgba(0,0,0,.6)";setTimeout(()=>{mgClose(m);cb()},700)}
+const MG={
+ hold(cb){const m=mgOpen(`<h3>Чашка</h3><p class="hint">Наклонитесь и осторожно вдохните. Удерживайте кнопку.</p><button class="hold"><i></i><span>Вдохнуть…</span></button>`);
+  const b=m.querySelector(".hold"),bar=b.querySelector("i");let v=0,t=null;
+  const down=e=>{e.preventDefault();clearInterval(t);t=setInterval(()=>{v+=4;bar.style.width=v+"%";if(v>=100){clearInterval(t);b.querySelector("span").textContent="Горький миндаль!";mgWin(m,cb)}},50)};
+  const up=()=>{if(v<100){clearInterval(t);v=0;bar.style.width="0"}};
+  b.addEventListener("pointerdown",down);b.addEventListener("pointerup",up);b.addEventListener("pointerleave",up)},
+ scratch(cb){const m=mgOpen(`<h3>Копирка</h3><p class="hint">Заштрихуйте копирку карандашом — проступит последнее письмо.</p><div class="scr"><div>Министру электронной промышленности СССР<br>от гл. инженера з-да «Импульс» Лебедева А.П.<br>…сообщаю о систематическом хищении радиодеталей<br>по указанию зам. главного инженера <b>Г. Сомова</b>…<br>14 ноября 1978 г.</div><canvas></canvas></div>`);
+  const c=m.querySelector("canvas"),box=c.parentNode;c.width=box.offsetWidth;c.height=box.offsetHeight;const x=c.getContext("2d");
+  x.fillStyle="#2f2d33";x.fillRect(0,0,c.width,c.height);x.strokeStyle="rgba(255,255,255,.05)";for(let i=0;i<c.width+c.height;i+=6){x.beginPath();x.moveTo(i,0);x.lineTo(i-c.height,c.height);x.stroke()}
+  x.globalCompositeOperation="destination-out";let dn=false,n=0,won=false;
+  const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+  const rub=e=>{if(!dn||won)return;const[a,b]=pt(e);x.beginPath();x.arc(a,b,20,0,7);x.fill();if(++n%8==0){const d=x.getImageData(0,0,c.width,c.height).data;let cl=0,tot=0;for(let i=3;i<d.length;i+=64){tot++;if(d[i]<40)cl++}if(cl/tot>.55){won=true;c.style.transition="opacity .6s";c.style.opacity=0;mgWin(m,cb)}}};
+  c.addEventListener("pointerdown",e=>{dn=true;c.setPointerCapture(e.pointerId);rub(e)});c.addEventListener("pointermove",rub);c.addEventListener("pointerup",()=>dn=false)},
+ lens(cb){const T=`13.11.78 · Калий цианистый · 5 г<br>Назначение: гальваника, цех №2<br>Получил: <b style="font-size:19px">Сомов Г.В.</b> &nbsp;<i>(подпись)</i>`;
+  const m=mgOpen(`<h3>Журнал реактивов</h3><p class="hint">Почерк мелкий. Водите лупой по записи и прочитайте, кто получил яд.</p><div class="lens"><div class="blur">${T}</div><div class="clear">${T}</div><span class="ring"></span></div><p style="margin:14px 0 4px"><b>Кто расписался?</b></p><div>${["Кравец Л.","Сомов Г.В.","Лебедев А.П."].map(n=>`<button class="mgbtn" data-n="${n}">${n}</button>`).join("")}</div>`);
+  const L=m.querySelector(".lens"),cl=L.querySelector(".clear"),ring=L.querySelector(".ring");
+  L.addEventListener("pointermove",e=>{const r=L.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;cl.style.clipPath=`circle(55px at ${a}px ${b}px)`;ring.style.display="block";ring.style.left=a+"px";ring.style.top=b+"px"});
+  L.addEventListener("pointerleave",()=>{cl.style.clipPath="circle(0 at 0 0)";ring.style.display="none"});
+  m.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{if(b.dataset.n=="Сомов Г.В.")mgWin(m,cb);else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300);toast("Присмотритесь ещё раз")}})},
+ flip(cb){const m=mgOpen(`<h3>Билет из пиджака</h3><p class="hint">Сомов говорит, что был в кино. Переверните билет.</p><div class="flipw"><div class="flip"><div><b>Кинотеатр «Октябрь»</b>Сеанс 21:00 · Зал 1<br>Ряд 7 · Место 12 · Цена 30 коп.</div><div class="back"><b>Дата сеанса: 12.11.78</b>Контроль оторван.<br>А убийство — вечером 14-го…</div></div></div>`);
+  const f=m.querySelector(".flip");m.querySelector(".flipw").onclick=()=>{if(f.classList.contains("on"))return;f.classList.add("on");setTimeout(()=>mgWin(m,cb),1300)}},
+ find(cb){const J=["📦","🪵","🔩","📎","🧱","🪨","🧰","🔧","🗞️","🥫"];let h="";for(let i=0;i<46;i++)h+=`<span style="left:${Math.random()*92}%;top:${Math.random()*86}%;font-size:${22+Math.random()*20}px;transform:rotate(${Math.random()*60-30}deg)">${J[i%J.length]}</span>`;
+  h+=`<span data-k style="left:${8+Math.random()*80}%;top:${10+Math.random()*75}%;font-size:15px;filter:saturate(.4) brightness(.8)">🔑</span>`;
+  const m=mgOpen(`<h3>Пол у выхода со склада</h3><p class="hint">Между досками что-то блеснуло. Найдите это среди хлама.</p><div class="junk">${h}</div>`);
+  m.querySelectorAll(".junk span").forEach(sp=>sp.onclick=()=>{if(sp.hasAttribute("data-k")){sp.style.transform="scale(2.4)";sp.style.filter="none";mgWin(m,cb)}else{sp.classList.add("shake");setTimeout(()=>sp.classList.remove("shake"),300)}})},
+ inv(cb){const m=mgOpen(`<h3>Опись вещей погибшего</h3><p class="hint">Лебедев каждое утро сам отпирал свой кабинет. Чего не хватает?</p><div class="inv"><span>⌚ Часы «Полёт»</span><span>👛 Бумажник, 14 руб.</span><span>🚬 «Беломорканал»</span><span>🔥 Спички</span><span>🪪 Удостоверение</span><span>🖊 Авторучка</span></div><div>${["Очков","Ключей","Денег","Записной книжки"].map(n=>`<button class="mgbtn" data-n="${n}">${n}</button>`).join("")}</div>`);
+  m.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{if(b.dataset.n=="Ключей")mgWin(m,cb);else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300);toast("Подумайте: дверь заперта снаружи")}})}
+};
 function render(){
- $("clock").textContent="🕰 "+fmt(S.time)+" / 20:00";
+ renderMap();$("clock").textContent="🕰 "+fmt(S.time)+" / 20:00";
  $("nc").textContent=S.clues.length;
  $("locs").innerHTML=LOCS.map(l=>{const lk=l.need&&!S.clues.includes(l.need);return `<div class="loc ${S.visited.includes(l.id)?'done':''} ${lk?'locked':''}" onclick="visit('${l.id}')"><b>${lk?'🔒 ':''}${l.n}</b><small>${l.s} · ${S.visited.includes(l.id)?'осмотрено':l.cost+' мин'}</small></div>`}).join("");
  $("sus").innerHTML=SUS.map(p=>`<div class="person"><div class="av">${p.n[0]}</div><h4>${p.n}</h4><small class="muted">${p.r}</small>${p.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.id+i);return `<button class="q ${a?'asked':''}" onclick="ask('${p.id}',${i})">${q[1]?'📎 ':''}${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")}</div>`).join("");
@@ -308,7 +402,7 @@ function accuse(){if(S.done)return;const w=$("a-who").value,y=$("a-why").value,p
   html=`<div class="result"><h3 style="font-family:Oswald">✅ Дело раскрыто</h3><p>Глеб Сомов годами списывал и продавал радиодетали. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», демонстративно ушёл через проходную в 19:10, громко объявив про кино, вернулся через склад, ключ от которого был только у него (кладовщик в отпуске), в той самой шляпе, что видел сторож,, и около 21:00 предложил Лебедеву выпить чаю «мировую». Яд был в чашке инженера. Свою чашку Сомов вымыл и второпях поставил на подоконник, а дверь запер ключом Лебедева, который обронил на складе. Билет в кино оказался старым.</p><p>Ключевых улик собрано: <b>${n} из 6</b>. Время: ${fmt(S.time)}. ${n>=5?"Блестящая работа, товарищ следователь.":"Суд поверит, но адвокат попортит нервы."}</p><button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
  }else html=`<div class="result"><h3 style="font-family:Oswald">❌ Дело развалилось</h3><p>Обвинение не выдержало проверки: ${w!="somov"?"у обвиняемого нашлось алиби или не хватило улик":"мотив или доказательство не убедили суд"}. Настоящий убийца остался на свободе.</p><button class="btn ghost" onclick="reset()">Начать заново</button></div>`;
  S.done=html;save();render()}
-function reset(){S={time:START,clues:[],visited:[],asked:[],done:false};save();$("scene").innerHTML="";render();tab("brief")}
+function reset(){S={time:START,clues:[],visited:[],asked:[],done:false};carAt=null;save();$("scene").innerHTML="";render();tab("brief")}
 
 addEventListener("scroll",()=>document.querySelector("header.top").classList.toggle("scrolled",scrollY>20),{passive:true});
 document.querySelectorAll("section h2, .feat, .case, .steps div, details").forEach((el,i)=>{el.classList.add("reveal");el.style.transitionDelay=(i%4)*90+"ms"});
