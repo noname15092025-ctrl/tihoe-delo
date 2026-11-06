@@ -548,7 +548,7 @@ const FT=["Вы ничего не нашли.","Здесь о Лебедеве �
  const zones=[[120,90,880,560],[880,560,1500,580],[100,700,1500,960]];
  Object.entries(FN).forEach(([c,arr])=>arr.forEach(n=>{let x,y,ok,tries=0;do{const z=zones[c=="people"?(r()<.6?2:0):(r()<.5?0:2)];x=z[0]+r()*(z[2]-z[0]);y=z[1]+r()*(z[3]-z[1]);
   ok=!(x>860&&x<1480&&y<540)&&P.every(p=>Math.hypot(p.x-x,p.y-y)>46);}while(!ok&&++tries<200);
-  P.push({id:"f"+P.length,n,a:ST[Math.floor(r()*ST.length)]+", "+(1+Math.floor(r()*40)),c,x:Math.round(x),y:Math.round(y),t:FT[Math.floor(r()*FT.length)],filler:1})}))})();
+  P.push({id:"f_"+[...n].reduce((h,ch)=>(h*31+ch.charCodeAt(0))>>>0,7).toString(36),n,a:ST[Math.floor(r()*ST.length)]+", "+(1+Math.floor(r()*40)),c,x:Math.round(x),y:Math.round(y),t:FT[Math.floor(r()*FT.length)],filler:1})}))})();
 const PL=Object.fromEntries(P.map(p=>[p.id,p]));
 const WHO={
  somov:{n:"Глеб Сомов",qs:[["Где вы были вечером 14-го?",null,"«Ушёл в семь, а в девять был в кино, в “Октябре”. Можете проверить»."],["Какие у вас были отношения с Лебедевым?",null,"«Рабочие. Он был человек сложный, но я его уважал»."],["Вы пили с ним чай вечером?","cup2","«Я? Я ушёл в семь, вам же сказали на проходной»."],["Ключ Лебедева нашли у выхода со склада.","key","«При чём тут я? Ключи от склада есть и у кладовщика». — Кладовщик в отпуске с 1 ноября. Сомов молчит."],["Зачем вы брали цианид в лаборатории?","lab","«Для гальваники, по плану». — Гальваника на ремонте. — «...Я... не знал»."],["Ваш билет в кино — за 12-е число.","ticket","Сомов бледнеет. «Перепутал билеты, бывает»."],["Сеанс 14-го в 21:00 отменили.","cinema","Долгое молчание. «...Я гулял. Один. Это не преступление»."],["Лебедев писал на вас в министерство.","type","Долгая пауза. «Я требую адвоката»."]]},
@@ -564,6 +564,7 @@ const QA=[["Кто отравил Аркадия Лебедева? (фамили
 /* ===== STATE ===== */
 let S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null};
 try{const v=localStorage.getItem("tihoe3");if(v)S=Object.assign(S,JSON.parse(v))}catch(e){}
+(function(){const ok=id=>!!PL[id];S.log=(S.log||[]).filter(ok);if(S.pos&&!ok(S.pos))S.pos=S.log[0]||null;S.clues=(S.clues||[]).filter(c=>CLUES[c]);S.asked=S.asked||[];S.trips=Math.max(S.trips||0,S.log.length);if(typeof S.el!=="number"||isNaN(S.el))S.el=0})();
 function save(){try{localStorage.setItem("tihoe3",JSON.stringify(S))}catch(e){}}
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -662,7 +663,7 @@ function trip(id){if(S.done){toast("Дело закрыто");return}
  S.pos=id;save();unsel();pins();clock();panel("hist");setTimeout(()=>{const e=document.querySelector(".hent");e&&e.classList.add("flash")},50)}
 function act(id,i){const h=PL[id].act[i];if(h[1]){const fin=()=>{addClue(h[1]);renderPanel()};if(h[3]&&!S.clues.includes(h[1]))MG[h[3]](fin,MGO[h[1]]);else fin()}else{const k="t"+id+i;if(!S.asked.includes(k)){S.asked.push(k);save()}renderPanel()}}
 function ask(w,i){const k=w+i,q=WHO[w].qs[i];if(!S.asked.includes(k)){S.asked.push(k);save();if(q[3])addClue(q[3])}renderPanel()}
-function entry(id){const p=PL[id];const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${ico(p.c)}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
+function entry(id){const p=PL[id];if(!p)return"";const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${ico(p.c)}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
  if(p.act&&p.act.length)h+=`<div>`+p.act.map((a,i)=>{const got=a[1]&&S.clues.includes(a[1]),told=!a[1]&&S.asked.includes("t"+id+i);
   return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[0]}${a[3]&&!got?" · мини-игра":""}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
  if(p.who){const w=WHO[p.who];h+=`<div class="intg"><div class="av sm">${PORT[p.who]}</div><b>Допрос: ${w.n}</b>`+w.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.who+i);
@@ -672,7 +673,8 @@ function entry(id){const p=PL[id];const tt=clueTotal(id),gg=clueGot(id);let h=`<
 /* ===== PANELS ===== */
 let cur="case";
 function panel(n){cur=n;document.querySelectorAll(".rail button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==n));$("side").classList.add("open");if(n=="hint"){S.hseen=HINTS.filter(h=>S.el>=h[0]*60000).length;save();clock()}renderPanel()}
-function renderPanel(){const b=$("pbody");if(!b)return;let h="";
+function renderPanel(){try{renderPanel_()}catch(e){console.error(e);$("pbody").innerHTML=`<h3>Что-то пошло не так</h3><p class="muted">Сохранение повреждено.</p><button class="btn wide" onclick="reset()">Начать сначала</button>`}}
+function renderPanel_(){const b=$("pbody");if(!b)return;let h="";
  if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="select('office',1)">Начать с места преступления</button><button class="btn ghost wide" onclick="paper()">Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="chrono()">${S.clues.includes('chrono')?'✓ Хронология восстановлена':S.clues.length>=9?'Восстановить хронологию вечера':'Хронология — нужно 9 улик, у вас '+S.clues.length+')'}</button><button class="btn ghost wide" onclick="panel('book')">Адресная книга</button><button class="btn ghost wide" onclick="tour(0)">Как играть</button><button class="btn ghost wide" style="opacity:.7" onclick="confirmBox('Начать заново?','Весь прогресс, улики и поездки будут удалены.','Да, начать заново',reset)">Начать заново</button>`;
  if(cur=="book"){h=`<h3>Адресная книга</h3><input id="bq" class="srch" placeholder="Поиск: фамилия, место, улица…" oninput="bookList()"><div id="blist"></div>`}
  if(cur=="hist")h=`<h3>История поездок</h3>`+(S.log.length?S.log.map(entry).join(""):`<p class="muted">Вы ещё никуда не ездили.</p>`);
