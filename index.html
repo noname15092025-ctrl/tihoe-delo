@@ -249,10 +249,10 @@ details[open] summary:after{transform:rotate(45deg)}
 
 <!-- ================= GAME ================= -->
 <style>
-#game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;grid-template-columns:58px 380px 1fr;opacity:0;transition:opacity .35s}
+#game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;grid-template-columns:76px 380px 1fr;opacity:0;transition:opacity .35s}
 #game.show{opacity:1}
 .rail{background:#0b0908;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
-.rail button{position:relative;width:42px;height:42px;border-radius:10px;border:1px solid transparent;background:none;color:#cfc6b6;font-size:19px;cursor:pointer;transition:background .2s}
+.rail button{position:relative;width:64px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;border:1px solid transparent;background:none;color:#cfc6b6;font-size:19px;cursor:pointer;transition:background .2s}
 .rail button:hover{background:#1e1a17}.rail button.on{background:var(--red);color:#fff}
 .rail .logo2{font-family:Oswald;color:var(--red);font-size:20px;margin-bottom:8px}
 .rail .bdg{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:11px;font-family:Oswald;border-radius:9px;padding:1px 6px}
@@ -296,25 +296,44 @@ details[open] summary:after{transform:rotate(45deg)}
 </style>
 <div id="game">
  <div class="rail"><div class="logo2">ТД</div>
-  <button data-p="case" title="Материалы дела" onclick="panel('case')">📁</button>
-  <button data-p="book" title="Адресная книга" onclick="panel('book')">📒</button>
-  <button data-p="hist" title="История поездок" onclick="panel('hist')">🕘</button>
-  <button data-p="notes" title="Блокнот улик" onclick="panel('notes')">🔎<span class="bdg" id="nbadge">0</span></button>
-  <button data-p="hint" title="Птички нашептали" onclick="panel('hint')">🐦<span class="bdg" id="hbadge"></span></button>
-  <button data-p="ans" title="Бланк ответов" onclick="panel('ans')">✍️</button>
+  <button data-p="case" title="Материалы дела" onclick="panel('case')">📁<em>Дело</em></button>
+  <button data-p="book" title="Адресная книга" onclick="panel('book')">📒<em>Адреса</em></button>
+  <button data-p="hist" title="История поездок" onclick="panel('hist')">🕘<em>Поездки</em></button>
+  <button data-p="notes" title="Блокнот улик" onclick="panel('notes')">🔎<em>Улики</em><span class="bdg" id="nbadge">0</span></button>
+  <button data-p="hint" title="Птички нашептали" onclick="panel('hint')">🐦<em>Подсказки</em><span class="bdg" id="hbadge"></span></button>
+  <button data-p="ans" title="Бланк ответов" onclick="panel('ans')">✍️<em>Ответ</em></button>
   <span class="sp"></span>
-  <button title="Скрыть панель" onclick="document.getElementById('side').classList.toggle('open');document.getElementById('game').classList.toggle('nos')">⇤</button>
-  <button title="Выйти" onclick="closeGame()">✕</button>
+  <button title="Скрыть панель" onclick="document.getElementById('side').classList.toggle('open');document.getElementById('game').classList.toggle('nos')">⇤<em>Панель</em></button>
+  <button title="Обучение" onclick="tour(0)">?<em>Помощь</em></button>
+  <button title="Выйти" onclick="closeGame()">✕<em>Выйти</em></button>
  </div>
  <div id="side" class="open"><div id="pbody"></div></div>
  <div id="mapbox"><svg id="cmap" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
   <div class="mtop" id="chips"></div>
-  <div class="clockb"><div id="clk">00:00:00</div><div id="trc">Поездки: 0</div></div>
+  <div class="clockb" title="Оценка: 12 поездок и меньше — отлично, до 20 — хорошо, больше — удовлетворительно"><div id="clk">00:00:00</div><div id="trc">Поездки: 0</div><div id="grade"></div></div>
+  <div class="mapbtns"><button onclick="whereAmI()">📍 Где я</button><button id="onlyv" onclick="onlyVisited()">🚩 Мои поездки</button></div>
   <div class="zbtn"><button onclick="zoom(.8)">+</button><button onclick="zoom(1.25)">−</button></div>
   <div id="pop"></div>
  </div>
 </div>
-<style>#game.nos{grid-template-columns:58px 0 1fr}#game.nos #side{display:none}@media(max-width:820px){#game.nos{grid-template-columns:52px 1fr}}</style>
+<style>
+.rail em{font-style:normal;font-size:10.5px;font-family:'PT Serif';color:#a89e8f}.rail button.on em{color:#fff}
+.hot.mgh:after{content:""}.hot.mgh{border-color:var(--red)!important}
+.prog{font-size:12px;color:#e9c46a;margin-left:8px;font-family:'PT Serif'}.prog.full{color:#7fb77e}
+.mp.e circle{fill:#9a948a;stroke:#e6e3da}.mp.full circle{fill:#5a8a58}.mp.h circle{stroke:#e9c46a;stroke-width:6}
+.ngrp{font-family:Oswald;margin:16px 0 8px;color:#cfc6b6;letter-spacing:1px}
+.clue{position:relative;padding-right:40px}.star{position:absolute;right:10px;top:10px;background:none;border:0;font-size:18px;cursor:pointer;opacity:.35}.star.on{opacity:1}
+.mapbtns{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}.mapbtns button{background:rgba(20,17,15,.9);color:#fff;border:1px solid #3a332c;border-radius:10px;padding:8px 12px;cursor:pointer;font-size:13px}.mapbtns button.on{background:var(--red)}
+#grade{font-size:11px;color:#a89e8f;margin-top:2px}
+.backmap{display:none;width:100%;margin-bottom:12px}
+.tour{position:fixed;inset:0;z-index:180;pointer-events:none}
+.tour .spot{position:fixed;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.2,.7,.2,1);pointer-events:none;outline:2px solid #e9c46a}
+.tour .tb{position:fixed;width:300px;background:var(--paper);color:var(--ink);border-radius:14px;padding:16px 18px;pointer-events:auto;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.tour .tb b{font-family:Oswald;font-size:18px;display:block;margin-bottom:4px}.tour .tb p{margin:0 0 12px;font-size:14px}
+.tour .tb .n{font-size:12px;color:#8a7f70;float:right;margin-top:10px}
+@media(max-width:820px){#game{grid-template-columns:64px 1fr}#side{left:64px;width:calc(100% - 64px)}.rail button{width:56px;height:50px}.backmap{display:block}.mapbtns{bottom:70px}.tour .tb{width:calc(100vw - 40px)}}
+
+#game.nos{grid-template-columns:76px 0 1fr}#game.nos #side{display:none}@media(max-width:820px){#game.nos{grid-template-columns:52px 1fr}}</style>
 <div class="toast" id="toast"></div>
 <script>
 const CLUES={
@@ -460,11 +479,11 @@ function save(){try{localStorage.setItem("tihoe3",JSON.stringify(S))}catch(e){}}
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2400)}
-function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);bump();renderPanel()}}
+function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);bump();const nq=Object.values(WHO).filter(w=>w.qs.some(q=>q[1]===c));if(nq.length)setTimeout(()=>toast("❓ Новый вопрос: "+nq.map(w=>w.n).join(", ")),2600);renderPanel();try{pins()}catch(e){}}}
 function bump(){const n=$("nbadge");if(n){n.textContent=S.clues.length;n.classList.remove("bump");void n.offsetWidth;n.classList.add("bump")}}
 let tick=null,last=0;
 function fmtT(ms){const s=Math.floor(ms/1000);return[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(v=>String(v).padStart(2,"0")).join(":")}
-function clock(){$("clk").textContent=fmtT(S.el);$("trc").textContent="Поездки: "+S.trips;
+function clock(){$("clk").textContent=fmtT(S.el);$("trc").textContent="Поездки: "+S.trips;$("grade").textContent=S.trips<=12?"оценка сейчас: отлично":S.trips<=20?"оценка сейчас: хорошо":"оценка сейчас: удовл.";
  const got=HINTS.filter(h=>S.el>=h[0]*60000).length;const hb=$("hbadge");hb.style.display=got>S.hseen?"block":"none";
  if(got>S.hseen&&!hb._n){hb._n=got;toast("🐦 Птички нашептали новую подсказку")}}
 var openGame;openGame=function(){const g=$("game");g.style.display="grid";requestAnimationFrame(()=>g.classList.add("show"));document.body.style.overflow="hidden";
@@ -488,8 +507,8 @@ function drawMap(){const m=$("cmap");
  ${[["ЦЕНТР",360,90],["ЗАРЕЧЬЕ",360,950],["СЛОБОДА",1150,950]].map(d=>`<text x="${d[1]}" y="${d[2]}" font-family="Oswald" font-size="26" fill="#a49e8f" letter-spacing="6">${d[0]}</text>`).join("")}
  <g id="pins"></g>`;
  pins();applyVB()}
-function pins(){const g=$("pins");g.innerHTML=P.filter(p=>filt.has(p.c)).map(p=>{const v=S.log.includes(p.id),s=sel===p.id;
- return `<g class="mp ${v?'v':''} ${s?'s':''}" data-id="${p.id}" transform="translate(${p.x},${p.y})"><circle r="${s?22:17}"/><text y="7" text-anchor="middle" font-size="17">${CATS[p.c][1]}</text></g>`}).join("");
+function pins(){const g=$("pins");g.innerHTML=P.filter(p=>filt.has(p.c)&&(!onlyV||S.log.includes(p.id))).map(p=>{const v=S.log.includes(p.id),s=sel===p.id;
+ const st=v?(p.filler?"e":!clueTotal(p.id)||isFull(p.id)?"full":"v"):"";return `<g class="mp ${st} ${s?'s':''} ${hlId===p.id?'h':''}" data-id="${p.id}" transform="translate(${p.x},${p.y})"><circle r="${s?22:17}"/><text y="7" text-anchor="middle" font-size="17">${CATS[p.c][1]}</text></g>`}).join("");
  if(S.pos&&PL[S.pos])g.insertAdjacentHTML("beforeend",`<g transform="translate(${PL[S.pos].x},${PL[S.pos].y-30})"><path d="M0 0 l-9 -16 a10 10 0 1 1 18 0z" fill="#e9c46a" stroke="#14110f" stroke-width="2"/></g>`);
  g.querySelectorAll(".mp").forEach(el=>el.onclick=e=>{e.stopPropagation();select(el.dataset.id)})}
 function applyVB(){if(vb.w<1650){vb.x=Math.max(-40,Math.min(1640-vb.w,vb.x))}if(vb.h<1050){vb.y=Math.max(-40,Math.min(1040-vb.h,vb.y))}$("cmap").setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);popPos()}
@@ -509,15 +528,51 @@ function initPan(){const m=$("cmap");let d=null;
  m.addEventListener("pointerup",()=>{if(d&&d.mv<3)unsel();d=null});
  m.addEventListener("wheel",e=>{e.preventDefault();const r=m.getBoundingClientRect();zoom(e.deltaY>0?1.15:.87,vb.x+(e.clientX-r.left)/r.width*vb.w,vb.y+(e.clientY-r.top)/r.height*vb.h)},{passive:false})}
 
+
+let hlId=null,onlyV=false;
+function clueIds(id){const p=PL[id];const a=(p.act||[]).filter(x=>x[1]).map(x=>x[1]);if(p.who)WHO[p.who].qs.forEach(q=>q[3]&&a.push(q[3]));return [...new Set(a)]}
+function clueTotal(id){return clueIds(id).length}
+function clueGot(id){return clueIds(id).filter(c=>S.clues.includes(c)).length}
+function isFull(id){const t=clueTotal(id);return t>0&&clueGot(id)>=t}
+function hl(id){if(hlId===id)return;hlId=id;pins()}
+function whereAmI(){if(!S.pos){toast("Вы ещё в прокуратуре — никуда не ездили");return}select(S.pos,1)}
+function onlyVisited(){onlyV=!onlyV;$("onlyv").classList.toggle("on",onlyV);pins();if(onlyV&&!S.log.length)toast("Поездок пока нет")}
+function confirmBox(title,text,yes,cb){const m=mgOpen(`<h3>${title}</h3><p class="hint">${text}</p><button class="mgbtn" data-yes>${yes}</button>`);m.querySelector("[data-close]").textContent="Отмена";m.querySelector("[data-yes]").onclick=()=>{mgClose(m);cb()}}
+function askSubmit(){if(QA.some((q,i)=>!$("qa"+i).value.trim())){toast("Заполните все поля");return}confirmBox("Отправить ответы?","Ответ можно отправить только один раз. Изменить его потом будет нельзя.","Отправить",submitA)}
+const GROUPS=[["Место преступления",["cup","cup2","nokey"]],["Глеб Сомов",["type","lab","ticket","cinema","loud","pass","watch","skirt","key"]],["Вера Лебедева",["insurance","neighbor"]],["Лида Кравец",["letters","alibiL"]]];
+function star(c){S.star=S.star||[];S.star.includes(c)?S.star=S.star.filter(x=>x!==c):S.star.push(c);save();renderPanel()}
+function notesHTML(){const cl=c=>`<div class="clue"><button class="star ${(S.star||[]).includes(c)?'on':''}" title="Пометить как важное" onclick="star('${c}')">⭐</button><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`;
+ const st=(S.star||[]).filter(c=>S.clues.includes(c)),used=new Set(GROUPS.flatMap(g=>g[1]));
+ let h=`<h3>Улики <span class="muted" style="font-size:15px">${S.clues.length} из ${Object.keys(CLUES).length}</span></h3>`;
+ if(!S.clues.length)return h+`<p class="muted">Пока пусто. Улики появятся после поездок.</p>`;
+ if(st.length)h+=`<div class="ngrp">⭐ Важное</div>`+st.map(cl).join("");
+ h+=GROUPS.map(([t,ids])=>{const g=ids.filter(c=>S.clues.includes(c));return g.length?`<div class="ngrp">${t}</div>`+g.map(cl).join(""):""}).join("");
+ return h+S.clues.filter(c=>!used.has(c)).map(cl).join("")}
+const TOUR=[["#side","Материалы дела","Здесь описано, что случилось. Прочитайте внимательно — от этого зависит, куда ехать."],
+ ['.rail button[data-p="book"]',"Адресная книга","Ищите людей и места по фамилии или названию. Нажмите на адрес — карта покажет его."],
+ ["#mapbox","Карта города","Каждая точка — адрес. Нажмите на неё и выберите «Поехать». Двигайте карту мышкой или пальцем, приближайте колёсиком."],
+ [".clockb","Часы и поездки","Время не ограничено, но каждая новая поездка учитывается. Чем меньше поездок — тем выше оценка."],
+ ['.rail button[data-p="hist"]',"Поездки и улики","После поездки здесь появится текст места, действия и допросы. Кнопки с 🔍 — мини-игры. Все находки собираются в «Уликах»."],
+ ['.rail button[data-p="hint"]',"Подсказки","Застряли — со временем «птички нашептают» подсказку. Жёлтая точка значит, что появилась новая."],
+ ['.rail button[data-p="ans"]',"Бланк ответов","Когда будете уверены, впишите ответы: кто, чем, зачем и как. Отправить можно только один раз. Удачи, следователь!"]];
+function tour(i){document.querySelector(".tour")?.remove();if(i>=TOUR.length){S.tut=1;save();return}
+ if(i==0){panel("case");if(innerWidth<=820)$("side").classList.add("open")}
+ if(innerWidth<=820&&(TOUR[i][0]=="#mapbox"||TOUR[i][0]==".clockb"))$("side").classList.remove("open");
+ const el=document.querySelector(TOUR[i][0]);if(!el){tour(i+1);return}const r=el.getBoundingClientRect(),d=document.createElement("div");d.className="tour";
+ d.innerHTML=`<div class="spot" style="left:${r.left-4}px;top:${r.top-4}px;width:${r.width+8}px;height:${r.height+8}px"></div><div class="tb"><b>${TOUR[i][1]}</b><p>${TOUR[i][2]}</p><button class="mgbtn" data-n>${i==TOUR.length-1?"Начать игру":"Далее"}</button><button class="mgbtn x" data-s>Пропустить</button><span class="n">${i+1} / ${TOUR.length}</span></div>`;
+ document.body.appendChild(d);const tb=d.querySelector(".tb"),w=tb.offsetWidth;let x=r.right+16,y=r.top;
+ if(x+w>innerWidth-10)x=r.left-w-16;if(x<10||r.width>innerWidth*.5){x=r.left+r.width/2-w/2;y=r.top+r.height/2-80}
+ tb.style.left=Math.max(10,Math.min(innerWidth-w-10,x))+"px";tb.style.top=Math.max(10,Math.min(innerHeight-tb.offsetHeight-10,y))+"px";
+ d.querySelector("[data-n]").onclick=()=>tour(i+1);d.querySelector("[data-s]").onclick=()=>{d.remove();S.tut=1;save()}}
 /* ===== TRIPS ===== */
 function trip(id){if(S.done){toast("Дело закрыто");return}
  if(!S.log.includes(id)){S.trips++;S.log.unshift(id)}else{S.log=[id,...S.log.filter(x=>x!==id)]}
  S.pos=id;save();unsel();pins();clock();panel("hist");setTimeout(()=>{const e=document.querySelector(".hent");e&&e.classList.add("flash")},50)}
 function act(id,i){const h=PL[id].act[i];if(h[1]){const fin=()=>{addClue(h[1]);renderPanel()};if(h[3]&&!S.clues.includes(h[1]))MG[h[3]](fin,MGO[h[1]]);else fin()}else{const k="t"+id+i;if(!S.asked.includes(k)){S.asked.push(k);save()}renderPanel()}}
 function ask(w,i){const k=w+i,q=WHO[w].qs[i];if(!S.asked.includes(k)){S.asked.push(k);save();if(q[3])addClue(q[3])}renderPanel()}
-function entry(id){const p=PL[id];let h=`<div class="hent"><div class="hh"><b>${esc(p.n)}</b><span>${CATS[p.c][1]}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
+function entry(id){const p=PL[id];const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${CATS[p.c][1]}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
  if(p.act&&p.act.length)h+=`<div>`+p.act.map((a,i)=>{const got=a[1]&&S.clues.includes(a[1]),told=!a[1]&&S.asked.includes("t"+id+i);
-  return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[0]}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
+  return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[3]&&!got?"🔍 ":""}${a[0]}${a[3]&&!got?" · мини-игра":""}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
  if(p.who){const w=WHO[p.who];h+=`<div class="intg"><div class="av sm">${PORT[p.who]}</div><b>Допрос: ${w.n}</b>`+w.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.who+i);
   return `<button class="q ${a?'asked':''}" onclick="ask('${p.who}',${i})">${q[1]?'📎 ':''}${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")+`</div>`}
  return h+`<button class="lnk" onclick="select('${id}',1)">Показать на карте</button></div>`}
@@ -526,29 +581,29 @@ function entry(id){const p=PL[id];let h=`<div class="hent"><div class="hh"><b>${
 let cur="case";
 function panel(n){cur=n;document.querySelectorAll(".rail button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==n));$("side").classList.add("open");if(n=="hint"){S.hseen=HINTS.filter(h=>S.el>=h[0]*60000).length;save();clock()}renderPanel()}
 function renderPanel(){const b=$("pbody");if(!b)return;let h="";
- if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="paper()">📰 Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="panel('book')">Открыть адресную книгу</button>`;
+ if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="select('office',1)">🚗 Начать: место преступления</button><button class="btn ghost wide" onclick="paper()">📰 Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="panel('book')">📒 Открыть адресную книгу</button><button class="btn ghost wide" onclick="tour(0)">❔ Как играть</button><button class="btn ghost wide" style="opacity:.7" onclick="confirmBox('Начать заново?','Весь прогресс, улики и поездки будут удалены.','Да, начать заново',reset)">↺ Начать заново</button>`;
  if(cur=="book"){h=`<h3>Адресная книга</h3><input id="bq" class="srch" placeholder="Поиск: фамилия, место, улица…" oninput="bookList()"><div id="blist"></div>`}
  if(cur=="hist")h=`<h3>История поездок</h3>`+(S.log.length?S.log.map(entry).join(""):`<p class="muted">Вы ещё никуда не ездили.</p>`);
- if(cur=="notes")h=`<h3>Блокнот</h3>`+(S.clues.length?S.clues.map(c=>`<div class="clue"><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`).join(""):`<p class="muted">Пока пусто.</p>`);
+ if(cur=="notes")h=notesHTML();
  if(cur=="hint"){const got=HINTS.filter(x=>S.el>=x[0]*60000);h=`<h3>🐦 Птички нашептали</h3>`+(got.length?got.map(x=>`<div class="tip"><small>${String(x[0]).padStart(2,"0")}:00</small>${x[1]}</div>`).join(""):"")+(got.length<HINTS.length?`<p class="muted">Следующая подсказка — через ${Math.max(1,Math.ceil(HINTS[got.length][0]-S.el/60000))} мин.</p>`:"")}
- if(cur=="ans"){if(S.done)h=`<h3>Бланк ответов</h3>`+S.done;else h=`<h3>Бланк ответов</h3><p class="muted">Ответ можно отправить только один раз.</p>`+QA.map((q,i)=>`<label class="ql">${q[0]}</label><input class="srch" id="qa${i}" placeholder="Ответ">`).join("")+`<button class="btn wide" onclick="submitA()">Сохранить и отправить</button>`}
- b.innerHTML=h;if(cur=="book")bookList();$("nbadge").textContent=S.clues.length}
+ if(cur=="ans"){if(S.done)h=`<h3>Бланк ответов</h3>`+S.done;else h=`<h3>Бланк ответов</h3><p class="muted">Ответ можно отправить только один раз.</p>`+QA.map((q,i)=>`<label class="ql">${q[0]}</label><input class="srch" id="qa${i}" placeholder="Ответ" value="${esc((S.draft||[])[i]||"")}" oninput="S.draft=S.draft||[];S.draft[${i}]=this.value;save()">`).join("")+`<button class="btn wide" onclick="askSubmit()">Сохранить и отправить</button>`}
+ b.innerHTML=`<button class="btn ghost backmap" onclick="document.getElementById('side').classList.remove('open')">← К карте</button>`+h;if(cur=="book")bookList();$("nbadge").textContent=S.clues.length}
 function bookList(){const q=($("bq")?.value||"").toLowerCase().replace(/ё/g,"е");const f=p=>(p.n+" "+p.a).toLowerCase().replace(/ё/g,"е").includes(q);
  const grp=[["Жители",P.filter(p=>p.c=="people"&&f(p))],["Предприятия и учреждения",P.filter(p=>p.c!="people"&&f(p))]];
- $("blist").innerHTML=grp.map(([t,a])=>`<div class="bg">${t} <span>${a.length}</span></div>`+a.sort((x,y)=>x.n.localeCompare(y.n,"ru")).map(p=>`<div class="bi ${S.log.includes(p.id)?'v':''}" onclick="select('${p.id}',1)"><span>${CATS[p.c][1]} ${esc(p.n)}</span><small>${esc(p.a)}</small></div>`).join("")).join("")}
+ $("blist").innerHTML=grp.map(([t,a])=>`<div class="bg">${t} <span>${a.length}</span></div>`+a.sort((x,y)=>x.n.localeCompare(y.n,"ru")).map(p=>`<div class="bi ${S.log.includes(p.id)?'v':''}" onmouseenter="hl('${p.id}')" onmouseleave="hl(null)" onclick="select('${p.id}',1)"><span>${CATS[p.c][1]} ${esc(p.n)}</span><small>${esc(p.a)}</small></div>`).join("")).join("")}
 function submitA(){const an=QA.map((q,i)=>($("qa"+i).value||"").toLowerCase().replace(/ё/g,"е"));if(an.some(a=>!a.trim())){toast("Заполните все поля");return}
  const ok=QA.map((q,i)=>q[1].some(k=>an[i].includes(k)));const n=ok.filter(Boolean).length;
  const grade=n<4?"":S.trips<=12?"Блестящая работа, товарищ следователь!":S.trips<=20?"Хорошая работа.":"Дело раскрыто, но вы изъездили полгорода.";
  S.done=`<div class="result"><h3 style="font-family:Oswald">${ok[0]?(n==4?"✅ Дело раскрыто":"⚠️ Убийца назван, но обвинение неполное"):"❌ Дело развалилось"}</h3>${QA.map((q,i)=>`<p>${ok[i]?"✅":"❌"} ${q[0]}<br><i>${esc(an[i])}</i></p>`).join("")}<p>Время: <b>${fmtT(S.el)}</b> · Поездки: <b>${S.trips}</b>. ${grade}</p>${ok[0]?`<p><b>Как всё было.</b> Глеб Сомов годами списывал и продавал радиодетали со склада №3. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», в 19:10 демонстративно ушёл через проходную, громко объявив про кино, и вернулся через склад, ключ от которого был только у него. Около 21:00 он предложил Лебедеву выпить чаю «мировую» и подсыпал яд в его чашку. Свою чашку вымыл и второпях поставил на подоконник, дверь запер ключом Лебедева и обронил его на складе. Билет был старый, а сеанс в «Октябре» в тот вечер и вовсе отменили.</p>`:""}<button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
  save();renderPanel()}
-function reset(){S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null};save();last=Date.now();const hb=$("hbadge");hb._n=0;pins();panel("case")}
+function reset(){S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null,tut:1};save();last=Date.now();const hb=$("hbadge");hb._n=0;pins();panel("case")}
 function paper(){const m=mgOpen(`<div class="paper"><div class="mast">ЗАРЕЧИНСКАЯ ПРАВДА</div><div class="pd">Орган Заречинского горкома КПСС · №218 · 14 ноября 1978 г. · Цена 2 коп.</div>
  <div class="cols"><div><h4>«Импульс» досрочно выполнил план</h4><p>Коллектив радиозавода «Импульс» рапортует о досрочном выполнении плана третьего квартала. Почётной грамотой награждён заместитель главного инженера тов. <b>Г.В. Сомов</b>. Главный инженер тов. А.П. Лебедев отметил, однако, «серьёзные вопросы к учёту на складах», которые будут рассмотрены отдельно.</p></div>
  <div><h4>В кино на этой неделе</h4><p>Кинотеатр «Октябрь» показывает фильм «Экипаж». Сеансы: 15:00, 18:00, 21:00. Дирекция приносит извинения за неполадки с проекционной аппаратурой.</p><h4>Новости коротко</h4><p>На ремонт закрыт гальванический цех завода «Импульс» — работы продлятся до декабря. В Доме культуры «Энергетик» — вечер танцев.</p></div></div></div>`);m.querySelector("[data-close]").textContent="Закрыть"}
 
 function chipsR(){$("chips").innerHTML=Object.entries(CATS).map(([k,v])=>`<span class="chip ${filt.has(k)?'':'off'}" onclick="tg('${k}')">${v[1]} ${v[0]}</span>`).join("")}
 function tg(k){filt.has(k)?filt.delete(k):filt.add(k);chipsR();pins()}
-const _og=openGame;openGame=function(){_og();chipsR()};
+const _og=openGame;openGame=function(){_og();chipsR();if(!S.tut)setTimeout(()=>tour(0),500)};
 initPan();addEventListener("resize",popPos);
 addEventListener("scroll",()=>document.querySelector("header.top").classList.toggle("scrolled",scrollY>20),{passive:true});
 document.querySelectorAll("section h2, .feat, .case, .steps div, details").forEach((el,i)=>{el.classList.add("reveal");el.style.transitionDelay=(i%4)*90+"ms"});
