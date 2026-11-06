@@ -4,81 +4,81 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тихое дело — детективная игра</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Courier+Prime&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#14110f;--paper:#efe6d2;--ink:#2a241e;--red:#b3261e;--muted:#8a7f70;--card:#1e1a17;--line:#3a332c}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#e9e1d1;font-family:'PT Serif',serif;line-height:1.55}
+body{margin:0;background:var(--bg);color:#e9e1d1;font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55}
 a{color:inherit}
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 header.top{position:sticky;top:0;z-index:10;background:rgba(20,17,15,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
 header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{font-family:Oswald;font-size:22px;letter-spacing:2px;text-transform:uppercase}
+.logo{font-family:'Playfair Display';font-size:22px;letter-spacing:2px;text-transform:uppercase}
 .logo span{color:var(--red)}
 nav a{margin-left:22px;text-decoration:none;color:#cfc6b6;font-size:15px}
 nav a:hover{color:#fff}
-.btn{display:inline-block;background:var(--red);color:#fff;border:0;padding:14px 26px;font-family:Oswald;font-size:17px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;padding:14px 26px;font-family:'Playfair Display';font-size:17px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px}
 .btn:hover{background:#cf3026}
 .btn.ghost{background:transparent;border:1px solid #6b6156}
 .hero{min-height:88vh;display:flex;align-items:center;background:
  radial-gradient(ellipse at 70% 40%,rgba(179,38,30,.18),transparent 60%),
  repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 2px,transparent 2px 4px),var(--bg)}
-.hero h1{font-family:Oswald;font-size:clamp(42px,7vw,86px);line-height:1;margin:0 0 18px;text-transform:uppercase}
+.hero h1{font-family:'Playfair Display';font-size:clamp(42px,7vw,86px);line-height:1;margin:0 0 18px;text-transform:uppercase}
 .hero h1 em{font-style:normal;color:var(--red)}
-.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:4px 10px;font-family:'Courier Prime';transform:rotate(-3deg);margin-bottom:22px;letter-spacing:2px}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:4px 10px;font-family:'IBM Plex Mono';transform:rotate(-3deg);margin-bottom:22px;letter-spacing:2px}
 .hero p.lead{font-size:21px;max-width:600px;color:#d6cdbd}
 section{padding:90px 0;border-top:1px solid var(--line)}
-h2{font-family:Oswald;font-size:40px;text-transform:uppercase;margin:0 0 30px;letter-spacing:1px}
+h2{font-family:'Playfair Display';font-size:40px;text-transform:uppercase;margin:0 0 30px;letter-spacing:1px}
 .grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 .feat{background:var(--card);padding:26px;border-left:3px solid var(--red)}
-.feat h3{font-family:Oswald;margin:8px 0;font-size:21px}
+.feat h3{font-family:'Playfair Display';margin:8px 0;font-size:21px}
 .feat .ico{font-size:30px}
 .case{background:var(--paper);color:var(--ink);padding:26px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.case h3{font-family:Oswald;font-size:24px;margin:0 0 6px}
-.case .tag{font-family:'Courier Prime';font-size:13px;color:var(--red)}
-.case .price{font-family:Oswald;font-size:28px;margin:14px 0}
+.case h3{font-family:'Playfair Display';font-size:24px;margin:0 0 6px}
+.case .tag{font-family:'IBM Plex Mono';font-size:13px;color:var(--red)}
+.case .price{font-family:'Playfair Display';font-size:28px;margin:14px 0}
 .case.soon{opacity:.6}
 .steps{counter-reset:s}
 .steps div{counter-increment:s;padding-left:58px;position:relative;margin-bottom:22px}
-.steps div:before{content:counter(s);position:absolute;left:0;top:0;width:42px;height:42px;border:2px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Oswald;font-size:20px;color:var(--red)}
+.steps div:before{content:counter(s);position:absolute;left:0;top:0;width:42px;height:42px;border:2px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-size:20px;color:var(--red)}
 details{background:var(--card);margin-bottom:10px;padding:18px 22px}
-summary{cursor:pointer;font-family:Oswald;font-size:18px}
+summary{cursor:pointer;font-family:'Playfair Display';font-size:18px}
 footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
 
 /* GAME */
 #game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;overflow:auto}
 .ghead{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0f0d0b;z-index:2;gap:10px;flex-wrap:wrap}
-.clock{font-family:'Courier Prime';font-size:15px;color:#e9c46a}
-.tabs button{background:none;border:1px solid var(--line);color:#cfc6b6;padding:8px 14px;cursor:pointer;font-family:Oswald;letter-spacing:1px;margin-left:4px}
+.clock{font-family:'IBM Plex Mono';font-size:15px;color:#e9c46a}
+.tabs button{background:none;border:1px solid var(--line);color:#cfc6b6;padding:8px 14px;cursor:pointer;font-family:'Playfair Display';letter-spacing:1px;margin-left:4px}
 .tabs button.on{background:var(--red);border-color:var(--red);color:#fff}
 .gbody{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
 .panel{display:none}.panel.on{display:block}
-.file{background:var(--paper);color:var(--ink);padding:28px;font-family:'Courier Prime';box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.file h3{font-family:Oswald;font-size:26px;margin:0 0 10px}
+.file{background:var(--paper);color:var(--ink);padding:28px;font-family:'IBM Plex Mono';box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.file h3{font-family:'Playfair Display';font-size:26px;margin:0 0 10px}
 .locs{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .loc{background:var(--card);border:1px solid var(--line);padding:18px;cursor:pointer;transition:.15s}
 .loc:hover{border-color:var(--red)}
 .loc.done{opacity:.55}
 .loc.locked{cursor:not-allowed;opacity:.35}
-.loc b{font-family:Oswald;font-size:18px;display:block}
+.loc b{font-family:'Playfair Display';font-size:18px;display:block}
 .loc small{color:var(--muted)}
 .scene{background:var(--paper);color:var(--ink);padding:28px;margin-top:20px}
-.scene h3{font-family:Oswald;margin:0 0 10px;font-size:24px}
-.hot{display:inline-block;margin:8px 8px 0 0;padding:8px 12px;border:1px dashed var(--ink);cursor:pointer;font-family:'Courier Prime';font-size:14px;background:#e4d9c0}
+.scene h3{font-family:'Playfair Display';margin:0 0 10px;font-size:24px}
+.hot{display:inline-block;margin:8px 8px 0 0;padding:8px 12px;border:1px dashed var(--ink);cursor:pointer;font-family:'IBM Plex Mono';font-size:14px;background:#e4d9c0}
 .hot:hover{background:#d9cba9}
 .hot.got{border-style:solid;background:#c9b88f;cursor:default}
-.clue{background:var(--paper);color:var(--ink);padding:16px 18px;margin-bottom:12px;font-family:'Courier Prime';border-left:4px solid var(--red)}
-.clue b{font-family:Oswald;font-size:17px}
+.clue{background:var(--paper);color:var(--ink);padding:16px 18px;margin-bottom:12px;font-family:'IBM Plex Mono';border-left:4px solid var(--red)}
+.clue b{font-family:'Playfair Display';font-size:17px}
 .sus{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
 .person{background:var(--card);border:1px solid var(--line);padding:18px}
-.person .av{width:64px;height:64px;border-radius:50%;background:#3a332c;display:flex;align-items:center;justify-content:center;font-family:Oswald;font-size:26px;margin-bottom:10px}
-.person h4{font-family:Oswald;margin:0;font-size:19px}
-.q{display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#e9e1d1;padding:9px 11px;margin-top:8px;cursor:pointer;font-family:'PT Serif';font-size:14px}
+.person .av{width:64px;height:64px;border-radius:50%;background:#3a332c;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-size:26px;margin-bottom:10px}
+.person h4{font-family:'Playfair Display';margin:0;font-size:19px}
+.q{display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#e9e1d1;padding:9px 11px;margin-top:8px;cursor:pointer;font-family:'IBM Plex Sans';font-size:14px}
 .q:hover{border-color:var(--red)}
 .q.asked{opacity:.5}
 .ans{font-style:italic;color:#d6cdbd;font-size:14px;margin-top:6px;padding-left:10px;border-left:2px solid var(--red)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 20px;font-family:Oswald;letter-spacing:1px;z-index:99;display:none}
-select{width:100%;padding:10px;font-family:'PT Serif';font-size:15px;margin:6px 0 16px;background:#fff;color:var(--ink)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 20px;font-family:'Playfair Display';letter-spacing:1px;z-index:99;display:none}
+select{width:100%;padding:10px;font-family:'IBM Plex Sans';font-size:15px;margin:6px 0 16px;background:#fff;color:var(--ink)}
 .result{margin-top:20px;padding:22px;background:var(--card);border:1px solid var(--line)}
 .muted{color:var(--muted)}
 @media(max-width:640px){nav a:not(.btn){display:none}}
@@ -153,28 +153,28 @@ details[open] summary:after{transform:rotate(45deg)}
 .mg.show{opacity:1}
 .mgbox{background:var(--paper);color:var(--ink);border-radius:16px;padding:24px;width:min(580px,94vw);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:translateY(20px) scale(.97);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
 .mg.show .mgbox{transform:none}
-.mgbox h3{font-family:Oswald;margin:0 0 6px;font-size:24px}.mgbox .hint{font-size:14px;color:#6b5f52;margin:0 0 14px}
-.mgbtn{background:var(--ink);color:var(--paper);border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'PT Serif';font-size:15px;margin:6px 6px 0 0;transition:transform .15s,background .2s}
+.mgbox h3{font-family:'Playfair Display';margin:0 0 6px;font-size:24px}.mgbox .hint{font-size:14px;color:#6b5f52;margin:0 0 14px}
+.mgbtn{background:var(--ink);color:var(--paper);border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'IBM Plex Sans';font-size:15px;margin:6px 6px 0 0;transition:transform .15s,background .2s}
 .mgbtn:hover{transform:translateY(-1px);background:#000}.mgbtn.x{background:transparent;color:var(--ink);border:1px solid #b5a88f}
-.scr{position:relative;border-radius:10px;overflow:hidden;background:#f6f0e2;padding:20px;font-family:'Courier Prime';font-size:15px;line-height:1.6;user-select:none}
+.scr{position:relative;border-radius:10px;overflow:hidden;background:#f6f0e2;padding:20px;font-family:'IBM Plex Mono';font-size:15px;line-height:1.6;user-select:none}
 .scr canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .lens{position:relative;height:150px;border-radius:10px;overflow:hidden;background:#f6f0e2;cursor:none;touch-action:none;user-select:none}
-.lens div{position:absolute;inset:0;padding:18px;font-family:'Courier Prime';font-size:15px;line-height:1.7}
+.lens div{position:absolute;inset:0;padding:18px;font-family:'IBM Plex Mono';font-size:15px;line-height:1.7}
 .lens .blur{filter:blur(5px)}.lens .clear{clip-path:circle(0 at 0 0);background:#fbf7ec}
 .lens .ring{position:absolute;width:110px;height:110px;border:4px solid #4a3f33;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 0 0 2000px rgba(0,0,0,0),inset 0 0 20px rgba(0,0,0,.2);display:none}
 .flipw{perspective:900px;height:180px;cursor:pointer}
 .flip{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
 .flip.on{transform:rotateY(180deg)}
-.flip>div{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:22px;font-family:'Courier Prime';background:#e8c9a0;border:2px dashed #8a6a45;display:flex;flex-direction:column;justify-content:center}
+.flip>div{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:22px;font-family:'IBM Plex Mono';background:#e8c9a0;border:2px dashed #8a6a45;display:flex;flex-direction:column;justify-content:center}
 .flip .back{transform:rotateY(180deg);background:#dcbf98}
-.flip b{font-family:Oswald;font-size:22px}
+.flip b{font-family:'Playfair Display';font-size:22px}
 .junk{position:relative;height:280px;border-radius:10px;overflow:hidden;background:repeating-linear-gradient(90deg,#6b543c 0 46px,#5d4834 46px 50px)}
 .junk span{position:absolute;cursor:pointer;user-select:none;transition:transform .15s}
 .junk span:hover{transform:scale(1.15)}
 .shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.hold{position:relative;overflow:hidden;width:100%;padding:16px;border-radius:10px;border:0;background:var(--ink);color:var(--paper);font-family:Oswald;font-size:17px;letter-spacing:1px;cursor:pointer;user-select:none;touch-action:none}
+.hold{position:relative;overflow:hidden;width:100%;padding:16px;border-radius:10px;border:0;background:var(--ink);color:var(--paper);font-family:'Playfair Display';font-size:17px;letter-spacing:1px;cursor:pointer;user-select:none;touch-action:none}
 .hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--red);z-index:0}.hold span{position:relative}
-.inv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.inv span{background:#e4d9c0;padding:8px 12px;border-radius:8px;font-family:'Courier Prime';font-size:14px}
+.inv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.inv span{background:#e4d9c0;padding:8px 12px;border-radius:8px;font-family:'IBM Plex Mono';font-size:14px}
 .hot.mgh:after{content:" ✦";color:var(--red)}
 
 .art{display:block;width:100%;height:auto;border-radius:12px;margin:-6px 0 18px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
@@ -184,13 +184,53 @@ details[open] summary:after{transform:rotate(45deg)}
 .hero .wrap{position:relative;z-index:1}
 
 .spotw svg{margin:0;border-radius:10px}
-.doc{background:#f6f0e2;border-radius:10px;padding:10px;font-family:'Courier Prime';font-size:14px;background-image:repeating-linear-gradient(#f6f0e2 0 27px,#d9cfb8 27px 28px)}
+.doc{background:#f6f0e2;border-radius:10px;padding:10px;font-family:'IBM Plex Mono';font-size:14px;background-image:repeating-linear-gradient(#f6f0e2 0 27px,#d9cfb8 27px 28px)}
 .ln{padding:4px 8px;cursor:pointer;border-radius:6px;transition:background .2s}.ln:hover{background:rgba(179,38,30,.12)}
 .ln.ok{background:rgba(179,38,30,.25);font-weight:700}.ln.no{text-decoration:line-through;opacity:.5}
 .chat{max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .say,.me{padding:10px 14px;border-radius:12px;max-width:85%;animation:up .3s both;font-size:15px}
 .say{background:#e2d6bb;align-self:flex-start;font-style:italic}.me{background:var(--ink);color:var(--paper);align-self:flex-end}
 .opts .mgbtn{display:block;width:100%;text-align:left}
+
+/* ===== REFINED ===== */
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16px;letter-spacing:.005em}
+h1,h2,h3,h4,.logo,.mast{font-family:'Playfair Display',Georgia,serif!important;text-transform:none!important;letter-spacing:0!important;font-weight:500}
+.logo{font-size:21px}.logo span{font-style:italic}
+.hero h1{font-size:clamp(44px,6.5vw,84px);line-height:1.02;font-weight:500}.hero h1 em{font-style:italic;color:#c8372d}
+.hero p.lead{font-size:19px;font-weight:300;line-height:1.65;color:#cfc6b6}
+.stamp{font-family:'IBM Plex Mono';font-size:12px;letter-spacing:4px;border-width:1px;padding:6px 12px}
+h2{font-size:42px;margin-bottom:36px}
+.btn{font-family:'IBM Plex Sans';font-weight:500;font-size:13px;letter-spacing:.14em;text-transform:uppercase;border-radius:2px!important;padding:14px 28px;box-shadow:none!important}
+.btn:hover{transform:none!important;background:#c8372d}.btn.ghost{border-color:#5a4f44}
+.feat{border-radius:2px!important;border:1px solid var(--line)!important;border-top:2px solid var(--red)!important;background:#17140f!important;padding:30px 26px}
+.feat:hover{transform:none!important;box-shadow:none!important;border-color:#5a4f44!important}
+.feat .ico{font-family:'IBM Plex Mono';font-size:13px;color:var(--red);letter-spacing:2px}.feat h3{font-size:22px;margin:14px 0 10px}
+.case{border-radius:2px!important}.case:not(.soon):hover{transform:translateY(-3px)!important}.case h3{font-size:26px}.case .tag{font-family:'IBM Plex Mono';letter-spacing:2px;font-size:11px}.case .price{font-family:'Playfair Display';font-weight:500}
+details,.file,.scene,.hent,.clue,.tip,.pcard,.mgbox,.loc,.person,.srch,.doc,.paper,#pop,.clockb,.chip,.mapbtns button,.zbtn button,.mgbtn,.hot,.q,.strip.ev,.dials,.dial span,.tour .tb,.say,.me{border-radius:3px!important}
+summary{font-family:'Playfair Display';font-size:19px}
+.steps div:before{font-family:'Playfair Display';font-size:18px;border-width:1px}
+nav a{font-size:14px;letter-spacing:.04em}
+body:after{opacity:.035}
+.toast{font-family:'IBM Plex Sans';font-size:14px;letter-spacing:.02em;border-radius:2px;background:#1c1815;border:1px solid #3a332c;border-left:3px solid var(--red)}
+.mgbox h3{font-size:24px}.mgbtn{font-family:'IBM Plex Sans';font-size:14px}
+#side h3{font-size:24px;font-weight:500}
+.rail{gap:2px}.rail .logo2{font-family:'Playfair Display';font-size:22px;color:#e9e1d1;margin-bottom:14px}.rail .logo2 span{color:var(--red);font-style:italic}
+.rail button{border-radius:3px}.rail button.on{background:#221d19;color:#fff;box-shadow:inset 2px 0 0 var(--red)}
+.rail em{font-family:'IBM Plex Sans';font-size:10px;letter-spacing:.04em}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;letter-spacing:.02em;background:rgba(20,17,15,.88)}
+#clk{font-family:'IBM Plex Mono';font-weight:500;font-size:26px}
+.hh{font-family:'Playfair Display';font-size:17px;font-weight:500}.hh span svg{opacity:.6}
+.mp circle{fill:#2b2622;stroke:#f4f2ea;stroke-width:2}.mp.v circle{fill:#b3261e}.mp.full circle{fill:#4d6b4b}.mp.e circle{fill:#8f897f}
+.hot{font-family:'IBM Plex Sans';font-size:13px}.hot.mgh{border-style:solid!important}
+.ans{font-style:normal;color:#bdb4a5}
+.ok{color:#7fb77e}.no{color:#e0857d}
+.result h3{font-size:24px}
+.rail button.on{background:#221d19!important;color:#fff!important;box-shadow:inset 2px 0 0 var(--red)}
+.hot,.q,.mgbtn,.prog,.ans,.bi,.addr{font-family:'IBM Plex Sans',system-ui,sans-serif!important}
+.prog{font-weight:400}
+.mtop{right:200px!important}@media(max-width:820px){.mtop{right:12px!important}}
+#pop b{font-family:'Playfair Display';font-weight:500;font-size:18px}
+.cols h4{font-family:'Playfair Display'}
 </style>
 </head>
 <body>
@@ -210,10 +250,10 @@ details[open] summary:after{transform:rotate(45deg)}
 <section><div class="wrap">
  <h2>Вы не читаете детектив. Вы его ведёте.</h2>
  <div class="grid">
-  <div class="feat"><div class="ico">🏭</div><h3>Живой город</h3>Завод, общежитие, проходная, гастроном. В каждом месте своя обстановка и свои люди.</div>
-  <div class="feat"><div class="ico">🔎</div><h3>Настоящие улики</h3>Журналы, записки, копирка в машинке. Улику нужно найти самому, никто не подскажет.</div>
-  <div class="feat"><div class="ico">🗣️</div><h3>Допросы</h3>Новые улики открывают новые вопросы. Все лгут — вопрос только в чём.</div>
-  <div class="feat"><div class="ico">🗺️</div><h3>Целый город</h3>Больше 80 адресов и адресная книга. Куда ехать — решаете вы. Чем меньше поездок, тем выше оценка.</div>
+  <div class="feat"><div class="ico">01</div><h3>Живой город</h3>Завод, общежитие, проходная, гастроном. В каждом месте своя обстановка и свои люди.</div>
+  <div class="feat"><div class="ico">02</div><h3>Настоящие улики</h3>Журналы, записки, копирка в машинке. Улику нужно найти самому, никто не подскажет.</div>
+  <div class="feat"><div class="ico">03</div><h3>Допросы</h3>Новые улики открывают новые вопросы. Все лгут — вопрос только в чём.</div>
+  <div class="feat"><div class="ico">04</div><h3>Целый город</h3>Больше 80 адресов и адресная книга. Куда ехать — решаете вы. Чем меньше поездок, тем выше оценка.</div>
  </div>
 </div></section>
 
@@ -254,28 +294,28 @@ details[open] summary:after{transform:rotate(45deg)}
 .rail{background:#0b0908;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
 .rail button{position:relative;width:64px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;border:1px solid transparent;background:none;color:#cfc6b6;font-size:19px;cursor:pointer;transition:background .2s}
 .rail button:hover{background:#1e1a17}.rail button.on{background:var(--red);color:#fff}
-.rail .logo2{font-family:Oswald;color:var(--red);font-size:20px;margin-bottom:8px}
-.rail .bdg{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:11px;font-family:Oswald;border-radius:9px;padding:1px 6px}
+.rail .logo2{font-family:'Playfair Display';color:var(--red);font-size:20px;margin-bottom:8px}
+.rail .bdg{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:11px;font-family:'Playfair Display';border-radius:9px;padding:1px 6px}
 #hbadge{display:none;width:10px;height:10px;padding:0;top:2px;right:2px;background:#e9c46a}
 .rail .sp{flex:1}
 #side{background:#141110;border-right:1px solid var(--line);overflow:auto;padding:18px 18px 40px}
-#side h3{font-family:Oswald;font-size:22px;margin:0 0 14px;letter-spacing:.5px}
+#side h3{font-family:'Playfair Display';font-size:22px;margin:0 0 14px;letter-spacing:.5px}
 .file.sm{padding:18px;font-size:14px;border-radius:12px;margin-bottom:14px}
 .btn.wide{display:block;width:100%;margin:8px 0;text-align:center;font-size:15px;padding:12px}
-.srch{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:#1e1a17;color:#e9e1d1;font-family:'PT Serif';font-size:15px;margin-bottom:12px;outline:none}
+.srch{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:#1e1a17;color:#e9e1d1;font-family:'IBM Plex Sans';font-size:15px;margin-bottom:12px;outline:none}
 .srch:focus{border-color:var(--red)}
-.bg{font-family:Oswald;color:#cfc6b6;margin:14px 0 6px;letter-spacing:1px}.bg span{color:var(--muted);font-size:13px}
+.bg{font-family:'Playfair Display';color:#cfc6b6;margin:14px 0 6px;letter-spacing:1px}.bg span{color:var(--muted);font-size:13px}
 .bi{padding:9px 10px;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;transition:background .15s}
 .bi:hover{background:#221d19}.bi small{color:var(--muted);font-size:12px}.bi.v span{color:#e0857d}
 .hent{background:#1c1815;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;font-size:14px}
 .hent.flash{animation:flash 1.2s}@keyframes flash{0%{border-color:var(--red);box-shadow:0 0 0 3px rgba(179,38,30,.4)}100%{}}
-.hh{display:flex;justify-content:space-between;font-family:Oswald;font-size:16px}.addr{color:#e0857d;font-size:12px}
+.hh{display:flex;justify-content:space-between;font-family:'Playfair Display';font-size:16px}.addr{color:#e0857d;font-size:12px}
 .hent p{margin:8px 0}.hent .hot{background:#2a241f;color:#e9e1d1;border-color:#5a4f44;font-size:13px}.hent .hot.got{background:#3a312a}
 .hent .ans{font-size:13px}
 .lnk{background:none;border:0;color:#e0857d;cursor:pointer;font-size:12px;margin-top:8px;padding:0;text-decoration:underline}
 .intg{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
 .av.sm{width:54px;height:54px;border-radius:50%;overflow:hidden;float:right;border:2px solid #3a332c}.av.sm svg{width:100%;height:100%}
-.tip{background:#1c1815;border-left:3px solid #e9c46a;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-size:14px;animation:up .4s both}.tip small{display:block;color:#e9c46a;font-family:'Courier Prime'}
+.tip{background:#1c1815;border-left:3px solid #e9c46a;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-size:14px;animation:up .4s both}.tip small{display:block;color:#e9c46a;font-family:'IBM Plex Mono'}
 .ql{display:block;margin:10px 0 6px;font-size:14px}
 #mapbox{position:relative;overflow:hidden;background:#d4d1c5}
 #cmap{width:100%;height:100%;display:block;cursor:grab;touch-action:none}#cmap:active{cursor:grabbing}
@@ -284,56 +324,56 @@ details[open] summary:after{transform:rotate(45deg)}
 .mtop{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
 .chip{pointer-events:auto;background:rgba(20,17,15,.85);color:#e9e1d1;border:1px solid #3a332c;border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;transition:opacity .2s}.chip.off{opacity:.4}
 .clockb{position:absolute;top:12px;right:12px;background:rgba(10,9,8,.92);color:#fff;border-radius:14px;padding:10px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-#clk{font-family:'Courier Prime';font-size:28px;font-weight:700;letter-spacing:1px}#trc{font-size:13px;color:#cfc6b6}
+#clk{font-family:'IBM Plex Mono';font-size:28px;font-weight:700;letter-spacing:1px}#trc{font-size:13px;color:#cfc6b6}
 .zbtn{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px}.zbtn button{width:38px;height:38px;border-radius:10px;border:0;background:rgba(20,17,15,.9);color:#fff;font-size:20px;cursor:pointer}
 #pop{display:none;position:absolute;width:250px;transform:translateX(-50%);background:#141110;color:#e9e1d1;border-radius:14px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:up .25s both;z-index:3}
-#pop b{display:block;font-family:Oswald;font-size:17px;margin-top:8px}#pop small{color:var(--muted);font-size:12px}
+#pop b{display:block;font-family:'Playfair Display';font-size:17px;margin-top:8px}#pop small{color:var(--muted);font-size:12px}
 #pop .art.sm{margin:0;border-radius:8px}#pop .ph{height:90px;border-radius:8px;background:#2a241f;display:flex;align-items:center;justify-content:center;font-size:40px}
 #pop .go{display:block;width:100%;margin-top:10px;padding:10px;font-size:15px}.px{position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:0;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;z-index:2}
-.paper{background:#ece4cf;color:#1d1a16;padding:20px;border-radius:6px;font-family:'PT Serif'}.mast{font-family:Oswald;font-size:34px;text-align:center;letter-spacing:4px;border-bottom:3px double #1d1a16}
-.pd{text-align:center;font-size:12px;margin:4px 0 12px;font-style:italic}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13.5px;text-align:justify}.cols h4{font-family:Oswald;margin:4px 0;font-size:16px}
+.paper{background:#ece4cf;color:#1d1a16;padding:20px;border-radius:6px;font-family:'IBM Plex Sans'}.mast{font-family:'Playfair Display';font-size:34px;text-align:center;letter-spacing:4px;border-bottom:3px double #1d1a16}
+.pd{text-align:center;font-size:12px;margin:4px 0 12px;font-style:italic}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13.5px;text-align:justify}.cols h4{font-family:'Playfair Display';margin:4px 0;font-size:16px}
 @media(max-width:820px){#game{grid-template-columns:52px 1fr}#side{position:absolute;left:52px;top:0;bottom:0;width:calc(100% - 52px);z-index:5;transform:translateX(-110%);transition:transform .3s}#side.open{transform:none}#mapbox{grid-column:2}.clockb{top:auto;bottom:12px;left:12px;right:auto;padding:6px 12px}#clk{font-size:20px}.cols{grid-template-columns:1fr}}
 </style>
 <div id="game">
- <div class="rail"><div class="logo2">ТД</div>
-  <button data-p="case" title="Материалы дела" onclick="panel('case')">📁<em>Дело</em></button>
-  <button data-p="book" title="Адресная книга" onclick="panel('book')">📒<em>Адреса</em></button>
-  <button data-p="hist" title="История поездок" onclick="panel('hist')">🕘<em>Поездки</em></button>
-  <button data-p="notes" title="Блокнот улик" onclick="panel('notes')">🔎<em>Улики</em><span class="bdg" id="nbadge">0</span></button>
-  <button data-p="hint" title="Птички нашептали" onclick="panel('hint')">🐦<em>Подсказки</em><span class="bdg" id="hbadge"></span></button>
-  <button data-p="ans" title="Бланк ответов" onclick="panel('ans')">✍️<em>Ответ</em></button>
+ <div class="rail"><div class="logo2">Т<span>Д</span></div>
+  <button data-p="case" title="Материалы дела" onclick="panel('case')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><em>Дело</em></button>
+  <button data-p="book" title="Адресная книга" onclick="panel('book')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg><em>Адреса</em></button>
+  <button data-p="hist" title="История поездок" onclick="panel('hist')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg><em>Поездки</em></button>
+  <button data-p="notes" title="Блокнот улик" onclick="panel('notes')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5"/></svg><em>Улики</em><span class="bdg" id="nbadge">0</span></button>
+  <button data-p="hint" title="Птички нашептали" onclick="panel('hint')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/></svg><em>Подсказки</em><span class="bdg" id="hbadge"></span></button>
+  <button data-p="ans" title="Бланк ответов" onclick="panel('ans')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><em>Ответ</em></button>
   <span class="sp"></span>
-  <button title="Скрыть панель" onclick="document.getElementById('side').classList.toggle('open');document.getElementById('game').classList.toggle('nos')">⇤<em>Панель</em></button>
-  <button title="Обучение" onclick="tour(0)">?<em>Помощь</em></button>
-  <button title="Выйти" onclick="closeGame()">✕<em>Выйти</em></button>
+  <button title="Скрыть панель" onclick="document.getElementById('side').classList.toggle('open');document.getElementById('game').classList.toggle('nos')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M9 4v16"/></svg><em>Панель</em></button>
+  <button title="Обучение" onclick="tour(0)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg><em>Помощь</em></button>
+  <button title="Выйти" onclick="closeGame()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><em>Выйти</em></button>
  </div>
  <div id="side" class="open"><div id="pbody"></div></div>
  <div id="mapbox"><svg id="cmap" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
   <div class="mtop" id="chips"></div>
   <div class="clockb" title="Оценка: 12 поездок и меньше — отлично, до 20 — хорошо, больше — удовлетворительно"><div id="clk">00:00:00</div><div id="trc">Поездки: 0</div><div id="grade"></div></div>
-  <div class="mapbtns"><button onclick="whereAmI()">📍 Где я</button><button id="onlyv" onclick="onlyVisited()">🚩 Мои поездки</button></div>
+  <div class="mapbtns"><button onclick="whereAmI()">Где я</button><button id="onlyv" onclick="onlyVisited()">Мои поездки</button></div>
   <div class="zbtn"><button onclick="zoom(.8)">+</button><button onclick="zoom(1.25)">−</button></div>
   <div id="pop"></div>
  </div>
 </div>
-<style>.abc{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}.abc span{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:#e4d9c0;border-radius:4px;font-family:'Courier Prime';font-size:14px}
-.strip.ev{clip-path:none;border-radius:8px;font-family:'PT Serif';font-size:14px}.strip.ev b{color:#b3261e;margin-right:4px}
+<style>.abc{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}.abc span{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:#e4d9c0;border-radius:4px;font-family:'IBM Plex Mono';font-size:14px}
+.strip.ev{clip-path:none;border-radius:8px;font-family:'IBM Plex Sans';font-size:14px}.strip.ev b{color:#b3261e;margin-right:4px}
 input[type=range]{accent-color:#b3261e}
 
 .pz{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pcard{background:#f6f0e2;border:2px solid #d4c7a8;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;transition:transform .15s,border-color .2s}
-.pcard:hover{transform:translateY(-2px);border-color:#8a7f70}.pcard b{display:block;font-family:Oswald;font-size:16px;margin-bottom:4px}.pcard span{display:block}.pcard.ok{border-color:#b3261e;background:#f3dcd6}.pcard.no{opacity:.45}
+.pcard:hover{transform:translateY(-2px);border-color:#8a7f70}.pcard b{display:block;font-family:'Playfair Display';font-size:16px;margin-bottom:4px}.pcard span{display:block}.pcard.ok{border-color:#b3261e;background:#f3dcd6}.pcard.no{opacity:.45}
 .dials{display:flex;gap:10px;justify-content:center;background:#4b4f52;padding:18px;border-radius:14px;transition:transform .4s}.dials.open{transform:perspective(600px) rotateY(-25deg)}
-.dial{display:flex;flex-direction:column;align-items:center;gap:4px}.dial span{width:52px;height:60px;background:#1d1f20;color:#e9c46a;font-family:'Courier Prime';font-size:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;box-shadow:inset 0 3px 8px #000}
+.dial{display:flex;flex-direction:column;align-items:center;gap:4px}.dial span{width:52px;height:60px;background:#1d1f20;color:#e9c46a;font-family:'IBM Plex Mono';font-size:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;box-shadow:inset 0 3px 8px #000}
 .dial button{background:#2a2d2f;color:#ddd;border:0;width:52px;border-radius:6px;cursor:pointer;padding:4px}.tries{font-size:13px;color:#8a3a2f;margin-left:6px}
-.strips{display:flex;flex-direction:column;gap:5px}.strip{background:#fbf7ec;padding:8px 12px;font-family:'Courier Prime';font-size:14px;cursor:pointer;border:2px solid transparent;box-shadow:0 2px 4px rgba(0,0,0,.15);clip-path:polygon(0 8%,4% 0,12% 6%,22% 0,35% 7%,48% 1%,60% 6%,74% 0,86% 7%,100% 2%,100% 92%,90% 100%,78% 94%,64% 100%,50% 93%,38% 100%,24% 94%,10% 100%,0 94%);transition:transform .2s}
+.strips{display:flex;flex-direction:column;gap:5px}.strip{background:#fbf7ec;padding:8px 12px;font-family:'IBM Plex Mono';font-size:14px;cursor:pointer;border:2px solid transparent;box-shadow:0 2px 4px rgba(0,0,0,.15);clip-path:polygon(0 8%,4% 0,12% 6%,22% 0,35% 7%,48% 1%,60% 6%,74% 0,86% 7%,100% 2%,100% 92%,90% 100%,78% 94%,64% 100%,50% 93%,38% 100%,24% 94%,10% 100%,0 94%);transition:transform .2s}
 .strip:hover{background:#fff}.strip.pk{border-color:#b3261e;background:#f3dcd6}.strips.done .strip{transform:none!important;background:#efe6d2}
 @media(max-width:500px){.pz{grid-template-columns:1fr}.dial span{width:44px}}
 
-.rail em{font-style:normal;font-size:10.5px;font-family:'PT Serif';color:#a89e8f}.rail button.on em{color:#fff}
+.rail em{font-style:normal;font-size:10.5px;font-family:'IBM Plex Sans';color:#a89e8f}.rail button.on em{color:#fff}
 .hot.mgh:after{content:""}.hot.mgh{border-color:var(--red)!important}
-.prog{font-size:12px;color:#e9c46a;margin-left:8px;font-family:'PT Serif'}.prog.full{color:#7fb77e}
+.prog{font-size:12px;color:#e9c46a;margin-left:8px;font-family:'IBM Plex Sans'}.prog.full{color:#7fb77e}
 .mp.e circle{fill:#9a948a;stroke:#e6e3da}.mp.full circle{fill:#5a8a58}.mp.h circle{stroke:#e9c46a;stroke-width:6}
-.ngrp{font-family:Oswald;margin:16px 0 8px;color:#cfc6b6;letter-spacing:1px}
+.ngrp{font-family:'Playfair Display';margin:16px 0 8px;color:#cfc6b6;letter-spacing:1px}
 .clue{position:relative;padding-right:40px}.star{position:absolute;right:10px;top:10px;background:none;border:0;font-size:18px;cursor:pointer;opacity:.35}.star.on{opacity:1}
 .mapbtns{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}.mapbtns button{background:rgba(20,17,15,.9);color:#fff;border:1px solid #3a332c;border-radius:10px;padding:8px 12px;cursor:pointer;font-size:13px}.mapbtns button.on{background:var(--red)}
 #grade{font-size:11px;color:#a89e8f;margin-top:2px}
@@ -341,7 +381,7 @@ input[type=range]{accent-color:#b3261e}
 .tour{position:fixed;inset:0;z-index:180;pointer-events:none}
 .tour .spot{position:fixed;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.2,.7,.2,1);pointer-events:none;outline:2px solid #e9c46a}
 .tour .tb{position:fixed;width:300px;background:var(--paper);color:var(--ink);border-radius:14px;padding:16px 18px;pointer-events:auto;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.tour .tb b{font-family:Oswald;font-size:18px;display:block;margin-bottom:4px}.tour .tb p{margin:0 0 12px;font-size:14px}
+.tour .tb b{font-family:'Playfair Display';font-size:18px;display:block;margin-bottom:4px}.tour .tb p{margin:0 0 12px;font-size:14px}
 .tour .tb .n{font-size:12px;color:#8a7f70;float:right;margin-top:10px}
 @media(max-width:820px){#game{grid-template-columns:64px 1fr}#side{left:64px;width:calc(100% - 64px)}.rail button{width:56px;height:50px}.backmap{display:block}.mapbtns{bottom:70px}.tour .tb{width:calc(100vw - 40px)}}
 
@@ -373,10 +413,10 @@ const CLUES={
 /* ===== ART ===== */
 const A=(inner,bg="#2a231d")=>`<svg class="art" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg"><defs><filter id="paint" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" result="d"/><feGaussianBlur in="d" stdDeviation=".45" result="b"/><feDropShadow in="b" dx="3" dy="6" stdDeviation="5" flood-color="#000" flood-opacity=".55"/></filter><filter id="wood"><feTurbulence type="fractalNoise" baseFrequency=".012 .35" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .32  0 0 0 0 .21  0 0 0 0 .13  0 0 0 .55 0"/><feComposite in2="SourceGraphic" operator="in"/></filter><filter id="wall"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="4" seed="9"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .42  0 0 0 0 .33  0 0 0 .22 0"/><feComposite in2="SourceGraphic" operator="in"/></filter><filter id="grainf"><feTurbulence baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .09 0"/></filter><linearGradient id="shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="vg" cx=".5" cy=".45" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient><radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd98a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient></defs><rect width="800" height="260" fill="${bg}"/><rect width="800" height="190" fill="#000" filter="url(#wall)"/><rect y="190" width="800" height="70" fill="#000" filter="url(#wood)"/><g filter="url(#paint)">${inner}</g><rect width="800" height="260" fill="url(#shine)" opacity=".5"/><rect width="800" height="260" filter="url(#grainf)"/><rect width="800" height="260" fill="url(#vg)"/></svg>`;
 const ART={
-office:A(`<rect x="470" y="30" width="200" height="140" fill="#3b4652"/>${[0,1,2,3,4,5,6,7,8].map(i=>`<rect x="470" y="${36+i*15}" width="200" height="7" fill="#1c1814"/>`).join("")}<rect x="0" y="190" width="800" height="70" fill="#1a1511"/><rect x="110" y="160" width="520" height="22" fill="#4a3526"/><rect x="130" y="182" width="20" height="78" fill="#3a291d"/><rect x="590" y="182" width="20" height="78" fill="#3a291d"/><path d="M190 160 l20 -48 h110 l20 48z" fill="#26292b"/><rect x="215" y="100" width="100" height="14" fill="#1a1c1d"/><rect x="225" y="78" width="80" height="26" fill="#d8cfbd"/>${[0,1,2,3,4].map(i=>`<circle cx="${225+i*20}" cy="${150}" r="5" fill="#bdb7aa"/>`).join("")}<ellipse cx="440" cy="158" rx="28" ry="6" fill="#ddd"/><path d="M420 132 h40 v18 a20 12 0 0 1 -40 0z" fill="#efe9dc"/><path d="M460 138 a8 8 0 0 1 0 14" stroke="#efe9dc" stroke-width="4" fill="none"/><rect x="500" y="130" width="70" height="30" fill="#c7b48f"/><rect x="505" y="124" width="60" height="8" fill="#a8946c"/><path d="M640 160 v-70 l-30 -20" stroke="#222" stroke-width="5" fill="none"/><path d="M590 60 l40 0 l-10 -22 h-20z" fill="#7a2a1f"/><path d="M560 60 l100 0 l-30 140 h-40z" fill="url(#lamp)"/><rect x="462" y="168" width="216" height="8" fill="#5a4a3a"/><path d="M650 152 h16 v12 a8 6 0 0 1 -16 0z" fill="#e8e2d4"/><path d="M666 155 a4 4 0 0 1 0 7" stroke="#e8e2d4" stroke-width="2" fill="none"/><circle cx="655" cy="156" r="1.4" fill="#9fc3d8"/><text x="30" y="40" font-family="Courier Prime" font-size="14" fill="#8a7f70">КАБ. 214</text>`),
-gate:A(`<rect x="0" y="190" width="800" height="70" fill="#1d1915"/><rect x="250" y="40" width="300" height="160" fill="#3e352c"/><rect x="290" y="70" width="220" height="80" fill="#cfae6a" opacity=".85"/><rect x="290" y="70" width="220" height="80" fill="none" stroke="#2a221b" stroke-width="6"/><line x1="400" y1="70" x2="400" y2="150" stroke="#2a221b" stroke-width="5"/><circle cx="350" cy="120" r="18" fill="#3a2d22"/><path d="M325 150 q25 -30 50 0z" fill="#3a2d22"/><circle cx="460" cy="95" r="16" fill="#f3ead6"/><line x1="460" y1="95" x2="460" y2="84" stroke="#222" stroke-width="2"/><line x1="460" y1="95" x2="466" y2="99" stroke="#222" stroke-width="2"/><rect x="570" y="140" width="12" height="60" fill="#555"/><rect x="560" y="150" width="140" height="8" fill="#6b6156"/><text x="300" y="62" font-family="Oswald" font-size="16" fill="#cfc6b6" letter-spacing="3">ПРОХОДНАЯ</text><circle cx="120" cy="90" r="40" fill="url(#lamp)"/>`),
-lab:A(`<rect x="0" y="200" width="800" height="60" fill="#191d1c"/><rect x="60" y="60" width="380" height="10" fill="#4a4034"/><rect x="60" y="130" width="380" height="10" fill="#4a4034"/>${[0,1,2,3,4,5].map(i=>`<path d="M${90+i*58} 60 v-26 h14 v26 l12 0 z" fill="none"/><rect x="${92+i*58}" y="${28+(i%2)*6}" width="16" height="32" rx="3" fill="${['#6ea38d','#b9c7c4','#c9a650','#7f8fa8','#a35d4a','#d9e0dc'][i]}" opacity=".7"/><path d="M${85+i*58} 130 l14 -40 h10 l14 40z" fill="${['#9fc1b4','#d8ccb0','#a3b7c9'][i%3]}" opacity=".6"/>`).join("")}<rect x="520" y="70" width="170" height="130" rx="6" fill="#4b4f52" stroke="#2a2d2f" stroke-width="5"/><circle cx="605" cy="135" r="22" fill="#34383a" stroke="#888" stroke-width="3"/><rect x="595" y="190" width="20" height="26" rx="4" fill="none" stroke="#b5a26a" stroke-width="5"/><rect x="600" y="205" width="10" height="16" fill="#b5a26a"/><text x="530" y="62" font-family="Courier Prime" font-size="13" fill="#9fb3ab">РЕАКТИВЫ · ЯД</text>`,"#202624"),
-store:A(`<rect x="0" y="200" width="800" height="60" fill="#17130f"/><rect x="560" y="40" width="140" height="170" fill="#3a2e22" stroke="#22190f" stroke-width="8"/><rect x="600" y="110" width="14" height="30" fill="#7c7466"/>${[[60,140,110],[150,150,90],[90,90,80],[260,160,70],[330,130,100],[200,110,60],[420,160,80]].map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="${210-y}" fill="#5b4632" stroke="#3a2c1e" stroke-width="4"/><line x1="${x}" y1="${y}" x2="${x+w}" y2="210" stroke="#3a2c1e" stroke-width="3"/>`).join("")}<line x1="400" y1="0" x2="400" y2="40" stroke="#222" stroke-width="2"/><circle cx="400" cy="46" r="8" fill="#ffe2a0"/><circle cx="400" cy="70" r="120" fill="url(#lamp)"/><text x="580" y="34" font-family="Courier Prime" font-size="13" fill="#8a7f70">СКЛАД №3</text>`,"#231c16"),
+office:A(`<rect x="470" y="30" width="200" height="140" fill="#3b4652"/>${[0,1,2,3,4,5,6,7,8].map(i=>`<rect x="470" y="${36+i*15}" width="200" height="7" fill="#1c1814"/>`).join("")}<rect x="0" y="190" width="800" height="70" fill="#1a1511"/><rect x="110" y="160" width="520" height="22" fill="#4a3526"/><rect x="130" y="182" width="20" height="78" fill="#3a291d"/><rect x="590" y="182" width="20" height="78" fill="#3a291d"/><path d="M190 160 l20 -48 h110 l20 48z" fill="#26292b"/><rect x="215" y="100" width="100" height="14" fill="#1a1c1d"/><rect x="225" y="78" width="80" height="26" fill="#d8cfbd"/>${[0,1,2,3,4].map(i=>`<circle cx="${225+i*20}" cy="${150}" r="5" fill="#bdb7aa"/>`).join("")}<ellipse cx="440" cy="158" rx="28" ry="6" fill="#ddd"/><path d="M420 132 h40 v18 a20 12 0 0 1 -40 0z" fill="#efe9dc"/><path d="M460 138 a8 8 0 0 1 0 14" stroke="#efe9dc" stroke-width="4" fill="none"/><rect x="500" y="130" width="70" height="30" fill="#c7b48f"/><rect x="505" y="124" width="60" height="8" fill="#a8946c"/><path d="M640 160 v-70 l-30 -20" stroke="#222" stroke-width="5" fill="none"/><path d="M590 60 l40 0 l-10 -22 h-20z" fill="#7a2a1f"/><path d="M560 60 l100 0 l-30 140 h-40z" fill="url(#lamp)"/><rect x="462" y="168" width="216" height="8" fill="#5a4a3a"/><path d="M650 152 h16 v12 a8 6 0 0 1 -16 0z" fill="#e8e2d4"/><path d="M666 155 a4 4 0 0 1 0 7" stroke="#e8e2d4" stroke-width="2" fill="none"/><circle cx="655" cy="156" r="1.4" fill="#9fc3d8"/><text x="30" y="40" font-family="IBM Plex Mono" font-size="14" fill="#8a7f70">КАБ. 214</text>`),
+gate:A(`<rect x="0" y="190" width="800" height="70" fill="#1d1915"/><rect x="250" y="40" width="300" height="160" fill="#3e352c"/><rect x="290" y="70" width="220" height="80" fill="#cfae6a" opacity=".85"/><rect x="290" y="70" width="220" height="80" fill="none" stroke="#2a221b" stroke-width="6"/><line x1="400" y1="70" x2="400" y2="150" stroke="#2a221b" stroke-width="5"/><circle cx="350" cy="120" r="18" fill="#3a2d22"/><path d="M325 150 q25 -30 50 0z" fill="#3a2d22"/><circle cx="460" cy="95" r="16" fill="#f3ead6"/><line x1="460" y1="95" x2="460" y2="84" stroke="#222" stroke-width="2"/><line x1="460" y1="95" x2="466" y2="99" stroke="#222" stroke-width="2"/><rect x="570" y="140" width="12" height="60" fill="#555"/><rect x="560" y="150" width="140" height="8" fill="#6b6156"/><text x="300" y="62" font-family="IBM Plex Sans" font-size="16" fill="#cfc6b6" letter-spacing="3">ПРОХОДНАЯ</text><circle cx="120" cy="90" r="40" fill="url(#lamp)"/>`),
+lab:A(`<rect x="0" y="200" width="800" height="60" fill="#191d1c"/><rect x="60" y="60" width="380" height="10" fill="#4a4034"/><rect x="60" y="130" width="380" height="10" fill="#4a4034"/>${[0,1,2,3,4,5].map(i=>`<path d="M${90+i*58} 60 v-26 h14 v26 l12 0 z" fill="none"/><rect x="${92+i*58}" y="${28+(i%2)*6}" width="16" height="32" rx="3" fill="${['#6ea38d','#b9c7c4','#c9a650','#7f8fa8','#a35d4a','#d9e0dc'][i]}" opacity=".7"/><path d="M${85+i*58} 130 l14 -40 h10 l14 40z" fill="${['#9fc1b4','#d8ccb0','#a3b7c9'][i%3]}" opacity=".6"/>`).join("")}<rect x="520" y="70" width="170" height="130" rx="6" fill="#4b4f52" stroke="#2a2d2f" stroke-width="5"/><circle cx="605" cy="135" r="22" fill="#34383a" stroke="#888" stroke-width="3"/><rect x="595" y="190" width="20" height="26" rx="4" fill="none" stroke="#b5a26a" stroke-width="5"/><rect x="600" y="205" width="10" height="16" fill="#b5a26a"/><text x="530" y="62" font-family="IBM Plex Mono" font-size="13" fill="#9fb3ab">РЕАКТИВЫ · ЯД</text>`,"#202624"),
+store:A(`<rect x="0" y="200" width="800" height="60" fill="#17130f"/><rect x="560" y="40" width="140" height="170" fill="#3a2e22" stroke="#22190f" stroke-width="8"/><rect x="600" y="110" width="14" height="30" fill="#7c7466"/>${[[60,140,110],[150,150,90],[90,90,80],[260,160,70],[330,130,100],[200,110,60],[420,160,80]].map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="${210-y}" fill="#5b4632" stroke="#3a2c1e" stroke-width="4"/><line x1="${x}" y1="${y}" x2="${x+w}" y2="210" stroke="#3a2c1e" stroke-width="3"/>`).join("")}<line x1="400" y1="0" x2="400" y2="40" stroke="#222" stroke-width="2"/><circle cx="400" cy="46" r="8" fill="#ffe2a0"/><circle cx="400" cy="70" r="120" fill="url(#lamp)"/><text x="580" y="34" font-family="IBM Plex Mono" font-size="13" fill="#8a7f70">СКЛАД №3</text>`,"#231c16"),
 guard:A(`<rect x="0" y="190" width="800" height="70" fill="#1c1713"/><rect x="200" y="150" width="400" height="18" fill="#4a3526"/><path d="M330 150 l6 -50 h28 l6 50z" fill="#cfa45a" opacity=".55"/><path d="M326 104 h48 v10 h-48z" fill="#8b8b8b"/><path d="M374 115 a12 14 0 0 1 0 26" stroke="#8b8b8b" stroke-width="5" fill="none"/><ellipse cx="480" cy="140" rx="40" ry="10" fill="#666"/><path d="M445 140 q35 -55 70 0z" fill="#7d7d7d"/><path d="M515 125 l25 -12" stroke="#7d7d7d" stroke-width="8"/><rect x="230" y="100" width="70" height="50" rx="6" fill="#5a3f2a"/><circle cx="252" cy="125" r="12" fill="#3a2a1d"/><rect x="270" y="112" width="22" height="26" fill="#c7b48f"/><circle cx="650" cy="60" r="60" fill="url(#lamp)"/><path d="M335 95 q8 -15 0 -30 M352 95 q8 -15 0 -30" stroke="#ddd" stroke-width="2" fill="none" opacity=".4"/>`),
 secr:A(`<rect x="0" y="190" width="800" height="70" fill="#1a1511"/><rect x="150" y="150" width="500" height="20" fill="#5a4030"/><rect x="170" y="170" width="460" height="60" fill="#4a3526"/>${[0,1,2].map(i=>`<rect x="190" y="${180+i*16}" width="120" height="12" fill="#3a291d"/><circle cx="250" cy="${186+i*16}" r="3" fill="#b5a26a"/>`).join("")}<rect x="600" y="100" width="40" height="50" fill="#7a4a2a"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${620+(i-2)*14}" cy="${80-Math.abs(i-2)*6}" rx="10" ry="30" fill="#3f6b3a" transform="rotate(${(i-2)*18} ${620} 100)"/>`).join("")}<path d="M380 150 h70 v-14 q-35 -18 -70 0z" fill="#1d1d1d"/><path d="M372 126 q43 -26 86 0 l-8 8 q-35 -16 -70 0z" fill="#232323"/><circle cx="415" cy="140" r="8" fill="#ddd"/><rect x="480" y="130" width="80" height="20" fill="#e7dcc4"/><rect x="484" y="124" width="72" height="8" fill="#d6c9ac"/><circle cx="300" cy="40" r="90" fill="url(#lamp)"/>`),
 home:A(`<rect x="0" y="200" width="800" height="60" fill="#3a1f1a"/><path d="M80 210 h640 l40 50 h-720z" fill="#6b2c22"/><path d="M120 220 h560 l20 30 h-600z" fill="none" stroke="#c9a650" stroke-width="2" opacity=".5"/><rect x="140" y="50" width="250" height="150" fill="#4a3022"/><rect x="155" y="65" width="105" height="60" fill="#8fa3a8" opacity=".35"/><rect x="270" y="65" width="105" height="60" fill="#8fa3a8" opacity=".35"/>${[0,1,2,3].map(i=>`<rect x="${165+i*24}" y="${92-i%2*6}" width="14" height="${30+i%2*6}" fill="#e6dcc8" opacity=".7"/>`).join("")}<rect x="155" y="140" width="220" height="50" fill="#3a251a"/><rect x="200" y="30" width="90" height="16" fill="#c7b48f"/><rect x="470" y="40" width="200" height="140" fill="#2b3440"/><rect x="460" y="30" width="30" height="170" fill="#7a3328" opacity=".8"/><rect x="650" y="30" width="30" height="170" fill="#7a3328" opacity=".8"/><circle cx="560" cy="90" r="22" fill="#e9dcc0" opacity=".25"/>`,"#3d2a22"),
@@ -409,7 +449,7 @@ const MG={ cipher(cb){const A="АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧ�
   const m=mgOpen(`<h3>Записка за подкладкой шляпы</h3><p class="hint">Буквы сдвинуты по алфавиту. На обороте карандашом: <b>«Ключ — цена сегодняшней “Правды”»</b>. Расшифруйте вручную по таблице и ответьте на вопросы.</p><div class="doc" style="font-size:16px;letter-spacing:2px">${enc}</div>
   <div class="abc">${[...A].map(c=>`<span>${c}</span>`).join("")}</div><textarea class="srch" rows="2" placeholder="Черновик расшифровки (для себя)" style="margin-top:10px;resize:vertical"></textarea>
   <label class="ql">Кто, по записке, «знает всё»? (одно слово)</label><input class="srch" id="c1"><label class="ql">Где заберут детали?</label><input class="srch" id="c2"><label class="ql">В какой день?</label><input class="srch" id="c3">
-  <button class="mgbtn" data-ok>Проверить</button><button class="mgbtn x" onclick="paper()">📰 Открыть газету</button><span class="tries"></span>`);
+  <button class="mgbtn" data-ok>Проверить</button><button class="mgbtn x" onclick="paper()">Открыть газету</button><span class="tries"></span>`);
   const n=v=>m.querySelector(v).value.toLowerCase().replace(/ё/g,"е");let t=0;
   m.querySelector("[data-ok]").onclick=()=>{const ok=[n("#c1").includes("инженер"),n("#c2").includes("склад"),n("#c3").includes("суббот")];t++;
    if(ok.every(Boolean))mgWin(m,cb);else m.querySelector(".tries").textContent=` Верно ${ok.filter(Boolean).length} из 3`+(t>=3?". Подсказка: каждую букву сдвиньте на 2 назад: Ж→Д, З→Е.":"")}},
@@ -474,7 +514,9 @@ const MG={ cipher(cb){const A="АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧ�
 };
 
 /* ===== CITY DATA ===== */
-const CATS={zavod:["Завод","🏭"],people:["Жители","🏠"],shop:["Магазины","🛒"],gov:["Учреждения","🏛"],fun:["Досуг","🎭"],med:["Здоровье","✚"],trans:["Транспорт","🚌"]};
+const CATS={zavod:["Завод"],people:["Жители"],shop:["Магазины"],gov:["Учреждения"],fun:["Досуг"],med:["Здоровье"],trans:["Транспорт"]};
+const CI={"zavod": "M3 21V10l5 3V10l5 3V6h4v15zM7 17h2m3 0h2m3 0h2", "people": "M4 11l8-7 8 7M6 9.5V20h12V9.5M10 20v-5h4v5", "shop": "M5 8h14l-1.5 12h-11zM9 8a3 3 0 0 1 6 0", "gov": "M3 9l9-5 9 5M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18", "fun": "M4 5h16v9a8 8 0 0 1-16 0zM9 10h.01M15 10h.01M9 14c1.5 1.5 4.5 1.5 6 0", "med": "M12 5v14M5 12h14", "trans": "M6 4h12a2 2 0 0 1 2 2v10H4V6a2 2 0 0 1 2-2zM4 11h16M7 19v1m10-1v1M7.5 14.5h.01m9 0h.01"};
+const ico=(c,sz=16,col="currentColor")=>`<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${CI[c]}"/></svg>`;
 const P=[
  // key places
  {id:"office",n:"Кабинет 214 (гл. инженер)",a:"з-д «Импульс», корпус А",c:"zavod",x:1080,y:250,t:"Кабинет пахнет остывшим табаком. На столе — чашка, папки, печатная машинка «Ятрань». Окно закрыто изнутри.",act:[["Экспертиза: определить яд","cup",null,"poison"],["Осмотреть комнату","cup2",null,"spot"],["Опись вещей погибшего","nokey",null,"inv"],["Заглянуть в печатную машинку",null,"Ленты нет, копирку вынули — кто-то торопился. Зато корзина для бумаг под столом полна обрывков."],["Собрать обрывки из корзины","type",null,"strips"],["Перебрать папки на столе",null,"Отчёты по плану. Ничего необычного."]]},
@@ -526,13 +568,13 @@ function save(){try{localStorage.setItem("tihoe3",JSON.stringify(S))}catch(e){}}
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2400)}
-function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);bump();const nq=Object.values(WHO).filter(w=>w.qs.some(q=>q[1]===c));if(nq.length)setTimeout(()=>toast("❓ Новый вопрос: "+nq.map(w=>w.n).join(", ")),2600);renderPanel();try{pins()}catch(e){}}}
+function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);bump();const nq=Object.values(WHO).filter(w=>w.qs.some(q=>q[1]===c));if(nq.length)setTimeout(()=>toast("Новый вопрос: "+nq.map(w=>w.n).join(", ")),2600);renderPanel();try{pins()}catch(e){}}}
 function bump(){const n=$("nbadge");if(n){n.textContent=S.clues.length;n.classList.remove("bump");void n.offsetWidth;n.classList.add("bump")}}
 let tick=null,last=0;
 function fmtT(ms){const s=Math.floor(ms/1000);return[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(v=>String(v).padStart(2,"0")).join(":")}
 function clock(){$("clk").textContent=fmtT(S.el);$("trc").textContent="Поездки: "+S.trips;$("grade").textContent=S.trips<=12?"оценка сейчас: отлично":S.trips<=20?"оценка сейчас: хорошо":"оценка сейчас: удовл.";
  const got=HINTS.filter(h=>S.el>=h[0]*60000).length;const hb=$("hbadge");hb.style.display=got>S.hseen?"block":"none";
- if(got>S.hseen&&!hb._n){hb._n=got;toast("🐦 Птички нашептали новую подсказку")}}
+ if(got>S.hseen&&!hb._n){hb._n=got;toast("Птички нашептали новую подсказку")}}
 var openGame;openGame=function(){const g=$("game");g.style.display="grid";requestAnimationFrame(()=>g.classList.add("show"));document.body.style.overflow="hidden";
  last=Date.now();clearInterval(tick);tick=setInterval(()=>{if(!S.done){const n=Date.now();S.el+=n-last;last=n;save()}clock()},1000);drawMap();panel(S.log.length?"hist":"case");clock()};
 function closeGame(){const g=$("game");g.classList.remove("show");setTimeout(()=>g.style.display="none",350);document.body.style.overflow="";clearInterval(tick)}
@@ -545,22 +587,22 @@ function drawMap(){const m=$("cmap");
  <rect x="-2000" y="-2000" width="5600" height="5000" fill="#d4d1c5"/>
  <rect x="40" y="30" width="1520" height="950" fill="url(#blk)"/>
  <path d="M-100 590 C250 540 420 700 760 650 S1250 560 1700 640 L1700 720 C1250 640 1000 760 760 730 S250 620 -100 670Z" fill="#9fb8c6"/>
- <text x="1200" y="660" font-family="PT Serif" font-style="italic" font-size="22" fill="#5d7c8c">р. Зарека</text>
+ <text x="1200" y="660" font-family="IBM Plex Sans" font-style="italic" font-size="22" fill="#5d7c8c">р. Зарека</text>
  <ellipse cx="200" cy="260" rx="120" ry="70" fill="#b9c9a9"/><ellipse cx="1300" cy="880" rx="150" ry="60" fill="#b9c9a9"/>
  <rect x="880" y="110" width="580" height="430" rx="10" fill="#c3bfb1" stroke="#8e887a" stroke-width="3" stroke-dasharray="12 8"/>
- <text x="900" y="140" font-family="Oswald" font-size="22" fill="#6e685c" letter-spacing="3">ЗАВОД «ИМПУЛЬС»</text>
+ <text x="900" y="140" font-family="IBM Plex Sans" font-size="22" fill="#6e685c" letter-spacing="3">ЗАВОД «ИМПУЛЬС»</text>
  <g stroke="#f4f2ea" stroke-width="16" stroke-linecap="round">${roads.map(r=>`<line x1="${r[0]}" y1="${r[1]}" x2="${r[2]}" y2="${r[3]}"/>`).join("")}</g>
  <g stroke="#f4f2ea" stroke-width="22"><line x1="640" y1="560" x2="640" y2="760"/><line x1="1000" y1="560" x2="1000" y2="760"/></g>
- ${[["ЦЕНТР",360,90],["ЗАРЕЧЬЕ",360,950],["СЛОБОДА",1150,950]].map(d=>`<text x="${d[1]}" y="${d[2]}" font-family="Oswald" font-size="26" fill="#a49e8f" letter-spacing="6">${d[0]}</text>`).join("")}
+ ${[["ЦЕНТР",360,90],["ЗАРЕЧЬЕ",360,950],["СЛОБОДА",1150,950]].map(d=>`<text x="${d[1]}" y="${d[2]}" font-family="IBM Plex Sans" font-size="26" fill="#a49e8f" letter-spacing="6">${d[0]}</text>`).join("")}
  <g id="pins"></g>`;
  pins();applyVB()}
 function pins(){const g=$("pins");g.innerHTML=P.filter(p=>filt.has(p.c)&&(!onlyV||S.log.includes(p.id))).map(p=>{const v=S.log.includes(p.id),s=sel===p.id;
- const st=v?(p.filler?"e":!clueTotal(p.id)||isFull(p.id)?"full":"v"):"";return `<g class="mp ${st} ${s?'s':''} ${hlId===p.id?'h':''}" data-id="${p.id}" transform="translate(${p.x},${p.y})"><circle r="${s?22:17}"/><text y="7" text-anchor="middle" font-size="17">${CATS[p.c][1]}</text></g>`}).join("");
+ const st=v?(p.filler?"e":!clueTotal(p.id)||isFull(p.id)?"full":"v"):"";return `<g class="mp ${st} ${s?'s':''} ${hlId===p.id?'h':''}" data-id="${p.id}" transform="translate(${p.x},${p.y})"><circle r="${s?20:15}"/><g transform="translate(-9,-9) scale(.75)" fill="none" stroke="#f4f2ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${CI[p.c]}"/></g></g>`}).join("");
  if(S.pos&&PL[S.pos])g.insertAdjacentHTML("beforeend",`<g transform="translate(${PL[S.pos].x},${PL[S.pos].y-30})"><path d="M0 0 l-9 -16 a10 10 0 1 1 18 0z" fill="#e9c46a" stroke="#14110f" stroke-width="2"/></g>`);
  g.querySelectorAll(".mp").forEach(el=>el.onclick=e=>{e.stopPropagation();select(el.dataset.id)})}
 function applyVB(){if(vb.w<1650){vb.x=Math.max(-40,Math.min(1640-vb.w,vb.x))}if(vb.h<1050){vb.y=Math.max(-40,Math.min(1040-vb.h,vb.y))}$("cmap").setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);popPos()}
 function select(id,center){sel=id;pins();const p=PL[id];if(center){vb.w=Math.min(vb.w,900);vb.h=vb.w*.625;vb.x=p.x-vb.w/2;vb.y=p.y-vb.h/2;applyVB();if(innerWidth<=820)$("side").classList.remove("open");}
- const v=S.log.includes(id);$("pop").innerHTML=`<button class="px" onclick="unsel()">✕</button>${ART[id]?ART[id].replace('class="art"','class="art sm"'):`<div class="ph">${CATS[p.c][1]}</div>`}<b>${esc(p.n)}</b><small>${esc(p.a)} · ${CATS[p.c][0]}</small><button class="btn go" onclick="trip('${id}')">${v?"Повторная поездка":"Поехать"}</button>`;
+ const v=S.log.includes(id);$("pop").innerHTML=`<button class="px" onclick="unsel()">✕</button>${ART[id]?ART[id].replace('class="art"','class="art sm"'):`<div class="ph">${ico(p.c,36,"#8a7f70")}</div>`}<b>${esc(p.n)}</b><small>${esc(p.a)} · ${CATS[p.c][0]}</small><button class="btn go" onclick="trip('${id}')">${v?"Повторная поездка":"Поехать"}</button>`;
  $("pop").style.display="block";popPos()}
 function unsel(){sel=null;$("pop").style.display="none";pins()}
 function popPos(){if(!sel)return;const p=PL[sel],m=$("cmap"),r=m.getBoundingClientRect(),w=$("mapbox").getBoundingClientRect();
@@ -588,18 +630,18 @@ function confirmBox(title,text,yes,cb){const m=mgOpen(`<h3>${title}</h3><p class
 function askSubmit(){if(QA.some((q,i)=>!$("qa"+i).value.trim())){toast("Заполните все поля");return}confirmBox("Отправить ответы?","Ответ можно отправить только один раз. Изменить его потом будет нельзя.","Отправить",submitA)}
 const GROUPS=[["Место преступления",["cup","cup2","nokey"]],["Глеб Сомов",["type","cipher","fence","lab","ticket","cinema","loud","pass","watch","skirt","key","chrono"]],["Вера Лебедева",["insurance","neighbor"]],["Лида Кравец",["letters","alibiL"]]];
 function star(c){S.star=S.star||[];S.star.includes(c)?S.star=S.star.filter(x=>x!==c):S.star.push(c);save();renderPanel()}
-function notesHTML(){const cl=c=>`<div class="clue"><button class="star ${(S.star||[]).includes(c)?'on':''}" title="Пометить как важное" onclick="star('${c}')">⭐</button><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`;
+function notesHTML(){const cl=c=>`<div class="clue"><button class="star ${(S.star||[]).includes(c)?'on':''}" title="Пометить как важное" onclick="star('${c}')">★</button><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`;
  const st=(S.star||[]).filter(c=>S.clues.includes(c)),used=new Set(GROUPS.flatMap(g=>g[1]));
  let h=`<h3>Улики <span class="muted" style="font-size:15px">${S.clues.length} из ${Object.keys(CLUES).length}</span></h3>`;
  if(!S.clues.length)return h+`<p class="muted">Пока пусто. Улики появятся после поездок.</p>`;
- if(st.length)h+=`<div class="ngrp">⭐ Важное</div>`+st.map(cl).join("");
+ if(st.length)h+=`<div class="ngrp">Важное</div>`+st.map(cl).join("");
  h+=GROUPS.map(([t,ids])=>{const g=ids.filter(c=>S.clues.includes(c));return g.length?`<div class="ngrp">${t}</div>`+g.map(cl).join(""):""}).join("");
  return h+S.clues.filter(c=>!used.has(c)).map(cl).join("")}
 const TOUR=[["#side","Материалы дела","Здесь описано, что случилось. Прочитайте внимательно — от этого зависит, куда ехать."],
  ['.rail button[data-p="book"]',"Адресная книга","Ищите людей и места по фамилии или названию. Нажмите на адрес — карта покажет его."],
  ["#mapbox","Карта города","Каждая точка — адрес. Нажмите на неё и выберите «Поехать». Двигайте карту мышкой или пальцем, приближайте колёсиком."],
  [".clockb","Часы и поездки","Время не ограничено, но каждая новая поездка учитывается. Чем меньше поездок — тем выше оценка."],
- ['.rail button[data-p="hist"]',"Поездки и улики","После поездки здесь появится текст места, действия и допросы. Кнопки с 🔍 — мини-игры. Все находки собираются в «Уликах»."],
+ ['.rail button[data-p="hist"]',"Поездки и улики","После поездки здесь появится текст места, действия и допросы. Кнопки в красной рамке — мини-игры. Все находки собираются в «Уликах»."],
  ['.rail button[data-p="hint"]',"Подсказки","Застряли — со временем «птички нашептают» подсказку. Жёлтая точка значит, что появилась новая."],
  ['.rail button[data-p="ans"]',"Бланк ответов","Когда будете уверены, впишите ответы: кто, чем, зачем и как. Отправить можно только один раз. Удачи, следователь!"]];
 function tour(i){document.querySelector(".tour")?.remove();if(i>=TOUR.length){S.tut=1;save();return}
@@ -620,38 +662,38 @@ function trip(id){if(S.done){toast("Дело закрыто");return}
  S.pos=id;save();unsel();pins();clock();panel("hist");setTimeout(()=>{const e=document.querySelector(".hent");e&&e.classList.add("flash")},50)}
 function act(id,i){const h=PL[id].act[i];if(h[1]){const fin=()=>{addClue(h[1]);renderPanel()};if(h[3]&&!S.clues.includes(h[1]))MG[h[3]](fin,MGO[h[1]]);else fin()}else{const k="t"+id+i;if(!S.asked.includes(k)){S.asked.push(k);save()}renderPanel()}}
 function ask(w,i){const k=w+i,q=WHO[w].qs[i];if(!S.asked.includes(k)){S.asked.push(k);save();if(q[3])addClue(q[3])}renderPanel()}
-function entry(id){const p=PL[id];const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${CATS[p.c][1]}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
+function entry(id){const p=PL[id];const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${ico(p.c)}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
  if(p.act&&p.act.length)h+=`<div>`+p.act.map((a,i)=>{const got=a[1]&&S.clues.includes(a[1]),told=!a[1]&&S.asked.includes("t"+id+i);
-  return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[3]&&!got?"🔍 ":""}${a[0]}${a[3]&&!got?" · мини-игра":""}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
+  return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[0]}${a[3]&&!got?" · мини-игра":""}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
  if(p.who){const w=WHO[p.who];h+=`<div class="intg"><div class="av sm">${PORT[p.who]}</div><b>Допрос: ${w.n}</b>`+w.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.who+i);
-  return `<button class="q ${a?'asked':''}" onclick="ask('${p.who}',${i})">${q[1]?'📎 ':''}${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")+`</div>`}
+  return `<button class="q ${a?'asked':''}" onclick="ask('${p.who}',${i})">${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")+`</div>`}
  return h+`<button class="lnk" onclick="select('${id}',1)">Показать на карте</button></div>`}
 
 /* ===== PANELS ===== */
 let cur="case";
 function panel(n){cur=n;document.querySelectorAll(".rail button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==n));$("side").classList.add("open");if(n=="hint"){S.hseen=HINTS.filter(h=>S.el>=h[0]*60000).length;save();clock()}renderPanel()}
 function renderPanel(){const b=$("pbody");if(!b)return;let h="";
- if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="select('office',1)">🚗 Начать: место преступления</button><button class="btn ghost wide" onclick="paper()">📰 Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="chrono()">${S.clues.includes('chrono')?'✓ Хронология восстановлена':S.clues.length>=9?'🕰 Восстановить хронологию вечера':'🔒 Хронология (нужно 9 улик, у вас '+S.clues.length+')'}</button><button class="btn ghost wide" onclick="panel('book')">📒 Открыть адресную книгу</button><button class="btn ghost wide" onclick="tour(0)">❔ Как играть</button><button class="btn ghost wide" style="opacity:.7" onclick="confirmBox('Начать заново?','Весь прогресс, улики и поездки будут удалены.','Да, начать заново',reset)">↺ Начать заново</button>`;
+ if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="select('office',1)">Начать с места преступления</button><button class="btn ghost wide" onclick="paper()">Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="chrono()">${S.clues.includes('chrono')?'✓ Хронология восстановлена':S.clues.length>=9?'Восстановить хронологию вечера':'Хронология — нужно 9 улик, у вас '+S.clues.length+')'}</button><button class="btn ghost wide" onclick="panel('book')">Адресная книга</button><button class="btn ghost wide" onclick="tour(0)">Как играть</button><button class="btn ghost wide" style="opacity:.7" onclick="confirmBox('Начать заново?','Весь прогресс, улики и поездки будут удалены.','Да, начать заново',reset)">Начать заново</button>`;
  if(cur=="book"){h=`<h3>Адресная книга</h3><input id="bq" class="srch" placeholder="Поиск: фамилия, место, улица…" oninput="bookList()"><div id="blist"></div>`}
  if(cur=="hist")h=`<h3>История поездок</h3>`+(S.log.length?S.log.map(entry).join(""):`<p class="muted">Вы ещё никуда не ездили.</p>`);
  if(cur=="notes")h=notesHTML();
- if(cur=="hint"){const got=HINTS.filter(x=>S.el>=x[0]*60000);h=`<h3>🐦 Птички нашептали</h3>`+(got.length?got.map(x=>`<div class="tip"><small>${String(x[0]).padStart(2,"0")}:00</small>${x[1]}</div>`).join(""):"")+(got.length<HINTS.length?`<p class="muted">Следующая подсказка — через ${Math.max(1,Math.ceil(HINTS[got.length][0]-S.el/60000))} мин.</p>`:"")}
+ if(cur=="hint"){const got=HINTS.filter(x=>S.el>=x[0]*60000);h=`<h3>Птички нашептали</h3>`+(got.length?got.map(x=>`<div class="tip"><small>${String(x[0]).padStart(2,"0")}:00</small>${x[1]}</div>`).join(""):"")+(got.length<HINTS.length?`<p class="muted">Следующая подсказка — через ${Math.max(1,Math.ceil(HINTS[got.length][0]-S.el/60000))} мин.</p>`:"")}
  if(cur=="ans"){if(S.done)h=`<h3>Бланк ответов</h3>`+S.done;else h=`<h3>Бланк ответов</h3><p class="muted">Ответ можно отправить только один раз.</p>`+QA.map((q,i)=>`<label class="ql">${q[0]}</label><input class="srch" id="qa${i}" placeholder="Ответ" value="${esc((S.draft||[])[i]||"")}" oninput="S.draft=S.draft||[];S.draft[${i}]=this.value;save()">`).join("")+`<button class="btn wide" onclick="askSubmit()">Сохранить и отправить</button>`}
  b.innerHTML=`<button class="btn ghost backmap" onclick="document.getElementById('side').classList.remove('open')">← К карте</button>`+h;if(cur=="book")bookList();$("nbadge").textContent=S.clues.length}
 function bookList(){const q=($("bq")?.value||"").toLowerCase().replace(/ё/g,"е");const f=p=>(p.n+" "+p.a).toLowerCase().replace(/ё/g,"е").includes(q);
  const grp=[["Жители",P.filter(p=>p.c=="people"&&f(p))],["Предприятия и учреждения",P.filter(p=>p.c!="people"&&f(p))]];
- $("blist").innerHTML=grp.map(([t,a])=>`<div class="bg">${t} <span>${a.length}</span></div>`+a.sort((x,y)=>x.n.localeCompare(y.n,"ru")).map(p=>`<div class="bi ${S.log.includes(p.id)?'v':''}" onmouseenter="hl('${p.id}')" onmouseleave="hl(null)" onclick="select('${p.id}',1)"><span>${CATS[p.c][1]} ${esc(p.n)}</span><small>${esc(p.a)}</small></div>`).join("")).join("")}
+ $("blist").innerHTML=grp.map(([t,a])=>`<div class="bg">${t} <span>${a.length}</span></div>`+a.sort((x,y)=>x.n.localeCompare(y.n,"ru")).map(p=>`<div class="bi ${S.log.includes(p.id)?'v':''}" onmouseenter="hl('${p.id}')" onmouseleave="hl(null)" onclick="select('${p.id}',1)"><span>${esc(p.n)}</span><small>${esc(p.a)}</small></div>`).join("")).join("")}
 function submitA(){const an=QA.map((q,i)=>($("qa"+i).value||"").toLowerCase().replace(/ё/g,"е"));if(an.some(a=>!a.trim())){toast("Заполните все поля");return}
  const ok=QA.map((q,i)=>q[1].some(k=>an[i].includes(k)));const n=ok.filter(Boolean).length;
  const grade=n<4?"":S.trips<=12?"Блестящая работа, товарищ следователь!":S.trips<=20?"Хорошая работа.":"Дело раскрыто, но вы изъездили полгорода.";
- S.done=`<div class="result"><h3 style="font-family:Oswald">${ok[0]?(n==4?"✅ Дело раскрыто":"⚠️ Убийца назван, но обвинение неполное"):"❌ Дело развалилось"}</h3>${QA.map((q,i)=>`<p>${ok[i]?"✅":"❌"} ${q[0]}<br><i>${esc(an[i])}</i></p>`).join("")}<p>Время: <b>${fmtT(S.el)}</b> · Поездки: <b>${S.trips}</b>. ${grade}</p>${ok[0]?`<p><b>Как всё было.</b> Глеб Сомов годами списывал и продавал радиодетали со склада №3. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», в 19:10 демонстративно ушёл через проходную, громко объявив про кино, и вернулся через склад, ключ от которого был только у него. Около 21:00 он предложил Лебедеву выпить чаю «мировую» и подсыпал яд в его чашку. Свою чашку вымыл и второпях поставил на подоконник, дверь запер ключом Лебедева и обронил его на складе. Билет был старый, а сеанс в «Октябре» в тот вечер и вовсе отменили.</p>`:""}<button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
+ S.done=`<div class="result"><h3 style="font-family:'Playfair Display'">${ok[0]?(n==4?"Дело раскрыто":"Убийца назван, но обвинение неполное"):"Дело развалилось"}</h3>${QA.map((q,i)=>`<p>${ok[i]?"<span class=ok>✓</span>":"<span class=no>✗</span>"} ${q[0]}<br><i>${esc(an[i])}</i></p>`).join("")}<p>Время: <b>${fmtT(S.el)}</b> · Поездки: <b>${S.trips}</b>. ${grade}</p>${ok[0]?`<p><b>Как всё было.</b> Глеб Сомов годами списывал и продавал радиодетали со склада №3. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», в 19:10 демонстративно ушёл через проходную, громко объявив про кино, и вернулся через склад, ключ от которого был только у него. Около 21:00 он предложил Лебедеву выпить чаю «мировую» и подсыпал яд в его чашку. Свою чашку вымыл и второпях поставил на подоконник, дверь запер ключом Лебедева и обронил его на складе. Билет был старый, а сеанс в «Октябре» в тот вечер и вовсе отменили.</p>`:""}<button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
  save();renderPanel()}
 function reset(){S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null,tut:1};save();last=Date.now();const hb=$("hbadge");hb._n=0;pins();panel("case")}
 function paper(){const m=mgOpen(`<div class="paper"><div class="mast">ЗАРЕЧИНСКАЯ ПРАВДА</div><div class="pd">Орган Заречинского горкома КПСС · №218 · 14 ноября 1978 г. · Цена 2 коп.</div>
  <div class="cols"><div><h4>«Импульс» досрочно выполнил план</h4><p>Коллектив радиозавода «Импульс» рапортует о досрочном выполнении плана третьего квартала. Почётной грамотой награждён заместитель главного инженера тов. <b>Г.В. Сомов</b>. Главный инженер тов. А.П. Лебедев отметил, однако, «серьёзные вопросы к учёту на складах», которые будут рассмотрены отдельно.</p></div>
  <div><h4>В кино на этой неделе</h4><p>Кинотеатр «Октябрь» показывает фильм «Экипаж». Сеансы: 15:00, 18:00, 21:00. Дирекция приносит извинения за неполадки с проекционной аппаратурой.</p><h4>Новости коротко</h4><p>На ремонт закрыт гальванический цех завода «Импульс» — работы продлятся до декабря. В Доме культуры «Энергетик» — вечер танцев.</p></div></div></div>`);m.querySelector("[data-close]").textContent="Закрыть"}
 
-function chipsR(){$("chips").innerHTML=Object.entries(CATS).map(([k,v])=>`<span class="chip ${filt.has(k)?'':'off'}" onclick="tg('${k}')">${v[1]} ${v[0]}</span>`).join("")}
+function chipsR(){$("chips").innerHTML=Object.entries(CATS).map(([k,v])=>`<span class="chip ${filt.has(k)?'':'off'}" onclick="tg('${k}')">${ico(k,14)} ${v[0]}</span>`).join("")}
 function tg(k){filt.has(k)?filt.delete(k):filt.add(k);chipsR();pins()}
 const _og=openGame;openGame=function(){_og();chipsR();if(!S.tut)setTimeout(()=>tour(0),500)};
 initPan();addEventListener("resize",popPos);
