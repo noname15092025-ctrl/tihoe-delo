@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тихое дело — детективная игра</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110f;--paper:#efe6d2;--ink:#2a241e;--red:#b3261e;--muted:#8a7f70;--card:#1e1a17;--line:#3a332c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e9e1d1;font-family:'PT Serif',serif;line-height:1.55}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header.top{position:sticky;top:0;z-index:10;background:rgba(20,17,15,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:Oswald;font-size:22px;letter-spacing:2px;text-transform:uppercase}
+.logo span{color:var(--red)}
+nav a{margin-left:22px;text-decoration:none;color:#cfc6b6;font-size:15px}
+nav a:hover{color:#fff}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;padding:14px 26px;font-family:Oswald;font-size:17px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px}
+.btn:hover{background:#cf3026}
+.btn.ghost{background:transparent;border:1px solid #6b6156}
+.hero{min-height:88vh;display:flex;align-items:center;background:
+ radial-gradient(ellipse at 70% 40%,rgba(179,38,30,.18),transparent 60%),
+ repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 2px,transparent 2px 4px),var(--bg)}
+.hero h1{font-family:Oswald;font-size:clamp(42px,7vw,86px);line-height:1;margin:0 0 18px;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--red)}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:4px 10px;font-family:'Courier Prime';transform:rotate(-3deg);margin-bottom:22px;letter-spacing:2px}
+.hero p.lead{font-size:21px;max-width:600px;color:#d6cdbd}
+section{padding:90px 0;border-top:1px solid var(--line)}
+h2{font-family:Oswald;font-size:40px;text-transform:uppercase;margin:0 0 30px;letter-spacing:1px}
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.feat{background:var(--card);padding:26px;border-left:3px solid var(--red)}
+.feat h3{font-family:Oswald;margin:8px 0;font-size:21px}
+.feat .ico{font-size:30px}
+.case{background:var(--paper);color:var(--ink);padding:26px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.case h3{font-family:Oswald;font-size:24px;margin:0 0 6px}
+.case .tag{font-family:'Courier Prime';font-size:13px;color:var(--red)}
+.case .price{font-family:Oswald;font-size:28px;margin:14px 0}
+.case.soon{opacity:.6}
+.steps{counter-reset:s}
+.steps div{counter-increment:s;padding-left:58px;position:relative;margin-bottom:22px}
+.steps div:before{content:counter(s);position:absolute;left:0;top:0;width:42px;height:42px;border:2px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Oswald;font-size:20px;color:var(--red)}
+details{background:var(--card);margin-bottom:10px;padding:18px 22px}
+summary{cursor:pointer;font-family:Oswald;font-size:18px}
+footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+
+/* GAME */
+#game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;overflow:auto}
+.ghead{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0f0d0b;z-index:2;gap:10px;flex-wrap:wrap}
+.clock{font-family:'Courier Prime';font-size:15px;color:#e9c46a}
+.tabs button{background:none;border:1px solid var(--line);color:#cfc6b6;padding:8px 14px;cursor:pointer;font-family:Oswald;letter-spacing:1px;margin-left:4px}
+.tabs button.on{background:var(--red);border-color:var(--red);color:#fff}
+.gbody{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+.panel{display:none}.panel.on{display:block}
+.file{background:var(--paper);color:var(--ink);padding:28px;font-family:'Courier Prime';box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.file h3{font-family:Oswald;font-size:26px;margin:0 0 10px}
+.locs{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.loc{background:var(--card);border:1px solid var(--line);padding:18px;cursor:pointer;transition:.15s}
+.loc:hover{border-color:var(--red)}
+.loc.done{opacity:.55}
+.loc.locked{cursor:not-allowed;opacity:.35}
+.loc b{font-family:Oswald;font-size:18px;display:block}
+.loc small{color:var(--muted)}
+.scene{background:var(--paper);color:var(--ink);padding:28px;margin-top:20px}
+.scene h3{font-family:Oswald;margin:0 0 10px;font-size:24px}
+.hot{display:inline-block;margin:8px 8px 0 0;padding:8px 12px;border:1px dashed var(--ink);cursor:pointer;font-family:'Courier Prime';font-size:14px;background:#e4d9c0}
+.hot:hover{background:#d9cba9}
+.hot.got{border-style:solid;background:#c9b88f;cursor:default}
+.clue{background:var(--paper);color:var(--ink);padding:16px 18px;margin-bottom:12px;font-family:'Courier Prime';border-left:4px solid var(--red)}
+.clue b{font-family:Oswald;font-size:17px}
+.sus{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.person{background:var(--card);border:1px solid var(--line);padding:18px}
+.person .av{width:64px;height:64px;border-radius:50%;background:#3a332c;display:flex;align-items:center;justify-content:center;font-family:Oswald;font-size:26px;margin-bottom:10px}
+.person h4{font-family:Oswald;margin:0;font-size:19px}
+.q{display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#e9e1d1;padding:9px 11px;margin-top:8px;cursor:pointer;font-family:'PT Serif';font-size:14px}
+.q:hover{border-color:var(--red)}
+.q.asked{opacity:.5}
+.ans{font-style:italic;color:#d6cdbd;font-size:14px;margin-top:6px;padding-left:10px;border-left:2px solid var(--red)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 20px;font-family:Oswald;letter-spacing:1px;z-index:99;display:none}
+select{width:100%;padding:10px;font-family:'PT Serif';font-size:15px;margin:6px 0 16px;background:#fff;color:var(--ink)}
+.result{margin-top:20px;padding:22px;background:var(--card);border:1px solid var(--line)}
+.muted{color:var(--muted)}
+@media(max-width:640px){nav a:not(.btn){display:none}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+ <div class="logo">Тихое <span>дело</span></div>
+ <nav><a href="#how">Как играть</a><a href="#cases">Дела</a><a href="#faq">Вопросы</a><a class="btn" style="padding:8px 16px;font-size:14px" href="#" onclick="openGame();return false">Играть</a></nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+ <div class="stamp">СОВ. СЕКРЕТНО · 1978</div>
+ <h1>Город спит.<br><em>Убийца — нет.</em></h1>
+ <p class="lead">Детективная игра в вымышленном городке Заречинск. Обходите адреса, находите улики, допрашивайте подозреваемых и назовите убийцу раньше, чем кончится время.</p>
+ <p style="margin-top:30px"><a class="btn" href="#" onclick="openGame();return false">Начать расследование</a> &nbsp; <a class="btn ghost" href="#how">Как это работает</a></p>
+</div></div>
+
+<section><div class="wrap">
+ <h2>Вы не читаете детектив. Вы его ведёте.</h2>
+ <div class="grid">
+  <div class="feat"><div class="ico">🏭</div><h3>Живой город</h3>Завод, общежитие, проходная, гастроном. В каждом месте своя обстановка и свои люди.</div>
+  <div class="feat"><div class="ico">🔎</div><h3>Настоящие улики</h3>Журналы, записки, копирка в машинке. Улику нужно найти самому, никто не подскажет.</div>
+  <div class="feat"><div class="ico">🗣️</div><h3>Допросы</h3>Новые улики открывают новые вопросы. Все лгут — вопрос только в чём.</div>
+  <div class="feat"><div class="ico">⏱️</div><h3>Время идёт</h3>Каждый выезд стоит часов. Успейте до вечера, иначе дело заберут в область.</div>
+ </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+ <h2>Как играть</h2>
+ <div class="steps">
+  <div><b>Прочтите материалы дела.</b> Что случилось, кто погиб, кто был рядом.</div>
+  <div><b>Выезжайте на адреса.</b> Осматривайте детали — подозрительное попадёт в блокнот.</div>
+  <div><b>Допрашивайте.</b> Предъявляйте найденное — свидетели начинают говорить иначе.</div>
+  <div><b>Выдвиньте обвинение.</b> Кто, зачем и чем это доказывается. Ошибка — дело развалится.</div>
+ </div>
+ <p class="muted">Играть можно одному или компанией за одним экраном. Одно дело — 40–60 минут.</p>
+</div></section>
+
+<section id="cases"><div class="wrap">
+ <h2>Дела</h2>
+ <div class="grid">
+  <div class="case"><div class="tag">ДЕЛО № 1 · ДОСТУПНО</div><h3>Чай для главного инженера</h3><p>Утром на радиозаводе «Импульс» нашли мёртвым главного инженера. Чашка остыла, дверь была заперта.</p><div class="price">Бесплатно</div><a class="btn" href="#" onclick="openGame();return false">Играть</a></div>
+  <div class="case soon"><div class="tag">ДЕЛО № 2 · СКОРО</div><h3>Последний автобус</h3><p>Кондуктор маршрута № 7 исчезла вместе с выручкой. Пассажиры видели разное.</p><div class="price">—</div></div>
+  <div class="case soon"><div class="tag">ДЕЛО № 3 · СКОРО</div><h3>Пожар в Доме культуры</h3><p>Сгорел архив за день до ревизии. Случайность? В Заречинске таких не бывает.</p><div class="price">—</div></div>
+ </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+ <h2>Вопросы</h2>
+ <details><summary>Сколько людей может играть?</summary><p>Сколько угодно — игра идёт на одном экране. Удобнее всего 1–4 человека.</p></details>
+ <details><summary>Можно ли проиграть?</summary><p>Да: если кончится время или вы обвините не того. Дело можно начать заново.</p></details>
+ <details><summary>Есть подсказки?</summary><p>Нет. Всё нужное есть в локациях и в ответах свидетелей. Внимательно читайте.</p></details>
+ <details><summary>Прогресс сохраняется?</summary><p>В этом браузере — да, если он это позволяет.</p></details>
+</div></section>
+
+<footer><div class="wrap">© Тихое дело. Все персонажи и события вымышлены, любые совпадения случайны.</div></footer>
+
+<!-- ================= GAME ================= -->
+<div id="game">
+ <div class="ghead">
+  <div class="logo" style="font-size:18px">Дело №1 · <span>Чай для инженера</span></div>
+  <div class="clock" id="clock"></div>
+  <div class="tabs">
+   <button data-p="brief" class="on">Дело</button><button data-p="map">Город</button><button data-p="sus">Допросы</button><button data-p="notes">Блокнот <span id="nc">0</span></button><button data-p="accuse">Обвинение</button><button onclick="closeGame()">✕</button>
+  </div>
+ </div>
+ <div class="gbody">
+  <div class="panel on" id="p-brief">
+   <div class="file">
+    <h3>Материалы дела</h3>
+    <p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p>
+    <p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последний раз Лебедева видели живым вчера около 18:30.</p>
+    <p>Вы — следователь прокуратуры. Начальство дало вам <b>до 20:00</b>. Каждый выезд на адрес отнимает время. Затем дело передадут в область.</p>
+    <p>Подозреваемые — на вкладке «Допросы». Адреса — «Город». Всё найденное попадает в «Блокнот».</p>
+    <p style="margin-top:20px"><button class="btn" onclick="tab('map')">На выезд</button></p>
+   </div>
+  </div>
+  <div class="panel" id="p-map"><div class="locs" id="locs"></div><div id="scene"></div></div>
+  <div class="panel" id="p-sus"><p class="muted">Допрос стоит 30 минут. Найденные улики открывают новые вопросы.</p><div class="sus" id="sus"></div></div>
+  <div class="panel" id="p-notes"><div id="notes"></div></div>
+  <div class="panel" id="p-accuse">
+   <div class="file">
+    <h3>Обвинительное заключение</h3>
+    <p>Обвинение можно выдвинуть только один раз.</p>
+    <label>Кто отравил Лебедева?</label><select id="a-who"></select>
+    <label>Мотив</label><select id="a-why"></select>
+    <label>Главное доказательство</label><select id="a-proof"></select>
+    <button class="btn" onclick="accuse()">Выдвинуть обвинение</button>
+    <div id="verdict"></div>
+   </div>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const START=9*60, END=20*60;
+const CLUES={
+ cup:{t:"Чашка с горьким миндальным запахом",d:"В чае — цианид. Сахара нет: Лебедев пил чай без сахара, это знали все."},
+ key:{t:"Журнал ключницы",d:"Ключ от кабинета 214 сдан вахтёру в 21:40. Подпись неразборчива, похожа на «С.»"},
+ type:{t:"Копирка в печатной машинке",d:"На ней проступает текст: «...в министерство... систематическое хищение радиодеталей... по указанию зам. главного инженера Г. Сомова...». Дата — 14 ноября."},
+ lab:{t:"Журнал химлаборатории",d:"13 ноября выдано 5 г цианистого калия «для гальваники». Расписался: Сомов Г.В. Цех гальваники в ноябре на ремонте и не работает."},
+ pass:{t:"Журнал проходной",d:"Кравец Л. — ушла 18:05. Сомов Г. — ушёл 19:10. Лебедева В. (жена) — не входила."},
+ ticket:{t:"Билет в кино из пиджака Сомова",d:"Кинотеатр «Октябрь», сеанс 21:00 — но дата на билете 12 ноября, а не 14-го."},
+ watch:{t:"Показания сторожа",d:"Около 21:00 видел свет в 214-м и мужчину в шляпе, который прошёл через склад, минуя проходную."},
+ letters:{t:"Письма в столе секретаря",d:"Записки от Лебедева: «Лида, жди меня в субботу». Роман длился около года."},
+ neighbor:{t:"Показания соседки Лебедевых",d:"Вера Лебедева весь вечер 14-го была у сестры — соседка видела, как та ушла в 17:00 и вернулась после полуночи."},
+ insurance:{t:"Страховой полис",d:"Жизнь Лебедева застрахована на 3000 рублей в пользу жены."},
+ skirt:{t:"Ключ через склад",d:"Дверь склада не заперта. Ключ от неё есть у зам. главного инженера и у кладовщика (тот в отпуске с 1 ноября)."}
+};
+const LOCS=[
+ {id:"office",n:"Кабинет 214",s:"Место преступления",cost:60,txt:"Кабинет пахнет остывшим табаком. На столе — чашка, папки, печатная машинка «Ятрань». Окно закрыто изнутри.",hots:[["Осмотреть чашку","cup"],["Заглянуть в печатную машинку","type"],["Перебрать папки на столе",null,"Отчёты по плану. Ничего необычного."]]},
+ {id:"gate",n:"Проходная завода",s:"Вахта, журналы",cost:45,txt:"Вахтёрша Зинаида Ивановна вяжет носок и неохотно отрывается от дела.",hots:[["Журнал проходной","pass"],["Журнал ключницы","key"]]},
+ {id:"lab",n:"Химлаборатория",s:"Корпус Б",cost:60,txt:"Колбы, вытяжной шкаф, запертый на висячий замок сейф с реактивами. Лаборантка нервничает.",hots:[["Журнал выдачи реактивов","lab"],["Спросить о цехе гальваники",null,"«Гальваника с октября на ремонте, там даже ванны слиты»."]]},
+ {id:"store",n:"Склад №3",s:"Задний двор",cost:45,need:"watch",txt:"Двор, заваленный ящиками. От склада идёт проход прямо к корпусу А, минуя проходную.",hots:[["Проверить дверь склада","skirt"]]},
+ {id:"guard",n:"Сторожка",s:"Ночной сторож",cost:30,txt:"Пётр Ильич, сторож, пьёт чай из подстаканника и охотно рассказывает о вчерашней ночи.",hots:[["Расспросить о вечере 14-го","watch"]]},
+ {id:"secr",n:"Приёмная",s:"Стол секретаря",cost:30,txt:"Аккуратный стол, фикус, стопка писем. Секретарь Лида Кравец отпросилась домой.",hots:[["Открыть ящик стола","letters"]]},
+ {id:"home",n:"Квартира Лебедевых",s:"ул. Гагарина, 12",cost:75,txt:"Двухкомнатная квартира. Вдова держится холодно. На серванте — папка с документами.",hots:[["Папка с документами","insurance"],["Поговорить с соседкой","neighbor"]]},
+ {id:"hostel",n:"Квартира Сомова",s:"Заводской дом",cost:75,need:"type",txt:"Холостяцкая квартира. На вешалке — пиджак и фетровая шляпа.",hots:[["Обыскать карманы пиджака","ticket"],["Осмотреть шляпу",null,"Обычная серая фетровая шляпа. На полях — складская пыль."]]}
+];
+const SUS=[
+ {id:"somov",n:"Глеб Сомов",r:"Зам. главного инженера",qs:[["Где вы были вечером 14-го?",null,"«Ушёл в семь, а в девять был в кино, в “Октябре”. Можете проверить»."],["Какие у вас были отношения с Лебедевым?",null,"«Рабочие. Он был человек сложный, но я его уважал»."],["Зачем вы брали цианид в лаборатории?","lab","«Для гальваники, по плану». — Гальваника на ремонте. — «...Я... не знал»."],["Ваш билет в кино — за 12-е число.","ticket","Сомов бледнеет. «Перепутал билеты, бывает»."],["Лебедев писал на вас в министерство.","type","Долгая пауза. «Я требую адвоката»."]]},
+ {id:"vera",n:"Вера Лебедева",r:"Жена погибшего",qs:[["Где вы были вечером 14-го?",null,"«У сестры. Мы с мужем давно живём каждый своей жизнью»."],["Вы знали о романе мужа?","letters","«Знала. И мне было всё равно. Так даже спокойнее»."],["Вы получите страховку.","insurance","«Три тысячи? За двадцать лет брака? Не смешите меня»."]]},
+ {id:"lida",n:"Лида Кравец",r:"Секретарь",qs:[["Когда вы ушли с работы?",null,"«Около шести. Аркадий Петрович просил чай и остался работать»."],["Вы заваривали ему чай?",null,"«В шесть — да. Без сахара, как всегда. Он выпил при мне»."],["У вас был роман с Лебедевым.","letters","Плачет. «Он обещал уйти от жены... Я бы никогда ему не навредила»."],["Что он печатал в последние дни?","type","«Какое-то письмо, сам, без меня. Сказал: “Это пойдёт выше головы Сомова”»."]]},
+ {id:"petr",n:"Пётр Ильич",r:"Ночной сторож",qs:[["Видели кого-нибудь ночью?",null,"«Свет горел в 214-м около девяти. И мужик в шляпе через склад шёл»."],["Узнали мужчину в шляпе?","skirt","«Лица не видел. Но ключ от склада только у начальства... у Сомова точно есть»."]]}
+];
+let S={time:START,clues:[],visited:[],asked:[],done:false};
+try{const s=localStorage.getItem("tihoe1");if(s)S=JSON.parse(s)}catch(e){}
+function save(){try{localStorage.setItem("tihoe1",JSON.stringify(S))}catch(e){}}
+const $=id=>document.getElementById(id);
+function fmt(m){return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")}
+function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2200)}
+function spend(m){if(S.time+m>END){toast("Не хватит времени до 20:00");return false}S.time+=m;save();render();if(S.time>=END)toast("Время вышло — выдвигайте обвинение");return true}
+function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);render()}}
+function openGame(){$("game").style.display="block";document.body.style.overflow="hidden";render()}
+function closeGame(){$("game").style.display="none";document.body.style.overflow=""}
+function tab(p){document.querySelectorAll(".tabs button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==p));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("on",x.id=="p-"+p))}
+document.querySelectorAll(".tabs button[data-p]").forEach(b=>b.onclick=()=>tab(b.dataset.p));
+function visit(id){const L=LOCS.find(l=>l.id==id);if(L.need&&!S.clues.includes(L.need)){toast("Пока нет причины туда ехать");return}
+ if(!S.visited.includes(id)){if(!spend(L.cost))return;S.visited.push(id);save()}showScene(id)}
+function showScene(id){const L=LOCS.find(l=>l.id==id);
+ $("scene").innerHTML=`<div class="scene"><h3>${L.n}</h3><p>${L.txt}</p><div>${L.hots.map((h,i)=>`<span class="hot ${h[1]&&S.clues.includes(h[1])?'got':''}" onclick="hot('${id}',${i})">${h[0]}</span>`).join("")}</div><p id="hn" style="margin-top:14px;font-style:italic"></p></div>`;
+ $("scene").scrollIntoView({behavior:"smooth"})}
+function hot(id,i){const h=LOCS.find(l=>l.id==id).hots[i];if(h[1]){addClue(h[1]);showScene(id);$("hn").textContent=CLUES[h[1]].d}else $("hn").textContent=h[2]}
+function ask(s,i){const k=s+i;const q=SUS.find(x=>x.id==s).qs[i];if(!S.asked.includes(k)){if(!spend(30))return;S.asked.push(k);save();render()}}
+function render(){
+ $("clock").textContent="🕰 "+fmt(S.time)+" / 20:00";
+ $("nc").textContent=S.clues.length;
+ $("locs").innerHTML=LOCS.map(l=>{const lk=l.need&&!S.clues.includes(l.need);return `<div class="loc ${S.visited.includes(l.id)?'done':''} ${lk?'locked':''}" onclick="visit('${l.id}')"><b>${lk?'🔒 ':''}${l.n}</b><small>${l.s} · ${S.visited.includes(l.id)?'осмотрено':l.cost+' мин'}</small></div>`}).join("");
+ $("sus").innerHTML=SUS.map(p=>`<div class="person"><div class="av">${p.n[0]}</div><h4>${p.n}</h4><small class="muted">${p.r}</small>${p.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.id+i);return `<button class="q ${a?'asked':''}" onclick="ask('${p.id}',${i})">${q[1]?'📎 ':''}${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")}</div>`).join("");
+ $("notes").innerHTML=S.clues.length?S.clues.map(c=>`<div class="clue"><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`).join(""):'<p class="muted">Блокнот пуст. Осматривайте места.</p>';
+ $("a-who").innerHTML=SUS.map(p=>`<option value="${p.id}">${p.n}</option>`).join("");
+ $("a-why").innerHTML=[["exp","Боялся разоблачения хищений"],["money","Ради страховки"],["love","Ревность / несчастная любовь"],["post","Хотел занять должность"]].map(o=>`<option value="${o[0]}">${o[1]}</option>`).join("");
+ $("a-proof").innerHTML='<option value="">— выберите улику из блокнота —</option>'+S.clues.map(c=>`<option value="${c}">${CLUES[c].t}</option>`).join("");
+ if(S.done)$("verdict").innerHTML=S.done;
+}
+function accuse(){if(S.done)return;const w=$("a-who").value,y=$("a-why").value,p=$("a-proof").value;if(!p){toast("Нужно доказательство");return}
+ const strong=["lab","type","ticket","key","skirt"];let html;
+ if(w=="somov"&&y=="exp"&&strong.includes(p)){
+  const n=["lab","type","ticket","key","skirt","watch"].filter(c=>S.clues.includes(c)).length;
+  html=`<div class="result"><h3 style="font-family:Oswald">✅ Дело раскрыто</h3><p>Глеб Сомов годами списывал и продавал радиодетали. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», ушёл через проходную в 19:10 для алиби, вернулся через склад, к которому имел ключ, и около 21:00 предложил выпить чаю «мировую» и подсыпал яд в его чашку. Уходя, запер кабинет и сдал ключ в 21:40. Билет в кино оказался старым.</p><p>Ключевых улик собрано: <b>${n} из 6</b>. Время: ${fmt(S.time)}. ${n>=5?"Блестящая работа, товарищ следователь.":"Суд поверит, но адвокат попортит нервы."}</p><button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
+ }else html=`<div class="result"><h3 style="font-family:Oswald">❌ Дело развалилось</h3><p>Обвинение не выдержало проверки: ${w!="somov"?"у обвиняемого нашлось алиби или не хватило улик":"мотив или доказательство не убедили суд"}. Настоящий убийца остался на свободе.</p><button class="btn ghost" onclick="reset()">Начать заново</button></div>`;
+ S.done=html;save();render()}
+function reset(){S={time:START,clues:[],visited:[],asked:[],done:false};save();$("scene").innerHTML="";render();tab("brief")}
+render();
+</script>
+</body>
+</html>
