@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тихое дело — Дело №4. Остров на водохранилище</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1113;--paper:#e9e4d6;--ink:#22201c;--red:#b3261e;--muted:#7d8388;--card:#171b1e;--line:#2c3338;--gold:#e9c46a;--ice:#9fb7c4}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:#dfe3e4;font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55;overflow:hidden}
+button{font:inherit}
+#app{display:grid;grid-template-rows:auto 1fr;height:100%}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0b0d0f;flex-wrap:wrap}
+.bar .logo{font-family:'Playfair Display';font-size:18px;text-decoration:none;color:inherit;margin-right:6px}.bar .logo span{color:var(--red)}
+.clock{font-family:'IBM Plex Mono';background:#14181b;border:1px solid var(--line);border-radius:10px;padding:5px 12px;font-size:14px}
+.clock b{color:var(--gold)}
+.bar .sp{flex:1}
+.tb{background:#14181b;border:1px solid var(--line);color:#cfd5d8;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:14px;position:relative}
+.tb:hover{border-color:#56616a}
+.tb .dot{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:var(--red);display:none}
+.tb.new .dot{display:block}
+#main{display:grid;grid-template-columns:1.1fr 1fr;min-height:0}
+#mapw{position:relative;min-height:0;background:radial-gradient(ellipse at 50% 40%,#1b2a33,#0b1014 75%)}
+#map{width:100%;height:100%;display:block}
+.loc{cursor:pointer}.loc circle{fill:#2a3238;stroke:#cfd5d8;stroke-width:2.5;transition:.2s}
+.loc:hover circle{fill:#41505a}.loc.here circle{fill:var(--red);stroke:var(--gold)}
+.loc text{fill:#e8ecee;font-family:'IBM Plex Sans';font-size:15px;paint-order:stroke;stroke:#0b1014;stroke-width:4px;pointer-events:none}
+#panel{border-left:1px solid var(--line);overflow:auto;padding:20px 22px 60px;background:#101315}
+#panel h2{font-family:'Playfair Display';font-size:28px;margin:0 0 6px}
+#panel .desc{color:#b9c1c5;margin-bottom:16px}
+.acts{display:grid;gap:8px}
+.act{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:var(--card);border:1px solid var(--line);color:#e6eaec;border-radius:10px;padding:12px 14px;cursor:pointer}
+.act:hover{border-color:#5b6870}.act small{color:var(--muted);font-family:'IBM Plex Mono';font-size:12px;white-space:nowrap}
+.act.done{opacity:.55}
+.act.lock{opacity:.6}
+.who{font-family:'Playfair Display';font-size:17px;margin:18px 0 8px;color:#c9d0d3}
+.modal{position:fixed;inset:0;background:rgba(3,5,6,.78);display:none;align-items:flex-start;justify-content:center;z-index:40;overflow:auto;padding:30px 12px}
+.modal.on{display:flex}
+.mbox{background:var(--paper);color:var(--ink);border-radius:8px;max-width:660px;width:100%;padding:24px 26px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.7);animation:up .25s}
+@keyframes up{from{transform:translateY(8px);opacity:0}}
+.mbox h3{font-family:'Playfair Display';font-size:24px;margin:0 0 4px}
+.mbox .sub{color:#6b6559;font-size:13px;margin-bottom:12px}
+.x{position:absolute;top:8px;right:12px;background:none;border:0;font-size:26px;cursor:pointer;color:#6b6559}
+.doc{background:#f8f5ec;border:1px solid #cfc6b0;border-radius:4px;padding:14px 16px;font-family:'IBM Plex Mono';font-size:14px;line-height:1.7;white-space:pre-wrap}
+.doc.hand{font-family:'Playfair Display';font-style:italic;font-size:17px;white-space:pre-wrap}
+.doc u{text-decoration:none;border-bottom:2px solid #6a6a6a;font-weight:600}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;margin:8px 8px 0 0;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink)}.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.chat{display:grid;gap:8px;margin:10px 0}
+.say{background:#f8f5ec;border-radius:10px;padding:10px 12px;border-left:3px solid #8a8070}
+.me{background:#dfe6ea;border-radius:10px;padding:10px 12px;border-left:3px solid #4b6a7a;font-style:italic}
+.qs button{display:block;width:100%;text-align:left;background:#fff;border:1px solid #cfc6b0;border-radius:8px;padding:9px 12px;margin-top:6px;cursor:pointer;color:var(--ink)}
+.qs button:hover{border-color:var(--ink)}
+.qs button.used{opacity:.45}
+.qs button.press{border-color:var(--red);color:var(--red)}
+.list{display:grid;gap:6px}
+.list button{text-align:left;background:#fff;border:1px solid #cfc6b0;border-radius:8px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.inp{width:100%;padding:10px;border:1px solid #a99f88;border-radius:8px;font:inherit;font-family:'IBM Plex Mono';font-size:16px;background:#fff;margin-top:8px}
+.dials{display:flex;gap:10px;justify-content:center;background:#3f4548;padding:16px;border-radius:12px;margin-top:10px}
+.dial{display:flex;flex-direction:column;align-items:center;gap:4px}
+.dial span{width:50px;height:58px;background:#16181a;color:var(--gold);font-family:'IBM Plex Mono';font-size:36px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.dial button{background:#2a2e31;color:#ddd;border:0;width:50px;border-radius:6px;cursor:pointer;padding:3px}
+.stain{position:relative;display:inline}
+.stain i{position:absolute;inset:-6px -10px;background:radial-gradient(circle,#7a5b33 0,#8e6b3c 45%,rgba(142,107,60,.85) 70%,rgba(142,107,60,0) 100%);border-radius:40%;cursor:pointer;transition:opacity .5s}
+.stain.clean i{opacity:0;pointer-events:none}
+.err{color:var(--red);font-size:14px;min-height:1.2em;margin-top:6px}
+.form label{display:block;margin:14px 0 6px;font-weight:600}
+.form select{width:100%;padding:9px;border-radius:8px;border:1px solid #a99f88;background:#fff;font:inherit}
+.diary .ent{margin-bottom:14px}.diary .ent.drug{font-family:'Playfair Display';font-style:italic;color:#5a2a26;transform:rotate(-.6deg);letter-spacing:.3px}
+.diary .date{font-family:'IBM Plex Mono';font-size:12px;color:#7a7264}
+.fullscr{position:fixed;inset:0;z-index:60;background:#05070a;color:#dfe3e4;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}
+.fullscr.on{display:flex}
+.fullscr .inner{max-width:620px}
+.fullscr h1{font-family:'Playfair Display';font-size:40px;margin:6px 0 10px}
+.fullscr p{color:#b9c1c5;font-size:17px}
+.fullscr .tag{font-family:'IBM Plex Mono';letter-spacing:.25em;font-size:12px;color:var(--gold)}
+.fullscr .btn{background:var(--red);border-color:var(--red);color:#fff}
+.fullscr .btn.ghost{background:transparent;border-color:#56616a;color:#dfe3e4}
+.paperhint{display:inline-block;margin-top:14px;padding:10px 14px;border:1px dashed var(--gold);border-radius:10px;color:var(--gold);font-size:15px}
+.snow{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.snow i{position:absolute;top:-10px;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.5;animation:fall linear infinite}
+@keyframes fall{to{transform:translate(30px,110vh)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#14181b;border:1px solid var(--gold);color:#eee;padding:10px 16px;border-radius:10px;z-index:80;display:none;max-width:90vw}
+.toast.on{display:block;animation:up .3s}
+@media(max-width:800px){body{overflow:auto}#app{height:auto}#main{grid-template-columns:1fr}#mapw{height:52vh}#panel{border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div id="app">
+ <div class="bar">
+  <a class="logo" href="index.html">Тихое <span>дело</span></a>
+  <div class="clock" id="clock"></div>
+  <span class="sp"></span>
+  <button class="tb" id="bDiary" onclick="openDiary()">📓 Дневник<span class="dot"></span></button>
+  <button class="tb" id="bFolder" onclick="openFolder()">🗂 Папка<span class="dot"></span></button>
+  <button class="tb" onclick="openReport()">✍️ Отчёт</button>
+  <button class="tb" id="bSnd" onclick="toggleSound()">🔇</button>
+  <button class="tb" onclick="askReset()" title="Начать заново">↺</button>
+ </div>
+ <div id="main">
+  <div id="mapw"><div class="snow" id="snow"></div><svg id="map" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div id="panel"></div>
+ </div>
+</div>
+
+<div class="modal" id="modal"><div class="mbox"><button class="x" onclick="closeM()">×</button><div id="mbody"></div></div></div>
+<div class="fullscr" id="full"><div class="inner" id="fullin"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== ДАННЫЕ ===================== */
+const DAYS=["","14 марта 1979","15 марта 1979","16 марта 1979"];
+
+const LOCS={
+ pier:{n:"Причал",x:400,y:520,d:"Обледенелые сваи, катер ушёл обратно, пока не начался ледоход. До берега три километра серого льда. Вдоль южного мыса чернеет полынья."},
+ b:{n:"Корпус Б",x:250,y:330,d:"Женское отделение. Длинный коридор, пахнет хлоркой и варёной капустой. В конце коридора пост медсестры, палата №7 рядом с ним."},
+ a:{n:"Корпус А",x:420,y:250,d:"Администрация. Скрипучий паркет, портрет Павлова, у входа бронзовая табличка. Кабинет главврача на втором этаже, на двери кодовый замок."},
+ st:{n:"Столовая",x:560,y:350,d:"Длинные столы, клеёнка, запах компота. Повариха тётя Дуся протирает раздачу."},
+ lib:{n:"Библиотека",x:300,y:180,d:"Комната в бывшей часовне. Три стеллажа книг, пыль, на столе ящик с читательскими формулярами."},
+ boil:{n:"Кочегарка",x:600,y:470,d:"Низкое кирпичное здание с трубой. Гудит котёл, у двери гора угля. Внутри жарко и темно."},
+ mayak:{n:"Маяк",x:640,y:130,d:"Старый маяк на северном мысу. Смотритель Ерёмин ведёт журнал погоды и знает лёд лучше всех."}
+};
+const ROADS=[["pier","b"],["pier","st"],["pier","boil"],["b","a"],["b","lib"],["a","lib"],["a","st"],["st","boil"],["a","mayak"],["boil","mayak"]];
+
+/* документы */
+const DOCS={
+ order:{t:"Предписание",s:"Прокуратура Заречинского района",b:`<div class="doc">Следователю Сомову А.П.
+
+13 марта 1979 г., ночью, из палаты №7 диспансера «Тихая пристань» (остров Каменный) исчезла больная Лапина Вера Степановна, 26 лет.
+Главный врач Штерн Г.К. полагает, что больная ушла по льду и погибла.
+
+Установить обстоятельства. Ледоход ожидается 14–16 марта, связь с островом только по рации. Катер за вами — 16 марта, в 19:00.
+К этому времени — отчёт.</div><p class="sub" style="margin-top:12px">Совет: возьмите листок и ручку. Имена, время и цифры здесь нигде не собраны вместе. Это ваша работа.</p>`},
+ ice:{t:"Следы на льду",s:"Осмотр у южного мыса",b:`<div class="doc">От заднего крыльца корпуса Б к полынье ведёт одна цепочка следов. До полыньи около 300 метров.
+
+Следы чёткие, <b>свежий снег в них не насыпан</b>.
+Отпечатки глубокие, края смазаны, будто по каждому следу ступали дважды.
+Каблук низкий, широкий — похоже на <b>валенки</b>. Размер примерно 39.
+
+Обратных следов нет.
+На краю полыньи — <b>серый пуховый платок</b>, мокрый, примёрзший ко льду.</div>`},
+ palata:{t:"Палата №7",s:"Осмотр",b:`<div class="doc">Две койки: Лапиной и Клавдии Мухиной.
+Окно с решёткой — решётка цела, шпингалет закрыт.
+Дверь палаты на ночь запирается снаружи, ключ — на посту медсестры.
+
+Под койкой Лапиной — больничные <b>тапочки, размер 36</b>.
+Халат — на крючке.
+На спинке стула пусто.
+На тумбочке — библиотечная книга: Жюль Верн, «Таинственный остров».</div>`},
+ obhod:{t:"Журнал обходов",s:"Пост медсестры, корпус Б",b:`<div class="doc">Ночь 13/14 марта. Дежурные: ст. м/с Рябова О.К., санитар Тарасов Н.
+
+00:00 — палаты 1–9, все спят — Тарасов
+01:00 — палаты 1–9, все спят — Тарасов
+01:30 — <b>пал. 7: Лапиной нет на месте</b>. Доложено ст. м/с — Тарасов
+02:45 — пал. 7, осмотр — <b>Рябова</b>
+03:30 — доложено главврачу по телефону — Рябова</div>`},
+ valenki:{t:"Валенки на батарее",s:"Пост медсестры",b:`<div class="doc">На батарее под окном поста сушатся серые валенки, мокрые почти до голенища. Внутри химическим карандашом: <b>«Рябова»</b>.
+Размер — 39.
+К подошве прилип клочок <b>серого пуха</b>.</div>`},
+ apteka:{t:"Журнал выдачи препаратов",s:"Шкаф поста медсестры. Залит чаем",b:null},
+ plaque:{t:"Табличка у входа",s:"Корпус А",b:`<div class="doc" style="text-align:center">ПСИХОНЕВРОЛОГИЧЕСКИЙ ДИСПАНСЕР
+«ТИХАЯ ПРИСТАНЬ»
+
+открыт <b>12 мая 1956 года</b>
+решением Заречинского облисполкома</div>`},
+ ordnote:{t:"Записка под стеклом",s:"Ординаторская",b:`<div class="doc hand">Г.К.! Замок опять перенастроили. Код, как вы и велели, — день и месяц открытия нашего учреждения. Не забудьте, умоляю.
+— О.К.</div>`},
+ trial:{t:"Журнал испытаний «К-17»",s:"Сейф главного врача",b:`<div class="doc">СЕКРЕТНО. Препарат К-17 (поставка из Москвы, без регистрации).
+Испытание: 9 больных, без их ведома.
+Наблюдаемые действия: провалы памяти на 6–8 часов, <b>повышенная внушаемость</b>, больной «под диктовку» пишет и подписывает что угодно, утром не помнит.
+
+<i>Стр. 14–22 вырваны.</i>
+
+На вклейке рукой главврача:
+«Лапина В.С., бывшая лаборантка, 2.I видела журнал. Госпитализирована 5.I моим распоряжением. В ночь на 14.III унесла страницы. НАЙТИ.
+Следователю — К-17 в вечерний чай, О.К. продиктует нужное. К 16-му — акт о несчастном случае. — Ш.»</div>`},
+ meteo:{t:"Журнал наблюдений маяка",s:"Смотритель Ерёмин",b:`<div class="doc">13.III, 23:00 — ясно, мороз −9°, ветер северный.
+14.III, <b>01:30 — снег</b>, умеренный.
+14.III, <b>02:30 — снег прекратился</b>, выпало 3 см.
+14.III, 03:00 — ясно, луна.
+14.III, 06:00 — у южного мыса тронулся лёд.</div>`},
+ formular:{t:"Читательский формуляр Лапиной",s:"Библиотека",b:`<div class="doc">Лапина В.С., корп. Б, пал. 7
+
+10.III — Жюль Верн, «Таинственный остров» — <b>не возвращена</b>
+11.III — Д. Дефо, «Робинзон Крузо»
+12.III — Р.Л. Стивенсон, «Остров сокровищ»
+
+<i>Библиотекарь: «Вера книги возвращала с пометками карандашом, я ей пеняла».</i></div>`},
+ eremin:{t:"Показания смотрителя",s:"Ерёмин Пётр Ильич",b:`<div class="doc">«Не спал, бессонница. В <b>три часа ночи</b>, при луне, видел: женщина в светлом, в чём-то вроде халата, шла от корпуса Б к полынье. Дошла, нагнулась и пошла назад — медленно, глядя под ноги. Я решил, что почудилось».</div>`},
+ dusya:{t:"Слова поварихи",s:"Тётя Дуся",b:`<div class="doc">«Гостю чай Ольга Карповна наливает сама, из своего чайника, и сама несёт. Мне не доверяет. А всем остальным — компот».</div>`},
+ cipher:{t:"Послание Веры",s:"Расшифровано по пометкам в книгах",b:`<div class="doc hand">Я у Михеича.
+Сестре не верь.
+Дневник пишешь не ты.</div>`},
+ night:{t:"Ночной визит",s:"15 марта, 23:10",b:`<div class="doc">Вы не спите и лежите с закрытыми глазами.
+Дверь тихо открывается. Ольга Карповна садится у кровати, раскрывает ваш дневник и шепчет:
+«Пишите, голубчик… Михеич пьяница, в кочегарку не ходить…»
+
+Не дождавшись ответа, наклоняется, видит открытые глаза — и быстро уходит. Дневник остался на тумбочке.</div>`},
+ vera:{t:"Показания Веры Лапиной",s:"Кочегарка, за котлом",b:`<div class="doc">«В январе я увидела у Германа Карловича журнал с К-17. Через три дня меня "госпитализировали".
+13-го ночью Коля Тарасов тихо открыл палату, в <b>час с четвертью</b>. Я пошла к Михеичу по берегу, в его старых валенках, — до снега.
+Страницы журнала у меня, вот они.
+А платок я оставила на стуле. Его взяла Ольга Карповна, больше некому.
+Вас поят тем же, чем поили нас. Не пейте их чай».</div>`}
+};
+
+/* книги с шифром */
+const BOOKS={
+ verne:{t:"«Таинственный остров»",msg:"ЯУМИХЕИЧА",txt:"Буря стихла только к утру. Путники выбрались из пещеры у самого моря и огляделись. Инженер сказал, что прежде всего надо подняться на вершину и посмотреть, остров это или материк. Моряк хмуро кивнул, а мальчик уже бежал вверх по камням. Вокруг, насколько хватало глаз, тянулась вода, и нигде не было видно ни паруса, ни дыма — только чайки кричали над скалами."},
+ defo:{t:"«Робинзон Крузо»",msg:"СЕСТРЕНЕВЕРЬ",txt:"Несколько лет я жил совсем один, а потом увидел на песке след босой ноги. Сердце моё остановилось. Я долго стоял, всматриваясь в берег, и не верил, что на этом острове есть кто-то, кроме меня."},
+ stev:{t:"«Остров сокровищ»",msg:"ДНЕВНИКПИШЕШЬНЕТЫ",txt:"Однажды вечером в трактир вошёл старый моряк с тяжёлым сундуком. Днём он сидел у окна, а по ночам пел свою песню, и никто не смел ему возразить. Он дал мне монету и велел следить за дорогой: если покажется одноногий, тотчас бежать к нему. Капитан пил всё больше, и каждый шорох пугал его. Под конец он шепнул, что карту ищут, что ему не уйти и что в сундуке лежит то, за чем они вернутся, — а потом затих навсегда. Мы с матерью остались одни в пустом доме, и ветер скрипел ставнями всю ночь. Мы ждали утра."}
+};
+
+/* персонажи */
+const PEOPLE={
+ shtern:{n:"Главврач Штерн",loc:"a",intro:"Высокий, седой, пальцы в чернилах. «Трагедия, товарищ следователь. Больная склонна к побегам. Лёд тонкий… Думаю, вы быстро подпишете акт».",
+  q:[{t:"Чем болела Лапина?",a:"«Бред преследования. Ей казалось, что её здесь травят. Классическая картина»."},
+     {t:"Кто её лечащий врач?",a:"«Я лично. Случай непростой»."},
+     {t:"Могу я осмотреть ваш кабинет?",a:"«Там нечего смотреть. И замок, знаете ли, капризный»."},
+     {t:"Что такое «К-17»?",need:"trial",press:1,a:"Штерн бледнеет. «Это… не ваша компетенция. Это санкционировано… Кем надо». Он отворачивается к окну и больше не говорит ни слова.",flag:"shternBroke"}]},
+ karp:{n:"Ольга Карповна",loc:"b",intro:"Старшая медсестра, полная, ласковая, глаза холодные. «Я всю ночь на посту сидела, никуда не выходила. В час видела Верочку у окна — на маяк глядела, бедная».",
+  q:[{t:"Кто готовит мне чай за ужином?",a:"«Я сама, голубчик. Вы гость, вам особенный, с травками»."},
+     {t:"Зачем вы заходили в палату в 2:45?",need:"obhod",press:1,a:"«Проверить… Порядок такой. Ничего я там не трогала!»"},
+     {t:"Почему ваши валенки мокрые до голенища?",need:"valenki",press:1,a:"Пауза. «Снег… с крыльца сметала». Хотя только что сказала, что с поста не выходила."},
+     {t:"Откуда на подошве пух от платка?",need:"valenki",need2:"ice",press:1,a:"Карповна встаёт. «Я на такие вопросы без Германа Карловича не отвечаю»."}]},
+ klava:{n:"Клава, соседка Веры",loc:"b",intro:"Маленькая старушка в одеяле, улыбается. «Верочка улетела, как птичка. Тихо-тихо».",
+  q:[{t:"Как Вера вышла из запертой палаты?",a:"«Коленька дверь открыл. Ключиком. А она мне пальчик к губам»."},
+     {t:"Во что Вера была обута?",a:"«В больших валенках, не в своих. Свои тапочки под кроватью оставила, там и стоят»."},
+     {t:"Где был Верин платок?",a:"«На стуле, она его не взяла. А потом пришла сестра, ночью, платочек унесла. А тапочки не тронула»."},
+     {t:"Что Вера читала?",a:"«Про острова всё. Карандашиком в книжках подчёркивала, по одной буковке. Ругалась, что я мешаю»."}]},
+ tar:{n:"Санитар Тарасов",loc:"b",intro:"Молодой, большой, глаза в пол. «В час она спала, в полвторого — нету. Я сразу доложил Ольге Карповне».",
+  q:[{t:"Кто открыл палату?",a:"«Не знаю я ничего»."},
+     {t:"Клава говорит, это были вы.",need:"klava_q0",press:1,a:"Долгое молчание. «…Она не сумасшедшая. Её сюда упекли. Я открыл, да. Больше ничего не скажу, пока не узнаю, на чьей вы стороне»."},
+     {t:"Чьи это следы на льду?",need:"ice",a:"«Не Верины. У неё нога маленькая, тридцать шестой. А там лапища»."}]},
+ zai:{n:"Доктор Зайцева",loc:"a",intro:"Молодой врач-ординатор, нервно курит у форточки. «Здесь творится что-то нехорошее. Мне даже историю болезни Лапиной не показывают».",
+  q:[{t:"Что дают больным?",a:"«Какие-то ампулы К-17, без названия, из Москвы. После них человек не помнит вечер, зато послушно пишет, что ему скажут. Я сама видела»."},
+     {t:"Как попасть в кабинет главврача?",a:"«Код я не знаю. Но Ольга Карповна вечно оставляет ему напоминания у нас, под стеклом на столе»."},
+     {t:"Я не помню, как писал в дневнике.",need:"drug1",press:1,a:"Она смотрит долго. «Вы вечером пили чай? …Сегодня не пейте. Вылейте в фикус»."}]},
+ dusya:{n:"Тётя Дуся, повариха",loc:"st",intro:"«Ужин в семь, товарищ следователь. Не опаздывайте, Ольга Карповна для вас чай заваривает».",
+  q:[{t:"Кто наливает мне чай?",a:"«Ольга Карповна сама, из своего чайника. Мне не доверяет. А всем остальным — компот».",doc:"dusya"},
+     {t:"Михеич ходит в столовую?",a:"«Третий день не ходит. Я ему к кочегарке судок ношу — на двоих просит, ест за двоих, говорит, мёрзнет»."}]},
+ eremin:{n:"Смотритель Ерёмин",loc:"mayak",intro:"Бывший пограничник, борода в инее. «Двадцать лет на границе следы читал. Спрашивай».",
+  q:[{t:"Что вы видели той ночью?",a:"«Видел. Записал»",doc:"eremin"},
+     {t:"Когда шёл снег?",a:"«У меня всё в журнале. Гляди сам»",doc:"meteo"},
+     {t:"Почему следы глубокие и смазанные?",need:"ice",a:"«Так ходят шаг в шаг, когда возвращаются по своим же следам. Чтобы вышла одна цепочка — туда. Старый приём»."}]},
+ mih:{n:"Кочегар Михеич",loc:"boil",intro:"Чёрный от угля старик. «Чего надо, начальник? Тут пыль да жар. Иди отсюда»."
+  ,q:[{t:"Вы видели Веру Лапину?",a:"«Не видел. Работаю я»."},
+      {t:"Ест за двоих, значит?",need:"dusya_q1",press:1,a:"«Мёрзну я. Чего пристал»."},
+      {t:"«Я у Михеича». Вера сама написала. Я на её стороне.",need:"cipher",press:1,a:"Михеич долго смотрит, потом откладывает лопату. «…Ну, коли так. Иди за мной. За котёл»."
+       ,flag:"veraFound",doc:"vera"}]}
+};
+
+/* действия локаций */
+const ACTS={
+ pier:[{id:"ice",t:"Осмотреть лёд у южного мыса",c:60,doc:"ice"}],
+ b:[{id:"palata",t:"Осмотреть палату №7",c:60,doc:"palata",then:()=>{give("book_verne");}},
+    {id:"obhod",t:"Посмотреть журнал обходов на посту",c:30,doc:"obhod"},
+    {id:"valenki",t:"Оглядеть пост медсестры",c:30,doc:"valenki"},
+    {id:"apteka",t:"Открыть шкаф с журналом препаратов",c:30,fn:()=>apteka()}],
+ a:[{id:"plaque",t:"Прочитать табличку у входа",c:15,doc:"plaque"},
+    {id:"ordnote",t:"Осмотреть стол в ординаторской",c:30,doc:"ordnote"},
+    {id:"safe",t:"Подняться к кабинету главврача",c:30,fn:()=>lock()}],
+ st:[],
+ lib:[{id:"formular",t:"Найти формуляр Лапиной",c:30,doc:"formular"},
+      {id:"defo",t:"Взять с полки «Робинзона Крузо»",c:30,need:"formular",then:()=>give("book_defo")},
+      {id:"stev",t:"Взять с полки «Остров сокровищ»",c:30,need:"formular",then:()=>give("book_stev")},
+      {id:"decode",t:"Сесть за стол и разобрать пометки",c:0,fn:()=>decode()}],
+ boil:[],
+ mayak:[]
+};
+
+/* ===================== СОСТОЯНИЕ ===================== */
+const KEY="td_ostrov";
+const fresh=()=>({day:1,min:8*60,loc:"pier",docs:["order"],items:[],done:[],asked:{},flags:{},diary:[{d:1,txt:"Прибыл последним катером. Лёд уже трещит. Главврач встретил на причале, торопит: «Подпишите акт и уезжайте». Не нравится мне это.",own:1}],newD:0,newF:0,started:0,ended:0});
+let S=fresh();
+try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&v.day)S=v}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const has=k=>S.docs.includes(k)||S.items.includes(k)||S.flags[k];
+
+/* ===================== КАРТА ===================== */
+function drawMap(){
+ const svg=$("map");let h=`<defs><filter id="rough"><feTurbulence baseFrequency=".02" numOctaves="3" seed="3"/><feDisplacementMap in="SourceGraphic" scale="18"/></filter>
+ <radialGradient id="isl" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#3b4438"/><stop offset="1" stop-color="#262e27"/></radialGradient></defs>
+ <rect width="800" height="600" fill="#24343d" opacity=".55"/>
+ <g opacity=".22" stroke="#cfe3ee" stroke-width="1">${Array.from({length:14},(_,i)=>`<path d="M0 ${40+i*42} Q200 ${30+i*42} 400 ${44+i*42} T800 ${38+i*42}" fill="none"/>`).join("")}</g>
+ <path filter="url(#rough)" d="M150 300 Q140 160 300 110 Q470 60 640 90 Q740 120 720 260 Q740 420 640 520 Q520 580 380 560 Q220 560 170 450 Q120 380 150 300Z" fill="url(#isl)" stroke="#8fa0a0" stroke-width="2"/>
+ <ellipse cx="470" cy="585" rx="70" ry="12" fill="#0b1014" stroke="#5b7380" stroke-dasharray="4 4"/><text x="470" y="575" fill="#9fb7c4" font-size="12" text-anchor="middle" font-family="IBM Plex Mono">полынья</text>`;
+ ROADS.forEach(([a,b])=>{const A=LOCS[a],B=LOCS[b];h+=`<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#8a8f80" stroke-width="2" stroke-dasharray="6 6" opacity=".55"/>`});
+ if(has("ice"))h+=`<path d="M250 330 Q330 450 450 575" stroke="#dfe9ee" stroke-width="2" stroke-dasharray="2 7" fill="none"/>`;
+ for(const k in LOCS){const L=LOCS[k];h+=`<g class="loc ${S.loc===k?'here':''}" onclick="move('${k}')"><circle cx="${L.x}" cy="${L.y}" r="16"/><text x="${L.x}" y="${L.y-26}" text-anchor="middle">${L.n}</text></g>`}
+ svg.innerHTML=h;
+}
+
+/* ===================== ВРЕМЯ ===================== */
+function fmt(m){return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")}
+function drawClock(){$("clock").innerHTML=`День <b>${S.day}</b> из 3 · ${DAYS[S.day]} · <b>${fmt(S.min)}</b>`;
+ $("bDiary").classList.toggle("new",!!S.newD);$("bFolder").classList.toggle("new",!!S.newF)}
+function spend(c){if(S.ended)return;S.min+=c;if(S.min>=19*60){S.min=19*60;save();render();setTimeout(evening,250);return true}save();return false}
+
+function evening(){
+ if(S.day===3){boat();return}
+ if(S.flags['eve'+S.day]){if(S.day===2&&!S.flags.tea2)evening2();else nextDayPrompt();return}
+ S.flags['eve'+S.day]=1;
+ if(S.day===1){
+  S.flags.drug1=1;S.diary.push({d:1,txt:"Видел с маяка женщину на льду. Она помахала мне и ушла под лёд. Всё ясно. Завтра — подписать акт о несчастном случае.",drug:1});S.newD=1;
+  full(`<div class="tag">ВЕЧЕР · 14 МАРТА</div><h1>Ужин</h1><p>Ольга Карповна ставит перед вами стакан чая с «травками» и ласково смотрит, как вы пьёте. Тепло, сонно… Дальше вы ничего не помните.</p><button class="btn" onclick="nextDay()">Утро →</button>`);
+ }else evening2();
+ save();
+}
+function nextDayPrompt(){full(`<div class="tag">НОЧЬ</div><h1>Остров спит</h1><button class="btn" onclick="nextDay()">Утро →</button>`)}
+function evening2(){{
+  full(`<div class="tag">ВЕЧЕР · 15 МАРТА</div><h1>Ужин</h1><p>Ольга Карповна снова несёт вам свой чай. «С травками, голубчик».</p><button class="btn" onclick="tea(1)">Выпить</button><button class="btn ghost" onclick="tea(0)">Незаметно вылить в фикус</button>`);
+ }
+ save();
+}
+function tea(drink){S.flags.tea2=1;
+ if(drink){S.diary.push({d:2,txt:"Михеич — пьяница, в кочегарку не ходить. Ольга Карповна — надёжный человек. Акт подписать.",drug:1});S.newD=1;
+  full(`<div class="tag">НОЧЬ</div><h1>Провал</h1><p>Стакан пустеет. Комната плывёт, кто-то говорит с вами тихим голосом… Утром вы ничего не помните.</p><button class="btn" onclick="nextDay()">Утро →</button>`)}
+ else{give("night");S.flags.refused=1;
+  full(`<div class="tag">НОЧЬ · 23:10</div><h1>Вы не спите</h1><p>Дверь тихо открывается. Ольга Карповна садится у вашей кровати с вашим же дневником и шепчет, что вам писать… Увидев открытые глаза, она поспешно уходит.</p><p class="paperhint">Запишите: что она пыталась вам продиктовать?</p><br><button class="btn" onclick="nextDay()">Утро →</button>`)}
+ save();
+}
+function nextDay(){S.day++;S.min=8*60;S.loc="b";S.diary.push({d:S.day,txt:S.day===2?"Утро. В дневнике запись моим почерком, но я её не помню. Буквы плывут. Что со мной было вечером?":"Последний день. В 19:00 катер. Надо успеть.",own:1});
+ S.newD=1;save();hideFull();render();toast(S.day===2?"В дневнике новая запись. Вы её не помните.":"День третий. Катер в 19:00.")}
+function boat(){full(`<div class="tag">16 МАРТА · 19:00</div><h1>Катер у причала</h1><p>Лёд прошёл. Капитан машет с палубы: пора. Отчёт — сейчас.</p><button class="btn" onclick="hideFull();openReport(1)">Написать отчёт</button>`)}
+
+/* ===================== ДЕЙСТВИЯ ===================== */
+function move(k){if(S.ended)return;if(k===S.loc){return}S.loc=k;if(!spend(30))render()}
+function give(k){if(!S.docs.includes(k)&&!S.items.includes(k)){if(k.startsWith("book_"))S.items.push(k);else S.docs.push(k);S.newF=1;save();drawClock()}}
+function doAct(a){
+ if(a.need&&!has(a.need)){toast("Сначала нужно понять, что искать.");return}
+ if(a.fn){if(a.c&&!S.done.includes(a.id)){if(spend(a.c))return}a.fn();render();return}
+ const first=!S.done.includes(a.id);
+ if(first){S.done.push(a.id);if(a.doc)give(a.doc);if(a.then)a.then();if(a.c&&spend(a.c))return}
+ if(a.doc)showDoc(a.doc);else if(a.then&&a.id.length<6)toast("Книга у вас в папке.");
+ render();
+}
+function talk(pk){
+ const p=PEOPLE[pk];const box=()=>{const qs=p.q.map((q,i)=>{const key=pk+"_q"+i;const ok=(!q.need||has(q.need))&&(!q.need2||has(q.need2));
+   if(!ok)return"";return `<button class="${S.asked[key]?'used':''} ${q.press?'press':''}" onclick="ask('${pk}',${i})">${q.press?'⚑ ':''}${q.t}</button>`}).join("");
+  return `<h3>${p.n}</h3><div class="sub">${LOCS[p.loc].n}</div><div class="chat" id="chat"><div class="say">${p.intro}</div></div><div class="qs">${qs}</div><p class="sub" style="margin-top:12px">⚑ — вопрос, который появился благодаря найденной улике. Каждый вопрос — 15 минут.</p>`};
+ openM(box());
+}
+function ask(pk,i){
+ const p=PEOPLE[pk],q=p.q[i],key=pk+"_q"+i;
+ const firstTime=!S.asked[key];S.asked[key]=1;S.flags[key]=1;
+ if(q.flag)S.flags[q.flag]=1;if(q.doc)give(q.doc);
+ const ch=$("chat");ch.insertAdjacentHTML("beforeend",`<div class="me">${q.t}</div><div class="say">${q.a}${q.doc?` <i>(в папке: «${DOCS[q.doc].t}»)</i>`:""}</div>`);
+ ch.lastElementChild.scrollIntoView({behavior:"smooth",block:"nearest"});
+ save();
+ if(firstTime&&spend(15)){closeM();return}
+ render();
+ if(q.flag==="veraFound"){setTimeout(()=>{closeM();full(`<div class="tag">КОЧЕГАРКА</div><h1>Она жива</h1><p>За котлом, на старом тюфяке, сидит худая девушка в огромных валенках. В руках — свёрток с вырванными страницами. «Вы ведь не их?» — спрашивает Вера.</p><button class="btn" onclick="hideFull();showDoc('vera')">Выслушать</button>`)},900)}
+}
+
+/* головоломки */
+function apteka(){
+ openM(`<h3>Журнал выдачи препаратов</h3><div class="sub">Залит сладким чаем. Нажмите на пятна, чтобы оттереть.</div>
+ <div class="doc">12.III — анальгин, 10 т. — пал. 3 — Рябова
+13.III — К-17, 1 амп. — пал. 7 (<span class="stain" onclick="this.classList.add('clean');chkA()"><b>Лапина</b><i></i></span>) — по указ. гл. врача
+14.III, 18:40 — К-17, 1 амп. — получ. <span class="stain" onclick="this.classList.add('clean');chkA()"><b>Рябова О.К.</b><i></i></span>
+   назначение: <span class="stain" onclick="this.classList.add('clean');chkA()"><b>«гость, в чай»</b><i></i></span>
+15.III, 18:40 — К-17, 1 амп. — получ. Рябова О.К. — то же</div><div class="err" id="aerr"></div>`);
+}
+function chkA(){if(document.querySelectorAll(".stain:not(.clean)").length===0){if(!S.docs.includes("apteka")){DOCS.apteka.b=`<div class="doc">13.III — К-17, 1 амп. — пал. 7 (Лапина) — по указ. гл. врача
+14.III, 18:40 — К-17, 1 амп. — получ. <b>Рябова О.К.</b> — назначение: <b>«гость, в чай»</b>
+15.III, 18:40 — К-17, 1 амп. — получ. Рябова О.К. — то же</div>`;give("apteka");S.done.push("apteka");save()}$("aerr").textContent="Всё прочитано. Запись в папке.";render()}}
+DOCS.apteka.b=`<div class="doc">13.III — К-17, 1 амп. — пал. 7 (Лапина) — по указ. гл. врача
+14.III, 18:40 — К-17, 1 амп. — получ. <b>Рябова О.К.</b> — назначение: <b>«гость, в чай»</b>
+15.III, 18:40 — К-17, 1 амп. — получ. Рябова О.К. — то же</div>`;
+
+function lock(){
+ if(has("trial")){showDoc("trial");return}
+ openM(`<h3>Кабинет главврача</h3><div class="sub">Кодовый замок на четыре цифры.</div><div class="dials">${[0,1,2,3].map(i=>`<div class="dial"><button onclick="dial(${i},1)">▲</button><span id="dl${i}">0</span><button onclick="dial(${i},-1)">▼</button></div>`).join("")}</div><button class="btn" onclick="tryLock()">Повернуть ручку</button><div class="err" id="lerr"></div>`);
+ window._dl=[0,0,0,0];
+}
+function dial(i,d){_dl[i]=(_dl[i]+d+10)%10;$("dl"+i).textContent=_dl[i]}
+function tryLock(){if(_dl.join("")==="1205"){give("trial");S.done.push("safe");save();closeM();render();
+  full(`<div class="tag">КАБИНЕТ ГЛАВВРАЧА</div><h1>Щелчок</h1><p>Дверь открывается. Сейф в кабинете не заперт — Штерн уверен, что сюда никто не войдёт. Внутри толстый журнал.</p><button class="btn" onclick="hideFull();showDoc('trial')">Читать</button>`)}
+ else $("lerr").textContent="Не поддаётся. Где-то должна быть подсказка."}
+
+function bookView(k){const B=BOOKS[k];let mi=0;const T=B.msg;
+ const out=[...B.txt].map(ch=>{if(mi<T.length&&ch.toUpperCase()===T[mi]){mi++;return `<u>${ch}</u>`}return ch}).join("");
+ return `<div class="doc">${out}</div>`}
+function decode(){
+ const got=["verne","defo","stev"].filter(k=>S.items.includes("book_"+k));
+ if(!got.length){openM(`<h3>Стол библиотеки</h3><p>Разбирать пока нечего. У вас нет ни одной книги, которую читала Вера.</p>`);return}
+ openM(`<h3>Пометки Веры</h3><div class="sub">В каждой книге карандашом подчёркнуты отдельные буквы. Порядок книг — по датам в формуляре.</div>
+ ${got.map(k=>`<p style="margin:12px 0 4px"><b>${BOOKS[k].t}</b></p>${bookView(k)}`).join("")}
+ ${got.length<3?`<p class="sub">Книг у вас ${got.length} из 3. Остальные надо найти.</p>`:""}
+ <p style="margin-top:14px"><b>Что написала Вера?</b> Наберите всё послание без пробелов или с пробелами.</p>
+ <input class="inp" id="cin" placeholder="…"><button class="btn" onclick="tryCipher()">Проверить</button><div class="err" id="cerr"></div>`);
+}
+function tryCipher(){const v=$("cin").value.toUpperCase().replace(/Ё/g,"Е").replace(/[^А-Я]/g,"");
+ const full_="ЯУМИХЕИЧАСЕСТРЕНЕВЕРЬДНЕВНИКПИШЕШЬНЕТЫ";
+ if(v===full_){give("cipher");save();closeM();render();showDoc("cipher")}
+ else if(full_.startsWith(v)&&v.length>=9)$("cerr").textContent="Верно, но это не всё. Нужны все три книги.";
+ else $("cerr").textContent="Не сходится. Выпишите подчёркнутые буквы на листок по порядку."}
+
+/* ===================== ОКНА ===================== */
+function openM(h){$("mbody").innerHTML=h;$("modal").classList.add("on")}
+function closeM(){$("modal").classList.remove("on")}
+$("modal").onclick=e=>{if(e.target.id==="modal")closeM()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+function showDoc(k){const d=DOCS[k];openM(`<h3>${d.t}</h3><div class="sub">${d.s}</div>${d.b}`)}
+function full(h){$("fullin").innerHTML=h;$("full").classList.add("on")}
+function hideFull(){$("full").classList.remove("on")}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),3200)}
+
+function openFolder(){S.newF=0;save();drawClock();
+ const docs=S.docs.map(k=>`<button onclick="showDoc('${k}')">📄 ${DOCS[k].t} <span style="color:#7a7264;font-size:13px">— ${DOCS[k].s}</span></button>`).join("");
+ const books=S.items.filter(i=>i.startsWith("book_")).map(i=>`<button onclick="openM('<h3>${BOOKS[i.slice(5)].t}</h3>'+bookView('${i.slice(5)}'))">📕 Книга ${BOOKS[i.slice(5)].t}</button>`).join("");
+ openM(`<h3>Папка</h3><div class="sub">Только документы и вещи. Выводы — на вашем листке.</div><div class="list">${docs}${books}</div>`)}
+function openDiary(){S.newD=0;save();drawClock();
+ openM(`<h3>Дневник следователя</h3><div class="sub">Сомов А.П.</div><div class="diary">${S.diary.map(e=>`<div class="ent ${e.drug?'drug':''}"><div class="date">${DAYS[e.d]}${e.drug?' · поздно вечером':''}</div>${e.txt}</div>`).join("")}</div>`)}
+
+const FORM=[
+ {l:"1. Что случилось с Верой Лапиной?",o:["Утонула в полынье","Ушла по льду на берег","Прячется в кочегарке у Михеича","Заперта в кабинете главврача"],a:2},
+ {l:"2. Кто оставил следы и платок у полыньи?",o:["Сама Вера","Смотритель Ерёмин","Старшая медсестра Рябова","Санитар Тарасов"],a:2},
+ {l:"3. Что происходило со следователем по вечерам?",o:["Обычная усталость","Ему подливали К-17 в чай и диктовали записи","Кто-то подделывал его почерк","Ему снились кошмары"],a:1},
+ {l:"4. Ради чего всё это?",o:["Скрыть незаконные испытания К-17, о которых узнала Вера","Скрыть побег от начальства","Свалить вину на Михеича","Получить премию за план"],a:0},
+ {l:"5. Кто за этим стоит?",o:["Рябова","Главврач Штерн","Доктор Зайцева","Тарасов"],a:1}
+];
+function openReport(forced){
+ openM(`<h3>Отчёт следователя</h3><div class="sub">${forced?"Катер ждёт. Отчёт надо сдать сейчас.":"Можно сдать в любой момент. Дело закроется."}</div><div class="form">${FORM.map((q,i)=>`<label>${q.l}</label><select id="f${i}"><option value="">— выберите —</option>${q.o.map((t,j)=>`<option value="${j}">${t}</option>`).join("")}</select>`).join("")}</div>
+ <button class="btn red" onclick="submit()">Подписать отчёт</button><div class="err" id="ferr"></div>`)}
+function submit(){const v=FORM.map((q,i)=>$("f"+i).value);if(v.some(x=>x==="")){$("ferr").textContent="Заполните все пункты.";return}
+ const r=FORM.filter((q,i)=>+v[i]===q.a).length;closeM();S.ended=1;save();
+ const time=`Дней: ${S.day} · Документов найдено: ${S.docs.length} · Чай на второй вечер: ${S.flags.refused?"вылит":S.day>=3?"выпит":"—"}`;
+ if(r===5){full(`<div class="tag">ДЕЛО ЗАКРЫТО · 5 ИЗ 5</div><h1>Вера уезжает с вами</h1>
+ <p>Вы поднимаетесь на катер не один. Вера Лапина крепко держит свёрток со страницами журнала. Михеич машет с берега. Ольга Карповна смотрит из окна корпуса Б.</p>
+ <p>Рябова сама вынесла платок к полынье в три часа ночи — в своих валенках, в белом халате, — и вернулась шаг в шаг. Она же подливала вам К-17 и диктовала записи. За всем стоял главврач Штерн: испытания без регистрации, на больных, без их ведома. Вера увидела журнал — и оказалась в палате №7.</p>
+ <p style="font-family:IBM Plex Mono;font-size:14px">Через неделю диспансер закрыт. Штерн и Рябова арестованы. Тарасов и Михеич — свидетели.</p>
+ <p style="font-size:14px">${time}</p>${S.flags.veraFound?"":"<p>Вы назвали всё верно, хотя саму Веру так и не нашли. Её привёл на причал Михеич.</p>"}
+ <a class="btn" href="index.html#cases">К делам</a><button class="btn ghost" onclick="reset()">Сыграть заново</button>`)}
+ else if(+v[0]===0){full(`<div class="tag">ВЕРНО ${r} ИЗ 5</div><h1>Акт о несчастном случае</h1>
+ <p>Вы пишете: «Больная Лапина ушла по льду и утонула». Штерн благодарит вас, крепко жмёт руку. Катер отходит.</p>
+ <p>Вы так и не узнаете, что в двухстах метрах, за котлом кочегарки, человек слышал гудок вашего катера — и понял, что за ней никто не придёт.</p>
+ <p style="font-size:14px">${time}</p><button class="btn" onclick="reset()">Начать заново</button>`)}
+ else{full(`<div class="tag">ВЕРНО ${r} ИЗ 5</div><h1>Прокурор возвращает отчёт</h1>
+ <p>Часть выводов не подтверждается материалами. Штерн пишет жалобу на «некомпетентного следователя». Дело передают другому. Что станет с Верой — неизвестно.</p>
+ <p style="font-size:14px">${time}</p><button class="btn" onclick="reset()">Начать заново</button>`)}
+}
+
+/* ===================== ПАНЕЛЬ ===================== */
+function render(){drawMap();drawClock();
+ const L=LOCS[S.loc];let h=`<h2>${L.n}</h2><div class="desc">${L.d}</div><div class="acts">`;
+ (ACTS[S.loc]||[]).forEach((a,i)=>{const done=S.done.includes(a.id),lk=a.need&&!has(a.need);
+  h+=`<button class="act ${done?'done':''} ${lk?'lock':''}" onclick="doAct(ACTS['${S.loc}'][${i}])"><span>${done&&a.doc?'↺ ':''}${a.t}</span><small>${done||!a.c?'':'+'+a.c+' мин'}</small></button>`});
+ h+=`</div>`;
+ const ppl=Object.keys(PEOPLE).filter(k=>PEOPLE[k].loc===S.loc&&!(k==="mih"&&S.flags.veraFound&&false));
+ if(ppl.length){h+=`<div class="who">Здесь</div><div class="acts">`+ppl.map(k=>`<button class="act" onclick="talk('${k}')"><span>💬 ${PEOPLE[k].n}</span><small>15 мин / вопрос</small></button>`).join("")+`</div>`}
+ h+=`<p class="sub" style="color:#7d8388;margin-top:22px;font-size:13px">Переход между зданиями — 30 минут. В 19:00 ужин. Катер — 16 марта в 19:00.</p>`;
+ $("panel").innerHTML=h;
+}
+
+/* ===================== ЗВУК ===================== */
+let AC=null,gain=null;
+function toggleSound(){try{
+ if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();const len=AC.sampleRate*4,buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0);let last=0;
+  for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.5}
+  const src=AC.createBufferSource();src.buffer=buf;src.loop=true;const f=AC.createBiquadFilter();f.type="lowpass";f.frequency.value=500;
+  const lfo=AC.createOscillator(),lg=AC.createGain();lfo.frequency.value=.08;lg.gain.value=250;lfo.connect(lg);lg.connect(f.frequency);lfo.start();
+  gain=AC.createGain();gain.gain.value=.5;src.connect(f);f.connect(gain);gain.connect(AC.destination);src.start();$("bSnd").textContent="🔊";return}
+ if(AC.state==="running"){AC.suspend();$("bSnd").textContent="🔇"}else{AC.resume();$("bSnd").textContent="🔊"}}catch(e){toast("Звук недоступен в этом браузере.")}}
+
+/* ===================== СТАРТ ===================== */
+function snow(){const s=$("snow");for(let i=0;i<40;i++){const e=document.createElement("i");e.style.left=Math.random()*100+"%";e.style.animationDuration=(6+Math.random()*8)+"s";e.style.animationDelay=(-Math.random()*10)+"s";s.appendChild(e)}}
+function askReset(){openM(`<h3>Начать заново?</h3><p>Весь прогресс будет потерян.</p><button class="btn red" onclick="reset()">Да, заново</button><button class="btn ghost" onclick="closeM()">Отмена</button>`)}
+function reset(){S=fresh();save();closeM();hideFull();intro()}
+function intro(){
+ full(`<div class="tag">ТИХОЕ ДЕЛО · ДЕЛО № 4</div><h1>Остров на водохранилище</h1>
+ <p>Март 1979 года. Ночью из запертой палаты закрытого диспансера на острове исчезла больная. Главврач говорит: ушла по льду и утонула. Начинается ледоход — остров отрезан на три дня.</p>
+ <p>Вы — следователь Сомов. Последний катер только что ушёл.</p>
+ <div class="paperhint">✎ Возьмите листок и ручку. Игра не записывает выводы за вас.</div><br><br>
+ <button class="btn" onclick="S.started=1;save();hideFull();render();showDoc('order')">Сойти на причал</button>`);
+}
+snow();render();
+if(!S.started)intro();else if(S.ended)openReport();else if(S.min>=19*60)evening();
+</script>
+</body>
+</html>
