@@ -10,26 +10,24 @@
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050403;color:#ddd6c8;font-family:'IBM Plex Sans',sans-serif}
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px 20px;position:relative;overflow:hidden;
 background:radial-gradient(ellipse at 50% 35%,rgba(120,90,40,.25),transparent 60%),#050403}
-.door{position:absolute;left:50%;top:50%;width:260px;height:420px;transform:translate(-50%,-50%);border:2px solid rgba(217,178,90,.12);border-radius:4px;
-background:linear-gradient(90deg,rgba(255,220,150,.05),transparent 30%,transparent 70%,rgba(255,220,150,.05));animation:breath 6s ease-in-out infinite}
-.door:after{content:"13";position:absolute;top:40px;left:50%;transform:translateX(-50%);font-family:'Playfair Display';font-size:30px;color:rgba(217,178,90,.25)}
-@keyframes breath{50%{box-shadow:0 0 120px rgba(255,200,120,.08)}}
-.in{position:relative;max-width:640px}
+.in{position:relative;max-width:760px}
+.light{position:absolute;left:50%;bottom:0;width:min(520px,80vw);height:6px;transform:translateX(-50%);background:#ffcf8a;filter:blur(3px);opacity:.55;box-shadow:0 0 60px 30px rgba(255,190,110,.18);animation:lamp 5s ease-in-out infinite}
+@keyframes lamp{50%{opacity:.25}53%{opacity:.6}55%{opacity:.2}}
 .tag{font-family:'IBM Plex Mono';letter-spacing:.3em;font-size:12px;color:#d9b25a}
-h1{font-family:'Playfair Display';font-size:clamp(40px,8vw,72px);margin:10px 0 14px;line-height:1.05}h1 span{color:#a8221a}
+h1{font-family:'Playfair Display';font-size:clamp(36px,6.5vw,68px);margin:10px 0 18px;line-height:1.1;text-wrap:balance}h1 span{white-space:nowrap}h1 span{color:#a8221a}
 p{color:#b8af9f;font-size:18px;line-height:1.6}
 .btn{display:inline-block;margin-top:22px;padding:15px 30px;background:#a8221a;color:#fff;text-decoration:none;border-radius:10px;font-size:18px;transition:.2s}
 .btn:hover{background:#c22a20;transform:translateY(-2px)}
-.meta{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-top:26px;font-family:'IBM Plex Mono';font-size:13px;color:#8a8072}
+.meta{display:flex;gap:10px 22px;justify-content:center;flex-wrap:wrap;margin-top:26px;font-family:'IBM Plex Mono';font-size:13px;color:#8a8072}
 .warn{margin-top:22px;font-size:14px;color:#a8877f}
 .flick{animation:fl 7s infinite}@keyframes fl{0%,96%,100%{opacity:1}97%{opacity:.2}98%{opacity:.9}99%{opacity:.3}}
 footer{text-align:center;color:#5f574b;font-size:13px;padding:20px}
 </style>
 </head>
 <body>
-<section class="hero"><div class="door"></div><div class="in">
+<section class="hero"><div class="light"></div><div class="in">
  <div class="tag">ТИХОЕ ДЕЛО · ХОРРОР-ДЕТЕКТИВ</div>
- <h1 class="flick">Тихий переулок, <span>13</span></h1>
+ <h1 class="flick">Тихий&nbsp;переулок,&nbsp;<span>13</span></h1>
  <p>Заречинск, ноябрь 1979 года. За год из коммунальной квартиры бесследно исчезли трое жильцов. Следователь, который вёл дело, пропал неделю назад.<br>Теперь в его комнате живёте вы. А по ночам в стене стучат.</p>
  <a class="btn" href="kvartira.html">Войти в квартиру</a>
  <div class="meta"><span>⏱ 1,5–2 часа</span><span>✎ нужен листок и ручка</span><span>🎧 лучше в наушниках</span><span>💾 прогресс сохраняется</span></div>
