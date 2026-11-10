@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тихое дело — Дело №2. Последний автобус</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110f;--paper:#efe6d2;--ink:#2a241e;--red:#b3261e;--muted:#8a7f70;--card:#1e1a17;--line:#3a332c;--gold:#e9c46a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e9e1d1;font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55}
+a{color:inherit}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(20,17,15,.95);z-index:5}
+.top .logo{font-family:'Playfair Display';font-size:20px;text-decoration:none}.top .logo span{color:var(--red)}
+.top nav{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--line);color:#cfc6b6;border-radius:20px;padding:7px 14px;cursor:pointer;font:inherit;font-size:14px}
+.tab.on{background:var(--red);border-color:var(--red);color:#fff}
+.tab .b{background:var(--gold);color:#000;border-radius:9px;padding:0 6px;font-size:11px;margin-left:4px}
+main{max-width:1000px;margin:0 auto;padding:24px 18px 80px}
+h1{font-family:'Playfair Display';font-size:38px;margin:4px 0 8px}
+h2{font-family:'Playfair Display';font-size:26px;margin:30px 0 12px}
+.tag{font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.2em;color:var(--gold)}
+.lead{font-size:17px;max-width:760px;color:#d9d0bf}
+.paperbox{background:var(--paper);color:var(--ink);border-radius:6px;padding:22px 24px;margin:18px 0;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.paperbox h3{font-family:'Playfair Display';margin:0 0 8px;font-size:22px}
+.mono{font-family:'IBM Plex Mono';font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:.15s;position:relative}
+.item:hover{border-color:#6b5f52;transform:translateY(-2px)}
+.item .ic{font-size:30px}.item b{display:block;font-family:'Playfair Display';font-size:17px;margin:6px 0 2px}.item small{color:var(--muted);font-size:13px}
+.item.seen:after{content:"✓ изучено";position:absolute;top:10px;right:12px;font-size:11px;color:#7fb77e}
+.sec{display:none}.sec.on{display:block}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;z-index:20;overflow:auto;padding:30px 12px}
+.modal.on{display:flex}
+.mbox{background:var(--paper);color:var(--ink);border-radius:8px;max-width:640px;width:100%;padding:24px 26px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.mbox h3{font-family:'Playfair Display';font-size:24px;margin:0 0 4px}
+.mbox .sub{color:#6a5f50;font-size:13px;margin-bottom:14px}
+.doc{background:#fbf6ea;border:1px solid #d6c9aa;border-radius:4px;padding:14px 16px;font-family:'IBM Plex Mono';font-size:14px;line-height:1.65;white-space:pre-wrap}
+.doc.hand{font-family:'Playfair Display';font-style:italic;font-size:17px}
+.x{position:absolute;top:10px;right:12px;background:none;border:0;font-size:24px;cursor:pointer;color:#6a5f50}
+.btn{display:inline-block;font:inherit;font-size:14px;padding:10px 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;margin:6px 6px 0 0}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.mark{margin-top:14px;font-size:13px}
+table.tt{border-collapse:collapse;width:100%;font-family:'IBM Plex Mono';font-size:13.5px}
+table.tt td,table.tt th{border-bottom:1px solid #d6c9aa;padding:5px 6px;text-align:left}
+.ded{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.ded h4{margin:0 0 6px;font-family:'Playfair Display';font-size:18px}
+.ded .q{margin:6px 0 10px;color:#d9d0bf}
+.ded .opts button{font:inherit;font-size:14px;background:#2a241f;color:#e9e1d1;border:1px solid #5a4f44;border-radius:8px;padding:8px 12px;margin:4px 6px 0 0;cursor:pointer}
+.ded .opts button:hover{border-color:var(--gold)}
+.ded.ok{border-color:#5a8a58}.ded.ok h4:after{content:" ✓";color:#7fb77e}
+.ded .fact{display:none;margin-top:10px;padding:10px 12px;border-left:3px solid #7fb77e;background:#1a2018;font-size:14.5px}
+.ded.ok .fact{display:block}.ded.ok .opts{display:none}
+.ded .no{color:#e0857d;font-size:13.5px;margin-top:8px;min-height:1em}
+.ded.locked{opacity:.45;pointer-events:none}
+.form label{display:block;margin:16px 0 6px;font-weight:600}
+.form select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:#1e1a17;color:#e9e1d1;font:inherit}
+.verdict{margin-top:20px;display:none}.verdict.on{display:block}
+.note{font-size:13.5px;color:var(--muted)}
+.notes li{margin-bottom:8px}
+.prog{height:6px;background:#2a241f;border-radius:4px;overflow:hidden;margin:8px 0 2px}.prog i{display:block;height:100%;background:var(--gold);transition:width .4s}
+.hl{background:#f3dcd6;padding:0 3px}
+@media(max-width:600px){h1{font-size:30px}.top{flex-direction:column;gap:8px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="logo" href="index.html">Тихое <span>дело</span></a>
+  <nav>
+    <button class="tab on" data-s="brief">Дело</button>
+    <button class="tab" data-s="bag">Сумка</button>
+    <button class="tab" data-s="file">Материалы</button>
+    <button class="tab" data-s="ded">Выводы <span class="b" id="dedb">0/5</span></button>
+    <button class="tab" data-s="ans">Ответ</button>
+  </nav>
+</div>
+
+<main>
+<!-- BRIEF -->
+<section class="sec on" id="s-brief">
+  <div class="tag">ДЕЛО № 2 · ЗАРЕЧИНСК · 9 ДЕКАБРЯ 1978</div>
+  <h1>Последний автобус</h1>
+  <p class="lead">Кондуктор маршрута №7 Нина Сергеевна Воронова не вернулась с последнего рейса. Вместе с ней пропала дневная выручка: 86 рублей 40 копеек. Утром дворник нашёл её сумку в сугробе у остановки «Речная», пустую, без денег.</p>
+  <div class="paperbox">
+    <h3>Ориентировка</h3>
+    <div class="mono">Начальник автопарка требует объявить Воронову в розыск за хищение выручки. Водитель автобуса утверждает: она сошла на конечной с деньгами и ушла.<br><br>Ваша задача — до вечера понять, что на самом деле произошло на последнем рейсе. Ответьте на пять вопросов в бланке:<br>— где на самом деле Нина рассталась с сумкой;<br>— кто забрал выручку;<br>— кто помог это скрыть;<br>— зачем;<br>— где сейчас Нина.</div>
+  </div>
+  <h2>Как вести дело</h2>
+  <p class="lead">1. Изучите <b>сумку</b>: всё, что в ней нашли.<br>2. Прочитайте <b>материалы</b>: показания, справки, журналы.<br>3. Делайте <b>выводы</b>: каждый правильный вывод становится установленным фактом.<br>4. Заполните <b>бланк ответа</b>. Можно и без всех выводов, если уверены.</p>
+  <p class="note">Все персонажи и события вымышлены. Прогресс сохраняется в этом браузере.</p>
+  <button class="btn red" onclick="go('bag')">Открыть сумку →</button>
+</section>
+
+<!-- BAG -->
+<section class="sec" id="s-bag">
+  <h2>Сумка кондуктора</h2>
+  <p class="note">Найдена 9 декабря в 8:00 дворником у остановки «Речная». Нажмите на предмет, чтобы рассмотреть.</p>
+  <div class="grid" id="bagGrid"></div>
+</section>
+
+<!-- FILE -->
+<section class="sec" id="s-file">
+  <h2>Материалы дела</h2>
+  <p class="note">Показания, справки и служебные документы, собранные к утру 9 декабря.</p>
+  <div class="grid" id="fileGrid"></div>
+</section>
+
+<!-- DEDUCTIONS -->
+<section class="sec" id="s-ded">
+  <h2>Выводы</h2>
+  <p class="note">Каждый вывод опирается на конкретные документы. Ошибка ничего не стоит, но подумайте прежде, чем отвечать.</p>
+  <div class="prog"><i id="dedp" style="width:0"></i></div>
+  <div id="dedList"></div>
+</section>
+
+<!-- ANSWER -->
+<section class="sec" id="s-ans">
+  <h2>Бланк ответа</h2>
+  <div class="form" id="form"></div>
+  <button class="btn red" id="submit" style="margin-top:20px">Закрыть дело</button>
+  <div class="verdict" id="verdict"></div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="mbox"><button class="x" onclick="closeM()">×</button><div id="mbody"></div></div></div>
+
+<script>
+
+
+const BAG = [
+ {id:"b1",ic:"👜",t:"Сумка",s:"Кожзаменитель, форменная",
+  body:`<div class="doc">Сумка кондуктора, через плечо. Ремешок цел, застёжка расстёгнута.
+Основное отделение: пусто.
+Внутри — пустой холщовый мешочек для выручки, завязки <b>разорваны, не развязаны</b>.
+Боковой карман на кнопке: застёгнут. (см. «Рулон билетов ЗК»)</div>`},
+ {id:"b2",ic:"🎫",t:"Рулон билетов ЗР",s:"Рабочий рулон рейса",
+  body:`<div class="doc">Рулон билетов, серия <b>ЗР 118</b>, номера 118 201 — 118 500.
+Оторваны билеты до № 118 437 включительно.
+Стоимость 5 коп. Штамп: «Автопарк г. Заречинска».</div>`},
+ {id:"b3",ic:"🎟️",t:"Рулон билетов ЗК",s:"Из застёгнутого бокового кармана",
+  body:`<div class="doc">Нетронутый рулон, серия <b>ЗК 4179</b>, номера 417 901 — 418 000.
+Стоимость 5 коп. Штамп «Автопарк г. Заречинска» — <b>оттиск бледный, буквы смазаны</b>.
+Рулон обёрнут бумажкой, на ней карандашом: «оставить. показать».</div>`},
+ {id:"b4",ic:"📒",t:"Записная книжка",s:"Клеёнчатая обложка",
+  body:`<div class="doc hand">Первые страницы — телефоны и дни рождения:
+Тамара (Ленинград) — 21.III
+Поликлиника — 2-31
+Сапожник Арам — ул. Садовая, 7
+
+<span class="hl">Страница с закладкой:</span>
+ЗК 4171 — В.З. выдала Гале (маршрут 1), за рулон Галя отдала В.З. 12 р. из 15
+ЗК 4172 — В.З. → Люся (маршрут 3)
+ЗК 4173 — В.З. → мне, сказала «твой процент 3 р.» — НЕ ВЗЯЛА
+ЗК 4174..4178 — А.Г. забирает выручку с рулона сам в конце смены
+ЗК 4179 — оставила себе!
+В накладных ЗК нет — проверила в бухгалтерии у Тони.
+Суббота 9-го — ОБХСС, ул. Советская 12, к 10:00.</div>`},
+ {id:"b5",ic:"📄",t:"Путевой лист",s:"Копия кондуктора, 8 декабря",
+  body:`<div class="doc">ПУТЕВОЙ ЛИСТ № 7/1208 · Маршрут № 7 · 8.XII.78
+Водитель: Гусев А.Н. · Кондуктор: Воронова Н.С.
+
+Последний рейс (по расписанию):
+пл. Ленина ........... 22:40
+Гастроном №3 ......... 22:48
+Техникум ............. 22:58
+Речная ............... 23:05
+Кирпичный завод (кон.) 23:20
+Возврат в парк ....... 23:40
+
+Примечание: от конечной до парка — 20 мин.
+от Речной до парка напрямую — 15 мин.</div>`},
+ {id:"b6",ic:"✉️",t:"Письмо сестры",s:"Конверт из Ленинграда",
+  body:`<div class="doc hand">Ниночка, здравствуй!
+Получила твоё письмо, переживаю. Если там правда так, как ты пишешь, не геройствуй одна. Приезжай ко мне в любой день, комната свободна, ключ, как всегда, у соседки Фроси. Ленинград, ул. Марата 14, кв. 9.
+Ночной поезд от вас идёт в 0:20, утром уже тут.
+Целую, твоя Тамара. 20.XI.78</div>`},
+ {id:"b7",ic:"📝",t:"Записка",s:"Сложена вчетверо",
+  body:`<div class="doc hand">Нина, буду ждать после смены на Речной. Нам надо поговорить. Л.
+
+<span style="font-family:IBM Plex Mono;font-style:normal;font-size:13px">В уголке карандашом: 1.XII</span></div>`},
+ {id:"b8",ic:"🔑",t:"Ключи и мелочь",s:"На дне сумки",
+  body:`<div class="doc">Связка ключей (2 шт.), расчёска, помада.
+Мелочи в сумке нет.
+
+Примечание дежурного: разменную мелочь (2–5 руб.) кондукторы по правилам носят не в сумке, а в правом кармане форменного пальто — «чтобы давать сдачу, не открывая выручку».</div>`}
+];
+
+const FILE = [
+ {id:"f1",ic:"🧑‍✈️",t:"Показания водителя",s:"Гусев Аркадий Николаевич",
+  body:`<div class="doc">«Последний рейс прошёл по расписанию. На конечной, у Кирпичного, в 23:20 Воронова сошла с мешком выручки, сказала, что переночует у подруги неподалёку. Я ей говорю — сдай деньги, а она отмахнулась. Я поехал в парк, приехал в 23:40, доложил диспетчеру Зуевой. Больше я её не видел. Всегда говорил, что она нечиста на руку».</div>`},
+ {id:"f2",ic:"👩‍💼",t:"Журнал диспетчера",s:"Ведёт Зуева В.П.",
+  body:`<div class="doc">8.XII.78 · Маршрут 7 · авт. 34-12 ЗРЧ
+Прибытие в парк: <b>23:40</b>
+Выручка: <b>НЕ СДАНА</b>. Со слов водителя, кондуктор Воронова сошла на конечной с выручкой.
+Подпись: Зуева В.П.
+
+<span style="font-size:12.5px">Примечание следователя: цифры «23:40» написаны поверх стёртого. Под ними просматривается «23:2…».</span></div>`},
+ {id:"f3",ic:"🚧",t:"Журнал проходной",s:"Вахтёр Семёнов (Семёныч)",
+  body:`<div class="doc">Журнал въезда-выезда, 8.XII.78
+…
+авт. 34-12 ЗРЧ (маршр. 7) — въезд <b>23:25</b> — Семёнов
+авт. 21-07 ЗРЧ (маршр. 3) — въезд 23:52 — Семёнов
+
+Семёныч на опросе: «Время я пишу по часам на будке, они у меня точные, по радио сверяю. Седьмой пришёл раньше обычного, я ещё удивился. Кондукторши в нём не было».</div>`},
+ {id:"f4",ic:"🧾",t:"Накладная на билеты",s:"Бухгалтерия автопарка",
+  body:`<div class="doc">НАКЛАДНАЯ № 112 от 1.XII.78
+Получено из типографии для автопарка:
+Билеты 5 коп., серия ЗР 117 — 100 рулонов
+Билеты 5 коп., серия ЗР 118 — 100 рулонов
+Билеты 3 коп., серия ЗТ 041 — 50 рулонов
+
+Других серий в ноябре — декабре не поступало.
+Гл. бухгалтер ___ / Кассир Т. Белова</div>`},
+ {id:"f5",ic:"🎓",t:"Показания студента",s:"Крылов Леонид, 19 лет",
+  body:`<div class="doc">«Да, я писал Нине Сергеевне записку, на прошлой неделе. Хотел пригласить в кино, а она сказала, что я дурак и она замужем. В пятницу ехал последним рейсом до Техникума, вышел без двух минут одиннадцать. С горки у Техникума видно Речную. Автобус там встал и стоял долго, минут пять — хотя там зимой никто не садится. Потом развернулся на кольце и пошёл <b>обратно к городу</b>, а не к Кирпичному. Я ещё подумал, что сломался».
+
+Справка вахты общежития: Крылов Л. вернулся в 23:08.</div>`},
+ {id:"f6",ic:"🍾",t:"Показания мужа",s:"Воронов Борис, слесарь",
+  body:`<div class="doc">«Ругались мы, да. Я на прошлой неделе по пьяни кричал, что убью, — соседи слышали. Но это так, с языка. Пятницу я не помню».
+
+СПРАВКА медвытрезвителя №1: Воронов Б.И. доставлен 8.XII в <b>22:15</b> с ул. Ленина, выпущен 9.XII в 7:00.</div>`},
+ {id:"f7",ic:"❄️",t:"Справка метеостанции",s:"Заречинская метеостанция",
+  body:`<div class="doc">8–9 декабря 1978 г.
+Снег начался в <b>23:30</b>, прекратился в 01:00. Выпало 5 см. Больше осадков до утра не было.</div>`},
+ {id:"f8",ic:"🧹",t:"Протокол находки",s:"Дворник Хамидуллин Р.",
+  body:`<div class="doc">9.XII, 8:00. У остановки «Речная», в сугробе в двух метрах от края дороги обнаружена женская сумка кондуктора.
+Сумка покрыта слоем снега <b>около 5 см</b>. Под сумкой снега нет — она лежала на старом, утоптанном насте.
+Рядом в снегу следов не видно — замело.</div>`},
+ {id:"f9",ic:"🚉",t:"Показания кассира вокзала",s:"Кассир Лукина М.",
+  body:`<div class="doc">«Ночью, минут пять первого, подошла женщина в форменном пальто, как у кондукторов, без сумки, без шапки, вся в снегу. Попросила общий до Ленинграда на 0:20. Платила мелочью — горсть пятаков и гривенников, выгребла из кармана, еле набрала 4 рубля 50. Плакала. Я ещё подумала, что с мужем поругалась».</div>`}
+];
+
+const DED = [
+ {id:"d1",t:"Когда сумка оказалась у Речной?",q:"Сопоставьте протокол находки и справку метеостанции.",
+  o:["После 1:00 ночи","Между 23:30 и 1:00","До 23:30, до начала снега"],a:2,
+  why:["Тогда на сумке не было бы снега — снегопад кончился в 1:00.","Тогда под сумкой был бы свежий снег. А его нет.",""],
+  f:"Сумку бросили у Речной <b>до 23:30</b>: она лежит на старом насте под всеми 5 см нового снега."},
+ {id:"d2",t:"Был ли автобус на конечной?",q:"Если Нина сошла у Кирпичного в 23:20, когда автобус мог быть в парке? Сравните с журналом проходной.",
+  o:["Да, всё сходится","Нет: в парк он приехал раньше, чем мог бы с конечной","Нельзя сказать"],a:1,
+  why:["От конечной до парка 20 минут: не раньше 23:40. А вахтёр записал въезд в 23:25.","",
+  "Можно: у вахтёра точное время, а в путевом листе — время в пути."],
+  f:"Автобус въехал в парк в <b>23:25</b>. С конечной (23:20 + 20 мин) так не успеть, а с Речной напрямую (23:05–23:10 + 15 мин) — как раз. Крылов видел, как автобус развернулся у Речной к городу. <b>Гусев лжёт: на конечную он не ездил.</b>"},
+ {id:"d3",t:"Какие билеты — «левые»?",q:"Сравните рулоны из сумки с накладной автопарка.",
+  o:["Серия ЗР 118","Серия ЗК 4179","Серия ЗТ 041"],a:1,
+  why:["ЗР 118 есть в накладной — это законный рабочий рулон.","","ЗТ 041 в сумке нет — это трёхкопеечные."],
+  f:"Серии <b>ЗК</b> в накладных нет, а штамп на рулоне смазан. Это неучтённые билеты: деньги за них не попадали в кассу парка."},
+ {id:"d4",t:"Кто стоит за «левыми» билетами?",q:"Чьи инициалы в записной книжке? Найдите их среди фамилий в материалах.",
+  o:["Воронов Б. и Крылов Л.","Зуева В. и Гусев А.","Семёнов и Белова Т."],a:1,need:["d3"],
+  why:["Таких инициалов в книжке нет.","","Белова — кассир, она подписала накладную, а Нина проверяла у неё серии."],
+  f:"<b>В.З. — Валентина Зуева</b>, диспетчер, раздавала рулоны ЗК. <b>А.Г. — Аркадий Гусев</b>, водитель, сам забирал выручку с них. Нина отказалась от доли и собиралась 9 декабря в ОБХСС."},
+ {id:"d5",t:"Куда делась Нина?",q:"Что она могла сделать без сумки и денег? Вспомните, где кондукторы держат размен.",
+  o:["Утонула в реке","Спряталась у Крылова","Уехала ночным поездом к сестре в Ленинград"],a:2,
+  why:["Кассир вокзала видела её живой в пять минут первого.","Крылов был в общежитии с 23:08, вахта подтверждает, и Нина его отвергла.",""],
+  f:"Нина убежала от Речной к вокзалу, заплатила разменной мелочью из кармана пальто (ровно то, что кондукторы носят отдельно от выручки) и уехала поездом 0:20 к сестре Тамаре: <b>Ленинград, ул. Марата 14, кв. 9</b>."}
+];
+
+const FORM = [
+ {k:"q1",l:"1. Где Нина на самом деле рассталась с сумкой?",o:["Кирпичный завод (конечная)","Речная","Техникум","Автопарк"],a:1},
+ {k:"q2",l:"2. Кто забрал выручку?",o:["Нина Воронова","Аркадий Гусев","Леонид Крылов","Борис Воронов","Валентина Зуева"],a:1},
+ {k:"q3",l:"3. Кто помог это скрыть?",o:["Никто","Вахтёр Семёнов","Диспетчер Зуева","Кассир Белова"],a:2},
+ {k:"q4",l:"4. Зачем?",o:["Из ревности","Чтобы ограбить","Чтобы забрать записи о «левых» билетах и выставить Нину воровкой","Чтобы вернуть долг"],a:2},
+ {k:"q5",l:"5. Где сейчас Нина?",o:["Погибла в реке","У сестры в Ленинграде","Прячется у Крылова","Задержана милицией"],a:1}
+];
+
+/* ============ ЛОГИКА ============ */
+const K="td_case2";
+let S={seen:[],ded:[],form:{},done:false};
+try{Object.assign(S,JSON.parse(localStorage.getItem(K)||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+
+function go(s){document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.s===s));
+ document.querySelectorAll(".sec").forEach(x=>x.classList.toggle("on",x.id==="s-"+s));window.scrollTo(0,0)}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>go(t.dataset.s));
+
+function grid(el,list){el.innerHTML="";list.forEach(it=>{const b=document.createElement("button");b.className="item"+(S.seen.includes(it.id)?" seen":"");
+ b.innerHTML=`<div class="ic">${it.ic}</div><b>${it.t}</b><small>${it.s}</small>`;b.onclick=()=>openItem(it,b);el.appendChild(b)})}
+function openItem(it,b){$("mbody").innerHTML=`<h3>${it.t}</h3><div class="sub">${it.s}</div>${it.body}`;$("modal").classList.add("on");
+ if(!S.seen.includes(it.id)){S.seen.push(it.id);save();b.classList.add("seen")}}
+function closeM(){$("modal").classList.remove("on")}
+$("modal").onclick=e=>{if(e.target.id==="modal")closeM()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeM()});
+
+function drawDed(){const L=$("dedList");L.innerHTML="";
+ DED.forEach(d=>{const ok=S.ded.includes(d.id),lock=d.need&&!d.need.every(n=>S.ded.includes(n));
+  const el=document.createElement("div");el.className="ded"+(ok?" ok":"")+(lock&&!ok?" locked":"");
+  el.innerHTML=`<h4>${d.t}</h4><div class="q">${lock&&!ok?"Сначала сделайте предыдущий вывод о билетах.":d.q}</div><div class="opts"></div><div class="no"></div><div class="fact">${d.f}</div>`;
+  const o=el.querySelector(".opts");d.o.forEach((t,i)=>{const b=document.createElement("button");b.textContent=t;
+   b.onclick=()=>{if(i===d.a){S.ded.push(d.id);save();drawDed()}else el.querySelector(".no").textContent="Не сходится: "+d.why[i]};o.appendChild(b)});
+  L.appendChild(el)});
+ $("dedb").textContent=S.ded.length+"/"+DED.length;$("dedp").style.width=(S.ded.length/DED.length*100)+"%"}
+
+function drawForm(){const F=$("form");F.innerHTML="";
+ FORM.forEach(q=>{const l=document.createElement("label");l.textContent=q.l;const s=document.createElement("select");
+  s.innerHTML=`<option value="">— выберите —</option>`+q.o.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
+  if(S.form[q.k]!==undefined)s.value=S.form[q.k];s.onchange=()=>{S.form[q.k]=s.value;save()};F.append(l,s)})}
+
+$("submit").onclick=()=>{
+ if(FORM.some(q=>S.form[q.k]===undefined||S.form[q.k]==="")){verdict(`<div class="paperbox"><b>Заполните все пять пунктов.</b></div>`);return}
+ const right=FORM.filter(q=>+S.form[q.k]===q.a).length;
+ S.done=right;save();
+ if(right===5){verdict(`<div class="paperbox"><div class="tag" style="color:#b3261e">ДЕЛО ЗАКРЫТО · 5 ИЗ 5</div><h3>Нина Воронова невиновна</h3>
+ <p>Гусев остановил последний рейс на пустой «Речной» в 23:05 и потребовал у Нины записи о «левых» билетах. Она отказалась и убежала в темноту. Гусев вырвал из сумки выручку, чтобы сделать из Нины воровку, бросил сумку в сугроб — за 25 минут до снегопада — и поехал прямо в парк. В 23:25 его записал вахтёр. Диспетчер Зуева, его сообщница, переправила время на 23:40 и вписала, что кондуктор «сошла на конечной».</p>
+ <p>Записную книжку Гусев принял за телефонную, а рулон ЗК в застёгнутом кармане не заметил. Нина без денег дошла до вокзала, наскребла на билет разменной мелочью из кармана пальто и в 0:20 уехала к сестре в Ленинград.</p>
+ <p>Муж был в вытрезвителе, Крылов — в общежитии. Записка «буду ждать на Речной» написана за неделю до того.</p>
+ <p class="mono">Через три дня в ОБХСС поступило заявление Н.С. Вороновой из Ленинграда. Изъято 9 рулонов серии ЗК. Гусев и Зуева арестованы.</p>
+ <p><a href="index.html#cases">← Вернуться к делам</a> · <a href="daily.html">Загадка дня</a></p></div>`)}
+ else{const bad=FORM.filter(q=>+S.form[q.k]!==q.a).map(q=>q.l.split(".")[0]).join(", ");
+  verdict(`<div class="paperbox"><div class="tag" style="color:#b3261e">ВЕРНО ${right} ИЗ 5</div><h3>Прокурор вернул дело на доследование</h3><p>Неверно в пунктах: ${bad}. Перечитайте материалы или пройдите «Выводы» — каждый установленный факт закрывает один из вопросов.</p></div>`)}
+};
+function verdict(h){const v=$("verdict");v.innerHTML=h;v.classList.add("on");v.scrollIntoView({behavior:"smooth"})}
+
+grid($("bagGrid"),BAG);grid($("fileGrid"),FILE);drawDed();drawForm();
+</script>
+</body>
+</html>
