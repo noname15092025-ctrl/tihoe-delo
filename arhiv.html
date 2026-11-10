@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тихое дело — детективная игра</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110f;--paper:#efe6d2;--ink:#2a241e;--red:#b3261e;--muted:#8a7f70;--card:#1e1a17;--line:#3a332c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e9e1d1;font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header.top{position:sticky;top:0;z-index:10;background:rgba(20,17,15,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:'Playfair Display';font-size:22px;letter-spacing:2px;text-transform:uppercase}
+.logo span{color:var(--red)}
+nav a{margin-left:22px;text-decoration:none;color:#cfc6b6;font-size:15px}
+nav a:hover{color:#fff}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;padding:14px 26px;font-family:'Playfair Display';font-size:17px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px}
+.btn:hover{background:#cf3026}
+.btn.ghost{background:transparent;border:1px solid #6b6156}
+.hero{min-height:88vh;display:flex;align-items:center;background:
+ radial-gradient(ellipse at 70% 40%,rgba(179,38,30,.18),transparent 60%),
+ repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 2px,transparent 2px 4px),var(--bg)}
+.hero h1{font-family:'Playfair Display';font-size:clamp(42px,7vw,86px);line-height:1;margin:0 0 18px;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--red)}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);padding:4px 10px;font-family:'IBM Plex Mono';transform:rotate(-3deg);margin-bottom:22px;letter-spacing:2px}
+.hero p.lead{font-size:21px;max-width:600px;color:#d6cdbd}
+section{padding:90px 0;border-top:1px solid var(--line)}
+h2{font-family:'Playfair Display';font-size:40px;text-transform:uppercase;margin:0 0 30px;letter-spacing:1px}
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.feat{background:var(--card);padding:26px;border-left:3px solid var(--red)}
+.feat h3{font-family:'Playfair Display';margin:8px 0;font-size:21px}
+.feat .ico{font-size:30px}
+.case{background:var(--paper);color:var(--ink);padding:26px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.case h3{font-family:'Playfair Display';font-size:24px;margin:0 0 6px}
+.case .tag{font-family:'IBM Plex Mono';font-size:13px;color:var(--red)}
+.case .price{font-family:'Playfair Display';font-size:28px;margin:14px 0}
+.case.soon{opacity:.6}
+.steps{counter-reset:s}
+.steps div{counter-increment:s;padding-left:58px;position:relative;margin-bottom:22px}
+.steps div:before{content:counter(s);position:absolute;left:0;top:0;width:42px;height:42px;border:2px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-size:20px;color:var(--red)}
+details{background:var(--card);margin-bottom:10px;padding:18px 22px}
+summary{cursor:pointer;font-family:'Playfair Display';font-size:18px}
+footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+
+/* GAME */
+#game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;overflow:auto}
+.ghead{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0f0d0b;z-index:2;gap:10px;flex-wrap:wrap}
+.clock{font-family:'IBM Plex Mono';font-size:15px;color:#e9c46a}
+.tabs button{background:none;border:1px solid var(--line);color:#cfc6b6;padding:8px 14px;cursor:pointer;font-family:'Playfair Display';letter-spacing:1px;margin-left:4px}
+.tabs button.on{background:var(--red);border-color:var(--red);color:#fff}
+.gbody{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+.panel{display:none}.panel.on{display:block}
+.file{background:var(--paper);color:var(--ink);padding:28px;font-family:'IBM Plex Mono';box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.file h3{font-family:'Playfair Display';font-size:26px;margin:0 0 10px}
+.locs{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.loc{background:var(--card);border:1px solid var(--line);padding:18px;cursor:pointer;transition:.15s}
+.loc:hover{border-color:var(--red)}
+.loc.done{opacity:.55}
+.loc.locked{cursor:not-allowed;opacity:.35}
+.loc b{font-family:'Playfair Display';font-size:18px;display:block}
+.loc small{color:var(--muted)}
+.scene{background:var(--paper);color:var(--ink);padding:28px;margin-top:20px}
+.scene h3{font-family:'Playfair Display';margin:0 0 10px;font-size:24px}
+.hot{display:inline-block;margin:8px 8px 0 0;padding:8px 12px;border:1px dashed var(--ink);cursor:pointer;font-family:'IBM Plex Mono';font-size:14px;background:#e4d9c0}
+.hot:hover{background:#d9cba9}
+.hot.got{border-style:solid;background:#c9b88f;cursor:default}
+.clue{background:var(--paper);color:var(--ink);padding:16px 18px;margin-bottom:12px;font-family:'IBM Plex Mono';border-left:4px solid var(--red)}
+.clue b{font-family:'Playfair Display';font-size:17px}
+.sus{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.person{background:var(--card);border:1px solid var(--line);padding:18px}
+.person .av{width:64px;height:64px;border-radius:50%;background:#3a332c;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-size:26px;margin-bottom:10px}
+.person h4{font-family:'Playfair Display';margin:0;font-size:19px}
+.q{display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#e9e1d1;padding:9px 11px;margin-top:8px;cursor:pointer;font-family:'IBM Plex Sans';font-size:14px}
+.q:hover{border-color:var(--red)}
+.q.asked{opacity:.5}
+.ans{font-style:italic;color:#d6cdbd;font-size:14px;margin-top:6px;padding-left:10px;border-left:2px solid var(--red)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 20px;font-family:'Playfair Display';letter-spacing:1px;z-index:99;display:none}
+select{width:100%;padding:10px;font-family:'IBM Plex Sans';font-size:15px;margin:6px 0 16px;background:#fff;color:var(--ink)}
+.result{margin-top:20px;padding:22px;background:var(--card);border:1px solid var(--line)}
+.muted{color:var(--muted)}
+@media(max-width:640px){nav a:not(.btn){display:none}}
+
+/* ===== MODERN / SMOOTH ===== */
+html{scroll-behavior:smooth}
+body{-webkit-font-smoothing:antialiased}
+body:after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:200;opacity:.05;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}100%{transform:translate(0,0)}}
+header.top{transition:background .3s,box-shadow .3s}
+header.top.scrolled{background:rgba(15,13,11,.75);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+nav a{position:relative;transition:color .2s}
+nav a:not(.btn):after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--red);transform:scaleX(0);transition:transform .25s}
+nav a:not(.btn):hover:after{transform:scaleX(1)}
+.btn{border-radius:10px;transition:transform .2s,box-shadow .25s,background .2s;box-shadow:0 6px 20px rgba(179,38,30,.25)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(179,38,30,.4)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.ghost{box-shadow:none}.btn.ghost:hover{border-color:#fff;background:rgba(255,255,255,.04)}
+.hero{position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:700px;height:700px;right:-150px;top:-100px;border-radius:50%;
+ background:radial-gradient(circle,rgba(179,38,30,.28),transparent 65%);filter:blur(20px);animation:float 9s ease-in-out infinite}
+@keyframes float{50%{transform:translate(-60px,40px) scale(1.08)}}
+.hero .wrap>*{opacity:0;transform:translateY(24px);animation:up .9s cubic-bezier(.2,.7,.2,1) forwards}
+.hero .wrap>*:nth-child(2){animation-delay:.12s}.hero .wrap>*:nth-child(3){animation-delay:.24s}.hero .wrap>*:nth-child(4){animation-delay:.36s}
+@keyframes up{to{opacity:1;transform:none}}
+.stamp{animation:up .9s forwards,stampIn .5s .9s both}
+@keyframes stampIn{0%{transform:rotate(-3deg) scale(1.6);opacity:0}100%{transform:rotate(-3deg) scale(1);opacity:1}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.feat,.case,details,.loc,.person,.clue,.file,.scene{border-radius:14px}
+.feat{background:linear-gradient(160deg,#221d19,#181512);border:1px solid var(--line);border-left:3px solid var(--red);transition:transform .3s,border-color .3s,box-shadow .3s}
+.feat:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.case{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.case:not(.soon):hover{transform:translateY(-8px) rotate(-.4deg);box-shadow:0 24px 50px rgba(0,0,0,.55)}
+details{border:1px solid var(--line);transition:border-color .2s}
+details[open]{border-color:#5a4f44}
+details p{animation:up .35s ease both}
+summary{list-style:none;display:flex;justify-content:space-between}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";color:var(--red);transition:transform .25s}
+details[open] summary:after{transform:rotate(45deg)}
+#game{opacity:0;transition:opacity .35s}
+#game.show{opacity:1}
+.ghead{background:rgba(15,13,11,.85)!important;backdrop-filter:blur(10px)}
+.tabs button{border-radius:8px;transition:background .2s,border-color .2s,color .2s}
+.tabs button:hover{border-color:#6b6156}
+.panel.on{animation:up .4s cubic-bezier(.2,.7,.2,1) both}
+.loc{transition:transform .2s,border-color .2s,box-shadow .2s}
+.loc:not(.locked):hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.4)}
+.scene{animation:up .45s cubic-bezier(.2,.7,.2,1) both}
+.hot{border-radius:8px;transition:background .2s,transform .15s}
+.hot:hover{transform:translateY(-1px)}
+.hot.got{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.08)}}
+.clue{animation:up .4s both}
+.q{border-radius:8px;transition:border-color .2s,background .2s}
+.q:hover{background:rgba(179,38,30,.08)}
+.ans{animation:up .35s both}
+.toast{display:block!important;opacity:0;transform:translate(-50%,20px);transition:opacity .3s,transform .3s;pointer-events:none;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#nc{display:inline-block}#nc.bump{animation:pop .4s}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.reveal,.hero .wrap>*{opacity:1;transform:none}}
+
+/* ===== MAP & MINIGAMES ===== */
+#map{width:100%;height:auto;display:block;background:#1a1613;border:1px solid var(--line);border-radius:14px;margin-bottom:18px;touch-action:manipulation}
+.pin{cursor:pointer}.pin .halo{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+.pin:hover .dot{fill:#e0453a}
+.pin.locked{cursor:not-allowed;opacity:.35}.pin.locked .halo,.pin.done .halo{display:none}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.mg{position:fixed;inset:0;z-index:150;background:rgba(5,4,3,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.mg.show{opacity:1}
+.mgbox{background:var(--paper);color:var(--ink);border-radius:16px;padding:24px;width:min(580px,94vw);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:translateY(20px) scale(.97);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.mg.show .mgbox{transform:none}
+.mgbox h3{font-family:'Playfair Display';margin:0 0 6px;font-size:24px}.mgbox .hint{font-size:14px;color:#6b5f52;margin:0 0 14px}
+.mgbtn{background:var(--ink);color:var(--paper);border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-family:'IBM Plex Sans';font-size:15px;margin:6px 6px 0 0;transition:transform .15s,background .2s}
+.mgbtn:hover{transform:translateY(-1px);background:#000}.mgbtn.x{background:transparent;color:var(--ink);border:1px solid #b5a88f}
+.scr{position:relative;border-radius:10px;overflow:hidden;background:#f6f0e2;padding:20px;font-family:'IBM Plex Mono';font-size:15px;line-height:1.6;user-select:none}
+.scr canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.lens{position:relative;height:150px;border-radius:10px;overflow:hidden;background:#f6f0e2;cursor:none;touch-action:none;user-select:none}
+.lens div{position:absolute;inset:0;padding:18px;font-family:'IBM Plex Mono';font-size:15px;line-height:1.7}
+.lens .blur{filter:blur(5px)}.lens .clear{clip-path:circle(0 at 0 0);background:#fbf7ec}
+.lens .ring{position:absolute;width:110px;height:110px;border:4px solid #4a3f33;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 0 0 2000px rgba(0,0,0,0),inset 0 0 20px rgba(0,0,0,.2);display:none}
+.flipw{perspective:900px;height:180px;cursor:pointer}
+.flip{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.flip.on{transform:rotateY(180deg)}
+.flip>div{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:22px;font-family:'IBM Plex Mono';background:#e8c9a0;border:2px dashed #8a6a45;display:flex;flex-direction:column;justify-content:center}
+.flip .back{transform:rotateY(180deg);background:#dcbf98}
+.flip b{font-family:'Playfair Display';font-size:22px}
+.junk{position:relative;height:280px;border-radius:10px;overflow:hidden;background:repeating-linear-gradient(90deg,#6b543c 0 46px,#5d4834 46px 50px)}
+.junk span{position:absolute;cursor:pointer;user-select:none;transition:transform .15s}
+.junk span:hover{transform:scale(1.15)}
+.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.hold{position:relative;overflow:hidden;width:100%;padding:16px;border-radius:10px;border:0;background:var(--ink);color:var(--paper);font-family:'Playfair Display';font-size:17px;letter-spacing:1px;cursor:pointer;user-select:none;touch-action:none}
+.hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--red);z-index:0}.hold span{position:relative}
+.inv{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}.inv span{background:#e4d9c0;padding:8px 12px;border-radius:8px;font-family:'IBM Plex Mono';font-size:14px}
+.hot.mgh:after{content:" ✦";color:var(--red)}
+
+.art{display:block;width:100%;height:auto;border-radius:12px;margin:-6px 0 18px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.person .av{width:84px;height:84px;background:none;overflow:hidden;border:2px solid #3a332c}
+.person .av svg{width:100%;height:100%}
+.skyline{position:absolute;left:0;right:0;bottom:0;width:100%;height:auto;pointer-events:none;opacity:.9}
+.hero .wrap{position:relative;z-index:1}
+
+.spotw svg{margin:0;border-radius:10px}
+.doc{background:#f6f0e2;border-radius:10px;padding:10px;font-family:'IBM Plex Mono';font-size:14px;background-image:repeating-linear-gradient(#f6f0e2 0 27px,#d9cfb8 27px 28px)}
+.ln{padding:4px 8px;cursor:pointer;border-radius:6px;transition:background .2s}.ln:hover{background:rgba(179,38,30,.12)}
+.ln.ok{background:rgba(179,38,30,.25);font-weight:700}.ln.no{text-decoration:line-through;opacity:.5}
+.chat{max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.say,.me{padding:10px 14px;border-radius:12px;max-width:85%;animation:up .3s both;font-size:15px}
+.say{background:#e2d6bb;align-self:flex-start;font-style:italic}.me{background:var(--ink);color:var(--paper);align-self:flex-end}
+.opts .mgbtn{display:block;width:100%;text-align:left}
+
+/* ===== REFINED ===== */
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16px;letter-spacing:.005em}
+h1,h2,h3,h4,.logo,.mast{font-family:'Playfair Display',Georgia,serif!important;text-transform:none!important;letter-spacing:0!important;font-weight:500}
+.logo{font-size:21px}.logo span{font-style:italic}
+.hero h1{font-size:clamp(44px,6.5vw,84px);line-height:1.02;font-weight:500}.hero h1 em{font-style:italic;color:#c8372d}
+.hero p.lead{font-size:19px;font-weight:300;line-height:1.65;color:#cfc6b6}
+.stamp{font-family:'IBM Plex Mono';font-size:12px;letter-spacing:4px;border-width:1px;padding:6px 12px}
+h2{font-size:42px;margin-bottom:36px}
+.btn{font-family:'IBM Plex Sans';font-weight:500;font-size:13px;letter-spacing:.14em;text-transform:uppercase;border-radius:2px!important;padding:14px 28px;box-shadow:none!important}
+.btn:hover{transform:none!important;background:#c8372d}.btn.ghost{border-color:#5a4f44}
+.feat{border-radius:2px!important;border:1px solid var(--line)!important;border-top:2px solid var(--red)!important;background:#17140f!important;padding:30px 26px}
+.feat:hover{transform:none!important;box-shadow:none!important;border-color:#5a4f44!important}
+.feat .ico{font-family:'IBM Plex Mono';font-size:13px;color:var(--red);letter-spacing:2px}.feat h3{font-size:22px;margin:14px 0 10px}
+.case{border-radius:2px!important}.case:not(.soon):hover{transform:translateY(-3px)!important}.case h3{font-size:26px}.case .tag{font-family:'IBM Plex Mono';letter-spacing:2px;font-size:11px}.case .price{font-family:'Playfair Display';font-weight:500}
+details,.file,.scene,.hent,.clue,.tip,.pcard,.mgbox,.loc,.person,.srch,.doc,.paper,#pop,.clockb,.chip,.mapbtns button,.zbtn button,.mgbtn,.hot,.q,.strip.ev,.dials,.dial span,.tour .tb,.say,.me{border-radius:3px!important}
+summary{font-family:'Playfair Display';font-size:19px}
+.steps div:before{font-family:'Playfair Display';font-size:18px;border-width:1px}
+nav a{font-size:14px;letter-spacing:.04em}
+body:after{opacity:.035}
+.toast{font-family:'IBM Plex Sans';font-size:14px;letter-spacing:.02em;border-radius:2px;background:#1c1815;border:1px solid #3a332c;border-left:3px solid var(--red)}
+.mgbox h3{font-size:24px}.mgbtn{font-family:'IBM Plex Sans';font-size:14px}
+#side h3{font-size:24px;font-weight:500}
+.rail{gap:2px}.rail .logo2{font-family:'Playfair Display';font-size:22px;color:#e9e1d1;margin-bottom:14px}.rail .logo2 span{color:var(--red);font-style:italic}
+.rail button{border-radius:3px}.rail button.on{background:#221d19;color:#fff;box-shadow:inset 2px 0 0 var(--red)}
+.rail em{font-family:'IBM Plex Sans';font-size:10px;letter-spacing:.04em}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;letter-spacing:.02em;background:rgba(20,17,15,.88)}
+#clk{font-family:'IBM Plex Mono';font-weight:500;font-size:26px}
+.hh{font-family:'Playfair Display';font-size:17px;font-weight:500}.hh span svg{opacity:.6}
+.mp circle{fill:#2b2622;stroke:#f4f2ea;stroke-width:2}.mp.v circle{fill:#b3261e}.mp.full circle{fill:#4d6b4b}.mp.e circle{fill:#8f897f}
+.hot{font-family:'IBM Plex Sans';font-size:13px}.hot.mgh{border-style:solid!important}
+.ans{font-style:normal;color:#bdb4a5}
+.ok{color:#7fb77e}.no{color:#e0857d}
+.result h3{font-size:24px}
+.rail button.on{background:#221d19!important;color:#fff!important;box-shadow:inset 2px 0 0 var(--red)}
+.hot,.q,.mgbtn,.prog,.ans,.bi,.addr{font-family:'IBM Plex Sans',system-ui,sans-serif!important}
+.prog{font-weight:400}
+.mtop{right:200px!important}@media(max-width:820px){.mtop{right:12px!important}}
+#pop b{font-family:'Playfair Display';font-weight:500;font-size:18px}
+.cols h4{font-family:'Playfair Display'}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+ <div class="logo">Тихое <span>дело</span></div>
+ <nav><a href="#how">Как играть</a><a href="#cases">Дела</a><a href="#faq">Вопросы</a><a class="btn" style="padding:8px 16px;font-size:14px" href="#" onclick="openGame();return false">Играть</a></nav>
+</div></header>
+
+<div class="hero"><svg class="skyline" viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14110f" stop-opacity="0"/><stop offset="1" stop-color="#0c0a09"/></linearGradient></defs><circle cx="1180" cy="60" r="34" fill="#e9dcc0" opacity=".14"/><g fill="#0d0b0a"><rect x="60" y="150" width="120" height="110"/><rect x="190" y="120" width="70" height="140"/><rect x="280" y="170" width="160" height="90"/><rect x="460" y="90" width="22" height="170"/><rect x="500" y="70" width="26" height="190"/><rect x="440" y="150" width="260" height="110"/><rect x="720" y="130" width="90" height="130"/><rect x="830" y="160" width="200" height="100"/><rect x="1050" y="110" width="80" height="150"/><rect x="1150" y="170" width="180" height="90"/><rect x="1340" y="140" width="100" height="120"/></g><g fill="#e9c46a" opacity=".55"><rect x="80" y="170" width="8" height="10"/><rect x="120" y="200" width="8" height="10"/><rect x="210" y="140" width="8" height="10"/><rect x="740" y="150" width="8" height="10"/><rect x="760" y="190" width="8" height="10"/><rect x="1070" y="130" width="8" height="10"/><rect x="1100" y="180" width="8" height="10"/><rect x="480" y="180" width="8" height="10"/><rect x="600" y="200" width="8" height="10"/><rect x="1370" y="160" width="8" height="10"/></g><g fill="#2a2420" opacity=".5"><circle cx="472" cy="78" r="14"/><circle cx="485" cy="58" r="18"/><circle cx="515" cy="52" r="16"/><circle cx="530" cy="30" r="22"/></g><rect width="1440" height="260" fill="url(#sk)"/></svg><div class="wrap">
+ <div class="stamp">СОВ. СЕКРЕТНО · 1978</div>
+ <h1>Город спит.<br><em>Убийца — нет.</em></h1>
+ <p class="lead">Детективная игра в вымышленном городке Заречинск. Ищите адреса на карте города, находите улики, допрашивайте подозреваемых и раскройте дело за наименьшее число поездок.</p>
+ <p style="margin-top:30px"><a class="btn" href="#" onclick="openGame();return false">Начать расследование</a> &nbsp; <a class="btn ghost" href="#how">Как это работает</a></p>
+</div></div>
+
+<section><div class="wrap">
+ <h2>Вы не читаете детектив. Вы его ведёте.</h2>
+ <div class="grid">
+  <div class="feat"><div class="ico">01</div><h3>Живой город</h3>Завод, общежитие, проходная, гастроном. В каждом месте своя обстановка и свои люди.</div>
+  <div class="feat"><div class="ico">02</div><h3>Настоящие улики</h3>Журналы, записки, копирка в машинке. Улику нужно найти самому, никто не подскажет.</div>
+  <div class="feat"><div class="ico">03</div><h3>Допросы</h3>Новые улики открывают новые вопросы. Все лгут — вопрос только в чём.</div>
+  <div class="feat"><div class="ico">04</div><h3>Целый город</h3>Больше 80 адресов и адресная книга. Куда ехать — решаете вы. Чем меньше поездок, тем выше оценка.</div>
+ </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+ <h2>Как играть</h2>
+ <div class="steps">
+  <div><b>Прочтите материалы дела.</b> Что случилось, кто погиб, кто был рядом.</div>
+  <div><b>Выезжайте на адреса.</b> Осматривайте детали — подозрительное попадёт в блокнот.</div>
+  <div><b>Допрашивайте.</b> Предъявляйте найденное — свидетели начинают говорить иначе.</div>
+  <div><b>Заполните бланк ответов.</b> Кто убил, чем, зачем и как. Застряли — «птички нашептают» подсказку.</div>
+ </div>
+ <p class="muted">Играть можно одному или компанией за одним экраном. Одно дело — 40–60 минут.</p>
+</div></section>
+
+<section id="cases"><div class="wrap">
+ <h2>Дела</h2>
+ <div class="grid">
+  <div class="case"><div class="tag">ДЕЛО № 1 · ДОСТУПНО</div><h3>Чай для главного инженера</h3><p>Утром на радиозаводе «Импульс» нашли мёртвым главного инженера. Чашка остыла, дверь была заперта.</p><div class="price">Бесплатно</div><a class="btn" href="#" onclick="openGame();return false">Играть</a></div>
+  <div class="case"><div class="tag">ДЕЛО № 2 · НОВОЕ</div><h3>Последний автобус</h3><p>Кондуктор маршрута № 7 исчезла вместе с выручкой. Водитель уверен, что она воровка. Её сумка говорит другое.</p><div class="price">Бесплатно</div><a class="btn" href="avtobus.html">Играть</a></div>
+  <div class="case"><div class="tag">КАЖДЫЙ ДЕНЬ · НОВОЕ</div><h3>Загадка дня</h3><p>Маленькое дело на пять минут: три подозреваемых, три улики. Новое каждую полночь.</p><div class="price">Бесплатно</div><a class="btn" href="daily.html">Решить</a></div>
+  <div class="case"><div class="tag">ДЕЛО № 4 · НОВОЕ</div><h3>Остров на водохранилище</h3><p>Из запертой палаты диспансера на острове исчезла больная. Ледоход, три дня, и ваш собственный дневник, которому нельзя верить.</p><div class="price">Бесплатно</div><a class="btn" href="ostrov.html">Играть</a></div>
+  <div class="case soon"><div class="tag">ДЕЛО № 3 · СКОРО</div><h3>Пожар в Доме культуры</h3><p>Сгорел архив за день до ревизии. Случайность? В Заречинске таких не бывает.</p><div class="price">—</div></div>
+ </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+ <h2>Вопросы</h2>
+ <details><summary>Сколько людей может играть?</summary><p>Сколько угодно — игра идёт на одном экране. Удобнее всего 1–4 человека.</p></details>
+ <details><summary>Можно ли проиграть?</summary><p>Да: если в бланке ответов назвать не того. Дело можно начать заново.</p></details>
+ <details><summary>Есть подсказки?</summary><p>Да: если долго не выходит, «птички» сами нашептают подсказку. Но настоящий следователь справится без них.</p></details>
+ <details><summary>Прогресс сохраняется?</summary><p>В этом браузере — да, если он это позволяет.</p></details>
+</div></section>
+
+<footer><div class="wrap">© Тихое дело. Все персонажи и события вымышлены, любые совпадения случайны.</div></footer>
+
+<!-- ================= GAME ================= -->
+<style>
+#game{display:none;position:fixed;inset:0;z-index:50;background:#0f0d0b;grid-template-columns:76px 380px 1fr;opacity:0;transition:opacity .35s}
+#game.show{opacity:1}
+.rail{background:#0b0908;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
+.rail button{position:relative;width:64px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;border:1px solid transparent;background:none;color:#cfc6b6;font-size:19px;cursor:pointer;transition:background .2s}
+.rail button:hover{background:#1e1a17}.rail button.on{background:var(--red);color:#fff}
+.rail .logo2{font-family:'Playfair Display';color:var(--red);font-size:20px;margin-bottom:8px}
+.rail .bdg{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:11px;font-family:'Playfair Display';border-radius:9px;padding:1px 6px}
+#hbadge{display:none;width:10px;height:10px;padding:0;top:2px;right:2px;background:#e9c46a}
+.rail .sp{flex:1}
+#side{background:#141110;border-right:1px solid var(--line);overflow:auto;padding:18px 18px 40px}
+#side h3{font-family:'Playfair Display';font-size:22px;margin:0 0 14px;letter-spacing:.5px}
+.file.sm{padding:18px;font-size:14px;border-radius:12px;margin-bottom:14px}
+.btn.wide{display:block;width:100%;margin:8px 0;text-align:center;font-size:15px;padding:12px}
+.srch{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:#1e1a17;color:#e9e1d1;font-family:'IBM Plex Sans';font-size:15px;margin-bottom:12px;outline:none}
+.srch:focus{border-color:var(--red)}
+.bg{font-family:'Playfair Display';color:#cfc6b6;margin:14px 0 6px;letter-spacing:1px}.bg span{color:var(--muted);font-size:13px}
+.bi{padding:9px 10px;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;transition:background .15s}
+.bi:hover{background:#221d19}.bi small{color:var(--muted);font-size:12px}.bi.v span{color:#e0857d}
+.hent{background:#1c1815;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;font-size:14px}
+.hent.flash{animation:flash 1.2s}@keyframes flash{0%{border-color:var(--red);box-shadow:0 0 0 3px rgba(179,38,30,.4)}100%{}}
+.hh{display:flex;justify-content:space-between;font-family:'Playfair Display';font-size:16px}.addr{color:#e0857d;font-size:12px}
+.hent p{margin:8px 0}.hent .hot{background:#2a241f;color:#e9e1d1;border-color:#5a4f44;font-size:13px}.hent .hot.got{background:#3a312a}
+.hent .ans{font-size:13px}
+.lnk{background:none;border:0;color:#e0857d;cursor:pointer;font-size:12px;margin-top:8px;padding:0;text-decoration:underline}
+.intg{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.av.sm{width:54px;height:54px;border-radius:50%;overflow:hidden;float:right;border:2px solid #3a332c}.av.sm svg{width:100%;height:100%}
+.tip{background:#1c1815;border-left:3px solid #e9c46a;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-size:14px;animation:up .4s both}.tip small{display:block;color:#e9c46a;font-family:'IBM Plex Mono'}
+.ql{display:block;margin:10px 0 6px;font-size:14px}
+#mapbox{position:relative;overflow:hidden;background:#d4d1c5}
+#cmap{width:100%;height:100%;display:block;cursor:grab;touch-action:none}#cmap:active{cursor:grabbing}
+.mp{cursor:pointer}.mp circle{fill:#4a443d;stroke:#f4f2ea;stroke-width:3;transition:r .15s}.mp:hover circle{fill:#6b6156}
+.mp.v circle{fill:#9b2a22}.mp.s circle{fill:#b3261e;stroke:#e9c46a}
+.mtop{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.chip{pointer-events:auto;background:rgba(20,17,15,.85);color:#e9e1d1;border:1px solid #3a332c;border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer;transition:opacity .2s}.chip.off{opacity:.4}
+.clockb{position:absolute;top:12px;right:12px;background:rgba(10,9,8,.92);color:#fff;border-radius:14px;padding:10px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#clk{font-family:'IBM Plex Mono';font-size:28px;font-weight:700;letter-spacing:1px}#trc{font-size:13px;color:#cfc6b6}
+.zbtn{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px}.zbtn button{width:38px;height:38px;border-radius:10px;border:0;background:rgba(20,17,15,.9);color:#fff;font-size:20px;cursor:pointer}
+#pop{display:none;position:absolute;width:250px;transform:translateX(-50%);background:#141110;color:#e9e1d1;border-radius:14px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:up .25s both;z-index:3}
+#pop b{display:block;font-family:'Playfair Display';font-size:17px;margin-top:8px}#pop small{color:var(--muted);font-size:12px}
+#pop .art.sm{margin:0;border-radius:8px}#pop .ph{height:90px;border-radius:8px;background:#2a241f;display:flex;align-items:center;justify-content:center;font-size:40px}
+#pop .go{display:block;width:100%;margin-top:10px;padding:10px;font-size:15px}.px{position:absolute;top:6px;right:8px;background:rgba(0,0,0,.5);border:0;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;z-index:2}
+.paper{background:#ece4cf;color:#1d1a16;padding:20px;border-radius:6px;font-family:'IBM Plex Sans'}.mast{font-family:'Playfair Display';font-size:34px;text-align:center;letter-spacing:4px;border-bottom:3px double #1d1a16}
+.pd{text-align:center;font-size:12px;margin:4px 0 12px;font-style:italic}.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13.5px;text-align:justify}.cols h4{font-family:'Playfair Display';margin:4px 0;font-size:16px}
+@media(max-width:820px){#game{grid-template-columns:52px 1fr}#side{position:absolute;left:52px;top:0;bottom:0;width:calc(100% - 52px);z-index:5;transform:translateX(-110%);transition:transform .3s}#side.open{transform:none}#mapbox{grid-column:2}.clockb{top:auto;bottom:12px;left:12px;right:auto;padding:6px 12px}#clk{font-size:20px}.cols{grid-template-columns:1fr}}
+</style>
+<div id="game">
+ <div class="rail"><div class="logo2">Т<span>Д</span></div>
+  <button data-p="case" title="Материалы дела" onclick="panel('case')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><em>Дело</em></button>
+  <button data-p="book" title="Адресная книга" onclick="panel('book')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg><em>Адреса</em></button>
+  <button data-p="hist" title="История поездок" onclick="panel('hist')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg><em>Поездки</em></button>
+  <button data-p="notes" title="Блокнот улик" onclick="panel('notes')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5"/></svg><em>Улики</em><span class="bdg" id="nbadge">0</span></button>
+  <button data-p="hint" title="Птички нашептали" onclick="panel('hint')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/></svg><em>Подсказки</em><span class="bdg" id="hbadge"></span></button>
+  <button data-p="ans" title="Бланк ответов" onclick="panel('ans')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg><em>Ответ</em></button>
+  <span class="sp"></span>
+  <button title="Скрыть панель" onclick="document.getElementById('side').classList.toggle('open');document.getElementById('game').classList.toggle('nos')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M9 4v16"/></svg><em>Панель</em></button>
+  <button title="Обучение" onclick="tour(0)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg><em>Помощь</em></button>
+  <button title="Выйти" onclick="closeGame()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><em>Выйти</em></button>
+ </div>
+ <div id="side" class="open"><div id="pbody"></div></div>
+ <div id="mapbox"><svg id="cmap" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="mtop" id="chips"></div>
+  <div class="clockb" title="Оценка: 12 поездок и меньше — отлично, до 20 — хорошо, больше — удовлетворительно"><div id="clk">00:00:00</div><div id="trc">Поездки: 0</div><div id="grade"></div></div>
+  <div class="mapbtns"><button onclick="whereAmI()">Где я</button><button id="onlyv" onclick="onlyVisited()">Мои поездки</button></div>
+  <div class="zbtn"><button onclick="zoom(.8)">+</button><button onclick="zoom(1.25)">−</button></div>
+  <div id="pop"></div>
+ </div>
+</div>
+<style>.abc{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}.abc span{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:#e4d9c0;border-radius:4px;font-family:'IBM Plex Mono';font-size:14px}
+.strip.ev{clip-path:none;border-radius:8px;font-family:'IBM Plex Sans';font-size:14px}.strip.ev b{color:#b3261e;margin-right:4px}
+input[type=range]{accent-color:#b3261e}
+
+.pz{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pcard{background:#f6f0e2;border:2px solid #d4c7a8;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;transition:transform .15s,border-color .2s}
+.pcard:hover{transform:translateY(-2px);border-color:#8a7f70}.pcard b{display:block;font-family:'Playfair Display';font-size:16px;margin-bottom:4px}.pcard span{display:block}.pcard.ok{border-color:#b3261e;background:#f3dcd6}.pcard.no{opacity:.45}
+.dials{display:flex;gap:10px;justify-content:center;background:#4b4f52;padding:18px;border-radius:14px;transition:transform .4s}.dials.open{transform:perspective(600px) rotateY(-25deg)}
+.dial{display:flex;flex-direction:column;align-items:center;gap:4px}.dial span{width:52px;height:60px;background:#1d1f20;color:#e9c46a;font-family:'IBM Plex Mono';font-size:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;box-shadow:inset 0 3px 8px #000}
+.dial button{background:#2a2d2f;color:#ddd;border:0;width:52px;border-radius:6px;cursor:pointer;padding:4px}.tries{font-size:13px;color:#8a3a2f;margin-left:6px}
+.strips{display:flex;flex-direction:column;gap:5px}.strip{background:#fbf7ec;padding:8px 12px;font-family:'IBM Plex Mono';font-size:14px;cursor:pointer;border:2px solid transparent;box-shadow:0 2px 4px rgba(0,0,0,.15);clip-path:polygon(0 8%,4% 0,12% 6%,22% 0,35% 7%,48% 1%,60% 6%,74% 0,86% 7%,100% 2%,100% 92%,90% 100%,78% 94%,64% 100%,50% 93%,38% 100%,24% 94%,10% 100%,0 94%);transition:transform .2s}
+.strip:hover{background:#fff}.strip.pk{border-color:#b3261e;background:#f3dcd6}.strips.done .strip{transform:none!important;background:#efe6d2}
+@media(max-width:500px){.pz{grid-template-columns:1fr}.dial span{width:44px}}
+
+.rail em{font-style:normal;font-size:10.5px;font-family:'IBM Plex Sans';color:#a89e8f}.rail button.on em{color:#fff}
+.hot.mgh:after{content:""}.hot.mgh{border-color:var(--red)!important}
+.prog{font-size:12px;color:#e9c46a;margin-left:8px;font-family:'IBM Plex Sans'}.prog.full{color:#7fb77e}
+.mp.e circle{fill:#9a948a;stroke:#e6e3da}.mp.full circle{fill:#5a8a58}.mp.h circle{stroke:#e9c46a;stroke-width:6}
+.ngrp{font-family:'Playfair Display';margin:16px 0 8px;color:#cfc6b6;letter-spacing:1px}
+.clue{position:relative;padding-right:40px}.star{position:absolute;right:10px;top:10px;background:none;border:0;font-size:18px;cursor:pointer;opacity:.35}.star.on{opacity:1}
+.mapbtns{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}.mapbtns button{background:rgba(20,17,15,.9);color:#fff;border:1px solid #3a332c;border-radius:10px;padding:8px 12px;cursor:pointer;font-size:13px}.mapbtns button.on{background:var(--red)}
+#grade{font-size:11px;color:#a89e8f;margin-top:2px}
+.backmap{display:none;width:100%;margin-bottom:12px}
+.tour{position:fixed;inset:0;z-index:180;pointer-events:none}
+.tour .spot{position:fixed;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.72);transition:all .35s cubic-bezier(.2,.7,.2,1);pointer-events:none;outline:2px solid #e9c46a}
+.tour .tb{position:fixed;width:300px;background:var(--paper);color:var(--ink);border-radius:14px;padding:16px 18px;pointer-events:auto;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.tour .tb b{font-family:'Playfair Display';font-size:18px;display:block;margin-bottom:4px}.tour .tb p{margin:0 0 12px;font-size:14px}
+.tour .tb .n{font-size:12px;color:#8a7f70;float:right;margin-top:10px}
+@media(max-width:820px){#game{grid-template-columns:64px 1fr}#side{left:64px;width:calc(100% - 64px)}.rail button{width:56px;height:50px}.backmap{display:block}.mapbtns{bottom:70px}.tour .tb{width:calc(100vw - 40px)}}
+
+#game.nos{grid-template-columns:76px 0 1fr}#game.nos #side{display:none}@media(max-width:820px){#game.nos{grid-template-columns:52px 1fr}}</style>
+<div class="toast" id="toast"></div>
+<script>
+const CLUES={
+ cup:{t:"Чашка с горьким миндальным запахом",d:"В чае — цианид. Заварка в чайнике свежая: чай заварили поздно вечером, а не в шесть."},
+ cup2:{t:"Вторая чашка на подоконнике",d:"Вымыта, но ещё влажная внутри. Вечером Лебедев пил чай не один — с кем-то, кого не опасался."},
+ nokey:{t:"Ключа Лебедева нет",d:"Ни в карманах, ни в кабинете нет его ключа от 214-го. Убийца запер дверь снаружи и унёс ключ."},
+ key:{t:"Ключ от 214-го у двери склада",d:"В щели между досками у выхода со склада — ключ с биркой «214». Убийца уходил этим путём и обронил его."},
+ loud:{t:"Слова вахтёрши",d:"«Сомов в 19:10 уходил — громко так попрощался, сказал, что идёт в кино на девять. Раньше никогда мне не докладывался»."},
+ type:{t:"Черновик письма в министерство",d:"Из обрывков собран текст: «...в министерство... систематическое хищение радиодеталей... по указанию зам. главного инженера Г. Сомова...». Дата — 14 ноября."},
+ lab:{t:"Журнал химлаборатории",d:"13 ноября выдано 5 г цианистого калия «для гальваники». Расписался: Сомов Г.В. Цех гальваники в ноябре на ремонте и не работает."},
+ pass:{t:"Журнал проходной",d:"Кравец Л. — ушла 18:05. Сомов Г. — ушёл 19:10. Лебедева В. (жена) — не входила."},
+ ticket:{t:"Билет в кино из пиджака Сомова",d:"Кинотеатр «Октябрь», сеанс 21:00 — но дата на билете 12 ноября, а не 14-го."},
+ watch:{t:"Показания сторожа",d:"Около 21:00 видел свет в 214-м. Чуть позже мужчина в шляпе вышел из корпуса А и ушёл через склад, минуя проходную."},
+ alibiL:{t:"Алиби секретаря",d:"Лида Кравец вечером 14-го была дома одна. Подтвердить некому — но на проходной она больше не появлялась, а ключа от склада у неё нет."},
+ letters:{t:"Письма в столе секретаря",d:"Записки от Лебедева: «Лида, жди меня в субботу». Роман длился около года."},
+ neighbor:{t:"Показания соседки Лебедевых",d:"Вера Лебедева весь вечер 14-го была у сестры — соседка видела, как та ушла в 17:00 и вернулась после полуночи."},
+ insurance:{t:"Страховой полис",d:"Жизнь Лебедева застрахована на 3000 рублей в пользу жены."},
+ skirt:{t:"Замок склада",d:"Дверь склада заперта, следов взлома нет. Ключи только у двоих: у зам. главного инженера Сомова и у кладовщика — тот с 1 ноября в отпуске в Сочи."}
+,
+ cipher:{t:"Шифровка Сомова",d:"«Детали заберёшь в субботу у склада три. Инженер знает всё, я решу вопрос. Г.» — Сомов знал о доносе и заранее собирался «решить вопрос». Записка не отправлена: адресат — тот, кто забирает детали."},
+ fence:{t:"Сообщник — Ершов",d:"Приёмщик комиссионного магазина Ершов В.П. скупал у Сомова радиодетали. Признался: «Глеб сказал — инженер нас сдаст, но он всё уладит»."},
+ chrono:{t:"Хронология вечера 14 ноября",d:"Лида ушла → Сомов ушёл через проходную → вернулся через склад → «мировая» и яд → чашка вымыта, дверь заперта → ушёл через склад, обронил ключ → утром тело нашла секретарь."},
+ cinema:{t:"Сеанс 14-го отменён",d:"Кассирша «Октября»: 14 ноября вечерний сеанс в 21:00 не состоялся — сгорел проектор, зал стоял пустой. Алиби Сомова — ложь."}
+};
+/* ===== ART ===== */
+const A=(inner,bg="#2a231d")=>`<svg class="art" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg"><defs><filter id="paint" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" result="d"/><feGaussianBlur in="d" stdDeviation=".45" result="b"/><feDropShadow in="b" dx="3" dy="6" stdDeviation="5" flood-color="#000" flood-opacity=".55"/></filter><filter id="wood"><feTurbulence type="fractalNoise" baseFrequency=".012 .35" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .32  0 0 0 0 .21  0 0 0 0 .13  0 0 0 .55 0"/><feComposite in2="SourceGraphic" operator="in"/></filter><filter id="wall"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="4" seed="9"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .42  0 0 0 0 .33  0 0 0 .22 0"/><feComposite in2="SourceGraphic" operator="in"/></filter><filter id="grainf"><feTurbulence baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .09 0"/></filter><linearGradient id="shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="vg" cx=".5" cy=".45" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient><radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd98a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient></defs><rect width="800" height="260" fill="${bg}"/><rect width="800" height="190" fill="#000" filter="url(#wall)"/><rect y="190" width="800" height="70" fill="#000" filter="url(#wood)"/><g filter="url(#paint)">${inner}</g><rect width="800" height="260" fill="url(#shine)" opacity=".5"/><rect width="800" height="260" filter="url(#grainf)"/><rect width="800" height="260" fill="url(#vg)"/></svg>`;
+const ART={
+office:A(`<rect x="470" y="30" width="200" height="140" fill="#3b4652"/>${[0,1,2,3,4,5,6,7,8].map(i=>`<rect x="470" y="${36+i*15}" width="200" height="7" fill="#1c1814"/>`).join("")}<rect x="0" y="190" width="800" height="70" fill="#1a1511"/><rect x="110" y="160" width="520" height="22" fill="#4a3526"/><rect x="130" y="182" width="20" height="78" fill="#3a291d"/><rect x="590" y="182" width="20" height="78" fill="#3a291d"/><path d="M190 160 l20 -48 h110 l20 48z" fill="#26292b"/><rect x="215" y="100" width="100" height="14" fill="#1a1c1d"/><rect x="225" y="78" width="80" height="26" fill="#d8cfbd"/>${[0,1,2,3,4].map(i=>`<circle cx="${225+i*20}" cy="${150}" r="5" fill="#bdb7aa"/>`).join("")}<ellipse cx="440" cy="158" rx="28" ry="6" fill="#ddd"/><path d="M420 132 h40 v18 a20 12 0 0 1 -40 0z" fill="#efe9dc"/><path d="M460 138 a8 8 0 0 1 0 14" stroke="#efe9dc" stroke-width="4" fill="none"/><rect x="500" y="130" width="70" height="30" fill="#c7b48f"/><rect x="505" y="124" width="60" height="8" fill="#a8946c"/><path d="M640 160 v-70 l-30 -20" stroke="#222" stroke-width="5" fill="none"/><path d="M590 60 l40 0 l-10 -22 h-20z" fill="#7a2a1f"/><path d="M560 60 l100 0 l-30 140 h-40z" fill="url(#lamp)"/><rect x="462" y="168" width="216" height="8" fill="#5a4a3a"/><path d="M650 152 h16 v12 a8 6 0 0 1 -16 0z" fill="#e8e2d4"/><path d="M666 155 a4 4 0 0 1 0 7" stroke="#e8e2d4" stroke-width="2" fill="none"/><circle cx="655" cy="156" r="1.4" fill="#9fc3d8"/><text x="30" y="40" font-family="IBM Plex Mono" font-size="14" fill="#8a7f70">КАБ. 214</text>`),
+gate:A(`<rect x="0" y="190" width="800" height="70" fill="#1d1915"/><rect x="250" y="40" width="300" height="160" fill="#3e352c"/><rect x="290" y="70" width="220" height="80" fill="#cfae6a" opacity=".85"/><rect x="290" y="70" width="220" height="80" fill="none" stroke="#2a221b" stroke-width="6"/><line x1="400" y1="70" x2="400" y2="150" stroke="#2a221b" stroke-width="5"/><circle cx="350" cy="120" r="18" fill="#3a2d22"/><path d="M325 150 q25 -30 50 0z" fill="#3a2d22"/><circle cx="460" cy="95" r="16" fill="#f3ead6"/><line x1="460" y1="95" x2="460" y2="84" stroke="#222" stroke-width="2"/><line x1="460" y1="95" x2="466" y2="99" stroke="#222" stroke-width="2"/><rect x="570" y="140" width="12" height="60" fill="#555"/><rect x="560" y="150" width="140" height="8" fill="#6b6156"/><text x="300" y="62" font-family="IBM Plex Sans" font-size="16" fill="#cfc6b6" letter-spacing="3">ПРОХОДНАЯ</text><circle cx="120" cy="90" r="40" fill="url(#lamp)"/>`),
+lab:A(`<rect x="0" y="200" width="800" height="60" fill="#191d1c"/><rect x="60" y="60" width="380" height="10" fill="#4a4034"/><rect x="60" y="130" width="380" height="10" fill="#4a4034"/>${[0,1,2,3,4,5].map(i=>`<path d="M${90+i*58} 60 v-26 h14 v26 l12 0 z" fill="none"/><rect x="${92+i*58}" y="${28+(i%2)*6}" width="16" height="32" rx="3" fill="${['#6ea38d','#b9c7c4','#c9a650','#7f8fa8','#a35d4a','#d9e0dc'][i]}" opacity=".7"/><path d="M${85+i*58} 130 l14 -40 h10 l14 40z" fill="${['#9fc1b4','#d8ccb0','#a3b7c9'][i%3]}" opacity=".6"/>`).join("")}<rect x="520" y="70" width="170" height="130" rx="6" fill="#4b4f52" stroke="#2a2d2f" stroke-width="5"/><circle cx="605" cy="135" r="22" fill="#34383a" stroke="#888" stroke-width="3"/><rect x="595" y="190" width="20" height="26" rx="4" fill="none" stroke="#b5a26a" stroke-width="5"/><rect x="600" y="205" width="10" height="16" fill="#b5a26a"/><text x="530" y="62" font-family="IBM Plex Mono" font-size="13" fill="#9fb3ab">РЕАКТИВЫ · ЯД</text>`,"#202624"),
+store:A(`<rect x="0" y="200" width="800" height="60" fill="#17130f"/><rect x="560" y="40" width="140" height="170" fill="#3a2e22" stroke="#22190f" stroke-width="8"/><rect x="600" y="110" width="14" height="30" fill="#7c7466"/>${[[60,140,110],[150,150,90],[90,90,80],[260,160,70],[330,130,100],[200,110,60],[420,160,80]].map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="${210-y}" fill="#5b4632" stroke="#3a2c1e" stroke-width="4"/><line x1="${x}" y1="${y}" x2="${x+w}" y2="210" stroke="#3a2c1e" stroke-width="3"/>`).join("")}<line x1="400" y1="0" x2="400" y2="40" stroke="#222" stroke-width="2"/><circle cx="400" cy="46" r="8" fill="#ffe2a0"/><circle cx="400" cy="70" r="120" fill="url(#lamp)"/><text x="580" y="34" font-family="IBM Plex Mono" font-size="13" fill="#8a7f70">СКЛАД №3</text>`,"#231c16"),
+guard:A(`<rect x="0" y="190" width="800" height="70" fill="#1c1713"/><rect x="200" y="150" width="400" height="18" fill="#4a3526"/><path d="M330 150 l6 -50 h28 l6 50z" fill="#cfa45a" opacity=".55"/><path d="M326 104 h48 v10 h-48z" fill="#8b8b8b"/><path d="M374 115 a12 14 0 0 1 0 26" stroke="#8b8b8b" stroke-width="5" fill="none"/><ellipse cx="480" cy="140" rx="40" ry="10" fill="#666"/><path d="M445 140 q35 -55 70 0z" fill="#7d7d7d"/><path d="M515 125 l25 -12" stroke="#7d7d7d" stroke-width="8"/><rect x="230" y="100" width="70" height="50" rx="6" fill="#5a3f2a"/><circle cx="252" cy="125" r="12" fill="#3a2a1d"/><rect x="270" y="112" width="22" height="26" fill="#c7b48f"/><circle cx="650" cy="60" r="60" fill="url(#lamp)"/><path d="M335 95 q8 -15 0 -30 M352 95 q8 -15 0 -30" stroke="#ddd" stroke-width="2" fill="none" opacity=".4"/>`),
+secr:A(`<rect x="0" y="190" width="800" height="70" fill="#1a1511"/><rect x="150" y="150" width="500" height="20" fill="#5a4030"/><rect x="170" y="170" width="460" height="60" fill="#4a3526"/>${[0,1,2].map(i=>`<rect x="190" y="${180+i*16}" width="120" height="12" fill="#3a291d"/><circle cx="250" cy="${186+i*16}" r="3" fill="#b5a26a"/>`).join("")}<rect x="600" y="100" width="40" height="50" fill="#7a4a2a"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${620+(i-2)*14}" cy="${80-Math.abs(i-2)*6}" rx="10" ry="30" fill="#3f6b3a" transform="rotate(${(i-2)*18} ${620} 100)"/>`).join("")}<path d="M380 150 h70 v-14 q-35 -18 -70 0z" fill="#1d1d1d"/><path d="M372 126 q43 -26 86 0 l-8 8 q-35 -16 -70 0z" fill="#232323"/><circle cx="415" cy="140" r="8" fill="#ddd"/><rect x="480" y="130" width="80" height="20" fill="#e7dcc4"/><rect x="484" y="124" width="72" height="8" fill="#d6c9ac"/><circle cx="300" cy="40" r="90" fill="url(#lamp)"/>`),
+home:A(`<rect x="0" y="200" width="800" height="60" fill="#3a1f1a"/><path d="M80 210 h640 l40 50 h-720z" fill="#6b2c22"/><path d="M120 220 h560 l20 30 h-600z" fill="none" stroke="#c9a650" stroke-width="2" opacity=".5"/><rect x="140" y="50" width="250" height="150" fill="#4a3022"/><rect x="155" y="65" width="105" height="60" fill="#8fa3a8" opacity=".35"/><rect x="270" y="65" width="105" height="60" fill="#8fa3a8" opacity=".35"/>${[0,1,2,3].map(i=>`<rect x="${165+i*24}" y="${92-i%2*6}" width="14" height="${30+i%2*6}" fill="#e6dcc8" opacity=".7"/>`).join("")}<rect x="155" y="140" width="220" height="50" fill="#3a251a"/><rect x="200" y="30" width="90" height="16" fill="#c7b48f"/><rect x="470" y="40" width="200" height="140" fill="#2b3440"/><rect x="460" y="30" width="30" height="170" fill="#7a3328" opacity=".8"/><rect x="650" y="30" width="30" height="170" fill="#7a3328" opacity=".8"/><circle cx="560" cy="90" r="22" fill="#e9dcc0" opacity=".25"/>`,"#3d2a22"),
+hostel:A(`<rect x="0" y="200" width="800" height="60" fill="#1c1814"/><rect x="380" y="20" width="12" height="190" fill="#3a2c1e"/><rect x="340" y="30" width="92" height="8" fill="#3a2c1e"/><path d="M336 50 q50 -20 100 0 l8 110 q-58 18 -116 0z" fill="#3e3f44"/><path d="M386 50 l-14 40 l14 10 l14 -10z" fill="#d8d2c4"/><path d="M386 60 l-5 50 l5 6 l5 -6z" fill="#7a2a1f"/><path d="M350 175 v-10 M422 175 v-10" stroke="#3e3f44" stroke-width="10"/><ellipse cx="460" cy="44" rx="44" ry="9" fill="#5c5a55"/><path d="M432 44 q0 -30 28 -32 q28 2 28 32z" fill="#6e6c66"/><rect x="432" y="36" width="56" height="7" fill="#2a2a2a"/><rect x="560" y="120" width="160" height="90" fill="#4a3526"/><rect x="580" y="100" width="40" height="22" fill="#1d1d1d"/><circle cx="660" cy="108" r="12" fill="#e9dcc0" opacity=".6"/><rect x="80" y="40" width="160" height="120" fill="#2b3440"/><line x1="160" y1="40" x2="160" y2="160" stroke="#1c1814" stroke-width="6"/><circle cx="560" cy="30" r="80" fill="url(#lamp)"/>`)
+};
+const PORT={
+somov:`<svg viewBox="0 0 84 84"><rect width="84" height="84" fill="#3a332c"/><path d="M14 84 q28 -34 56 0z" fill="#26272b"/><path d="M36 60 l6 10 l6 -10z" fill="#d8d2c4"/><circle cx="42" cy="42" r="15" fill="#c9a98a"/><ellipse cx="42" cy="30" rx="26" ry="5" fill="#4a4844"/><path d="M27 30 q0 -16 15 -17 q15 1 15 17z" fill="#5c5a55"/><rect x="27" y="25" width="30" height="4" fill="#222"/><rect x="34" y="40" width="6" height="2" fill="#333"/><rect x="44" y="40" width="6" height="2" fill="#333"/><path d="M36 50 h12" stroke="#7a5a46" stroke-width="2"/></svg>`,
+vera:`<svg viewBox="0 0 84 84"><rect width="84" height="84" fill="#3a332c"/><path d="M16 84 q26 -32 52 0z" fill="#4b2a2a"/><circle cx="42" cy="44" r="14" fill="#d7b79a"/><path d="M27 44 q0 -22 15 -22 q15 0 15 22 q-4 -14 -15 -14 q-11 0 -15 14z" fill="#5a3a22"/><circle cx="42" cy="20" r="8" fill="#5a3a22"/><circle cx="37" cy="44" r="1.6" fill="#333"/><circle cx="47" cy="44" r="1.6" fill="#333"/><path d="M38 51 h8" stroke="#8a4a3a" stroke-width="2"/></svg>`,
+lida:`<svg viewBox="0 0 84 84"><rect width="84" height="84" fill="#3a332c"/><path d="M16 84 q26 -32 52 0z" fill="#5f6f8a"/><path d="M26 50 q-2 -28 16 -28 q18 0 16 28 h-6 q0 -10 -10 -14 q-10 4 -10 14z" fill="#b98a4a"/><circle cx="42" cy="44" r="13" fill="#e3c4a6"/><path d="M29 40 q4 -14 13 -14 q9 0 13 14 q-6 -8 -13 -8 q-7 0 -13 8z" fill="#c9994e"/><circle cx="37" cy="44" r="1.6" fill="#333"/><circle cx="47" cy="44" r="1.6" fill="#333"/><path d="M38 51 q4 2 8 0" stroke="#b5504a" stroke-width="2" fill="none"/></svg>`,
+petr:`<svg viewBox="0 0 84 84"><rect width="84" height="84" fill="#3a332c"/><path d="M12 84 q30 -34 60 0z" fill="#3f4a3a"/><circle cx="42" cy="44" r="15" fill="#c49a7c"/><path d="M26 36 q16 -16 32 0 l2 4 h-36z" fill="#2f3a2c"/><rect x="24" y="36" width="38" height="5" fill="#252e23"/><path d="M33 52 q9 6 18 0" stroke="#d8d2c4" stroke-width="4" fill="none"/><circle cx="37" cy="45" r="1.6" fill="#333"/><circle cx="47" cy="45" r="1.6" fill="#333"/></svg>`
+};
+/* ===== MINIGAMES ===== */
+function mgOpen(html){const m=document.createElement("div");m.className="mg";m.innerHTML=`<div class="mgbox">${html}<div style="margin-top:14px"><button class="mgbtn x" data-close>Отложить</button></div></div>`;
+ document.body.appendChild(m);requestAnimationFrame(()=>m.classList.add("show"));m.querySelector("[data-close]").onclick=()=>mgClose(m);m.onclick=e=>{if(e.target===m)mgClose(m)};return m}
+function mgClose(m){m.classList.remove("show");setTimeout(()=>m.remove(),300)}
+function mgWin(m,cb){m.querySelector(".mgbox").style.boxShadow="0 0 0 3px #b3261e,0 30px 80px rgba(0,0,0,.6)";setTimeout(()=>{mgClose(m);cb()},700)}
+
+const MGO={
+ cup2:{t:"Кабинет 214",h:"Секретарь вымыла обе чашки и убрала в шкаф. Осмотрите комнату: что стоит не на своём месте?",a:"office",x:658,y:158,r:26,miss:"Ничего необычного"},
+ skirt:{t:"Дверь склада",h:"Сторож говорит, мужчина ушёл через склад. Осмотрите дверь: как он её открыл?",a:"store",x:607,y:125,r:30,miss:"Обычные доски"},
+ letters:{t:"Стол секретаря",h:"Лида просила ничего не трогать. Где она могла хранить личное?",a:"secr",x:250,y:202,r:40,miss:"Только служебные бумаги"},
+ pass:{t:"Журнал проходной, 14.11",h:"Найдите, кто из сотрудников заводоуправления ушёл последним.",lines:["17:02 — Гусев П.Н., цех №1 — выход","17:30 — Лаборантка Орлова Т. — выход","18:05 — Кравец Л.М., заводоуправление — выход","18:40 — Бригада ремонта гальваники — выход","19:10 — Сомов Г.В., заводоуправление — выход","19:15 — Лебедева В.А. — пропуск не выписывался"],ok:4,miss:"Позже уходил ещё кто-то из управления"},
+ insurance:{t:"Страховой полис Госстраха",h:"Кому достанутся деньги? Нажмите на нужную строку.",lines:["Страхователь: Лебедев Аркадий Петрович","Вид: смешанное страхование жизни","Страховая сумма: 3000 руб. 00 коп.","Выгодоприобретатель: Лебедева Вера Андреевна, жена","Дата: 2 марта 1971 г."],ok:3,miss:"Это не о получателе"},
+ loud:{t:"Вахтёрша Зинаида Ивановна",intro:"«Ну что ещё? У меня журнал, всё записано»",q:[["Кто вчера уходил поздно?","«Начальство. Кравец в шесть, Сомов в начале восьмого»."],["Лебедев выходил?","«Нет, свет у него горел. Так и сидел, бедный»."],["Сомов вёл себя как обычно?","«Да какое там! Громко попрощался, сказал — в кино на девять идёт. Раньше и не здоровался»." ,1]]},
+ watch:{t:"Сторож Пётр Ильич",intro:"«Садитесь, товарищ следователь. Чайку?»",q:[["Спасибо, не надо. Вы обходили завод ночью?","«Каждые два часа, как положено»."],["Ничего не слышали?","«Тихо было. Собаки только лаяли у склада»."],["Видели свет в корпусе А?","«В 214-м горел около девяти. А потом мужик в шляпе из корпуса вышел — и через склад. Мимо проходной, значит».",1]]},
+ neighbor:{t:"Соседка, Нина Семёновна",intro:"«Ой, горе-то какое... Я Верочку с детства знаю»",q:[["Хорошо жили Лебедевы?","«Да какое... Ругались. Но чтоб руку поднять — никогда»."],["Где была Вера вечером 14-го?","«У сестры, в Заречье. Ушла в пять, вернулась за полночь, я ещё дверь слышала»." ,1],["Приходил кто-нибудь к ним?","«Мужчина в шляпе бывал, с завода. Года два назад, потом перестал»."]]}
+};
+const MG={ cipher(cb){const A="АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",PL_="ДЕТАЛИ ЗАБЕРЕШЬ В СУББОТУ У СКЛАДА ТРИ. ИНЖЕНЕР ЗНАЕТ ВСЕ, Я РЕШУ ВОПРОС. Г.";
+  const enc=PL_.replace(/[А-Я]/g,c=>A[(A.indexOf(c)+2)%32]);
+  const m=mgOpen(`<h3>Записка за подкладкой шляпы</h3><p class="hint">Буквы сдвинуты по алфавиту. На обороте карандашом: <b>«Ключ — цена сегодняшней “Правды”»</b>. Расшифруйте вручную по таблице и ответьте на вопросы.</p><div class="doc" style="font-size:16px;letter-spacing:2px">${enc}</div>
+  <div class="abc">${[...A].map(c=>`<span>${c}</span>`).join("")}</div><textarea class="srch" rows="2" placeholder="Черновик расшифровки (для себя)" style="margin-top:10px;resize:vertical"></textarea>
+  <label class="ql">Кто, по записке, «знает всё»? (одно слово)</label><input class="srch" id="c1"><label class="ql">Где заберут детали?</label><input class="srch" id="c2"><label class="ql">В какой день?</label><input class="srch" id="c3">
+  <button class="mgbtn" data-ok>Проверить</button><button class="mgbtn x" onclick="paper()">Открыть газету</button><span class="tries"></span>`);
+  const n=v=>m.querySelector(v).value.toLowerCase().replace(/ё/g,"е");let t=0;
+  m.querySelector("[data-ok]").onclick=()=>{const ok=[n("#c1").includes("инженер"),n("#c2").includes("склад"),n("#c3").includes("суббот")];t++;
+   if(ok.every(Boolean))mgWin(m,cb);else m.querySelector(".tries").textContent=` Верно ${ok.filter(Boolean).length} из 3`+(t>=3?". Подсказка: каждую букву сдвиньте на 2 назад: Ж→Д, З→Е.":"")}},
+ order(cb,o){let ord=o.start.slice(),pick=null,tries=0;const m=mgOpen(`<h3>${o.t}</h3><p class="hint">${o.h}</p><div class="strips chron"></div><button class="mgbtn" data-chk style="margin-top:12px">Проверить порядок</button><span class="tries"></span>`);
+  const box=m.querySelector(".strips");const draw=()=>{box.innerHTML=ord.map((k,i)=>`<div class="strip ev ${pick===i?'pk':''}" data-i="${i}"><b>${i+1}.</b> ${o.items[k]}</div>`).join("");
+   box.querySelectorAll(".strip").forEach(s=>s.onclick=()=>{const i=+s.dataset.i;if(pick===null)pick=i;else{[ord[pick],ord[i]]=[ord[i],ord[pick]];pick=null}draw()})};draw();
+  m.querySelector("[data-chk]").onclick=()=>{tries++;const ok=ord.filter((k,i)=>k===i).length;if(ok===ord.length){box.classList.add("done");mgWin(m,cb)}else{box.classList.add("shake");setTimeout(()=>box.classList.remove("shake"),300);
+   m.querySelector(".tries").textContent=` На своих местах: ${ok} из ${ord.length}`+(tries>=5?". "+o.tip:"")}}},
+ poison(cb){const T=[["Цианистый калий","Смерть за несколько минут","Кожа ярко-розовая","Запах горького миндаля"],["Мышьяк","Смерть через часы или дни","Рвота, обезвоживание","Запах чеснока"],["Стрихнин","Смерть за 1–3 часа","Сильные судороги, оскал","Горький вкус, без запаха"],["Морфий","Смерть за несколько часов","Синюшная кожа, кома","Зрачки сужены в точку"]];
+  const m=mgOpen(`<h3>Экспертиза: что за яд?</h3><div class="doc" style="margin-bottom:12px;line-height:1.5">ПРОТОКОЛ (выписка): смерть наступила быстро — чашка не допита, тело в рабочей позе за столом. Судорог и рвоты нет. Кожа лица <b>необычно розовая</b>. От остатков чая — <b>слабый горьковатый запах</b>. Зрачки расширены.</div><p class="hint">Сравните признаки и выберите яд. Ошибка — эксперт поправит.</p><div class="pz">${T.map((p,i)=>`<div class="pcard" data-i="${i}"><b>${p[0]}</b>${p.slice(1).map(x=>`<span>${x}</span>`).join("")}</div>`).join("")}</div>`);
+  const why=["","«Мышьяк убивает часами, а он умер за чашкой чая. И рвоты нет»","«При стрихнине были бы страшные судороги. Тут спокойная поза»","«При морфии зрачки сужены, а у него — расширены. И кожа не синюшная»"];
+  m.querySelectorAll(".pcard").forEach(c=>c.onclick=()=>{const i=+c.dataset.i;if(i===0){c.classList.add("ok");mgWin(m,cb)}else{c.classList.add("shake","no");setTimeout(()=>c.classList.remove("shake"),300);toast(why[i])}})},
+ safe(cb){const m=mgOpen(`<h3>Сейф с реактивами</h3><p class="hint">Журнал выдачи ядов хранится в сейфе. Лаборантка забыла код, но на дверце нацарапано:</p><div class="doc" style="margin-bottom:14px;font-size:15px">«Сначала — дверь того, кто главный.<br>Потом — откуда всё пропадает.»</div><div class="dials">${[0,1,2,3].map(i=>`<div class="dial" data-i="${i}"><button data-d="1">▲</button><span>0</span><button data-d="-1">▼</button></div>`).join("")}</div><button class="mgbtn" data-try style="margin-top:12px">Повернуть ручку</button><span class="tries"></span>`);
+  const v=[0,0,0,0];let n=0;m.querySelectorAll(".dial").forEach(d=>d.querySelectorAll("button").forEach(b=>b.onclick=()=>{const i=+d.dataset.i;v[i]=(v[i]+ +b.dataset.d+10)%10;d.querySelector("span").textContent=v[i]}));
+  m.querySelector("[data-try]").onclick=()=>{if(v.join("")==="2143"){m.querySelector(".dials").classList.add("open");mgWin(m,cb)}else{n++;m.querySelector(".dials").classList.add("shake");setTimeout(()=>m.querySelector(".dials").classList.remove("shake"),300);
+   m.querySelector(".tries").textContent=n>=4?" Подсказка: номер кабинета главного инженера + номер склада, где пропадали детали":n>=2?" Не открывается. Главный — это главный инженер. А что пропадает и откуда?":" Не открывается"}}},
+ strips(cb){const L=["Министру электронной промыш-","ленности СССР от гл. инженера","з-да «Импульс» Лебедева А.П.","Сообщаю о систематическом хи-","щении радиодеталей со склада №3","по указанию зам. главного инже-","нера тов. Г.В. Сомова. Прошу","назначить ревизию. 14.XI.78 Лебедев"];
+  let o=[5,2,7,0,3,6,1,4],pick=null;const m=mgOpen(`<h3>Обрывки из корзины</h3><p class="hint">Кто-то порвал черновик письма. Нажмите на две полоски, чтобы поменять их местами, и соберите текст по порядку.</p><div class="strips"></div>`);
+  const box=m.querySelector(".strips");const draw=()=>{box.innerHTML=o.map((k,i)=>`<div class="strip ${pick===i?'pk':''}" data-i="${i}" style="transform:rotate(${(k%3-1)*.8}deg)">${L[k]}</div>`).join("");
+   box.querySelectorAll(".strip").forEach(s=>s.onclick=()=>{const i=+s.dataset.i;if(pick===null){pick=i}else{[o[pick],o[i]]=[o[i],o[pick]];pick=null}draw();if(o.every((k,i)=>k===i)){box.classList.add("done");mgWin(m,cb)}})};draw()},
+ flipq(cb){const m=mgOpen(`<h3>Билет из пиджака</h3><p class="hint">Сомов говорит, что 14-го в 21:00 был в кино. Изучите билет с обеих сторон — нажмите, чтобы перевернуть.</p><div class="flipw"><div class="flip"><div><b>Кинотеатр «Октябрь»</b>Фильм «Экипаж» · Сеанс 21:00<br>Ряд 7 · Место 12 · Цена 30 коп.</div><div class="back"><b>Серия АБ №004417</b>Дата сеанса: 12.11.78<br>Контроль: оторван ✂</div></div></div><p style="margin:14px 0 4px"><b>Что не так с алиби?</b></p><div class="opts">${["Не тот кинотеатр","Билет на 12-е число, а не на 14-е","Сеанс был в 18:00","Контроль не оторван — он не заходил в зал"].map((t,i)=>`<button class="mgbtn" data-i="${i}">${t}</button>`).join("")}</div>`);
+  const f=m.querySelector(".flip");m.querySelector(".flipw").onclick=()=>f.classList.toggle("on");
+  m.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{if(b.dataset.i==="1")mgWin(m,cb);else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300);toast(f.classList.contains("on")?"Посмотрите внимательнее":"Сначала переверните билет")}})},
+ labchain(cb){MG.safe(()=>setTimeout(()=>MG.lens(cb),350))},
+
+ spot(cb,o){const m=mgOpen(`<h3>${o.t}</h3><p class="hint">${o.h}</p><div class="spotw" style="position:relative;cursor:zoom-in">${ART[o.a]}</div>`);
+  const w=m.querySelector(".spotw");w.onclick=e=>{const r=w.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*800,y=(e.clientY-r.top)/r.height*260;
+   const d=Math.hypot(x-o.x,y-o.y),mk=document.createElement("span");mk.style.cssText=`position:absolute;left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;width:44px;height:44px;margin:-22px;border-radius:50%;border:3px solid ${d<o.r?'#b3261e':'#fff'};pointer-events:none;animation:pop .4s`;w.appendChild(mk);
+   if(d<o.r){mgWin(m,cb)}else{setTimeout(()=>mk.remove(),500);toast(o.miss||"Здесь ничего")}}},
+ pick(cb,o){const m=mgOpen(`<h3>${o.t}</h3><p class="hint">${o.h}</p><div class="doc">${o.lines.map((l,i)=>`<div class="ln" data-i="${i}">${l}</div>`).join("")}</div>`);
+  m.querySelectorAll(".ln").forEach(el=>el.onclick=()=>{if(+el.dataset.i===o.ok){el.classList.add("ok");mgWin(m,cb)}else{el.classList.add("shake","no");setTimeout(()=>el.classList.remove("shake"),300);toast(o.miss||"Не то")}})},
+ talk(cb,o){const m=mgOpen(`<h3>${o.t}</h3><div class="chat"><div class="say">${o.intro}</div></div><div class="opts">${o.q.map((q,i)=>q[3]&&!S.clues.includes(q[3])?"":`<button class="mgbtn" data-i="${i}">${q[0]}</button>`).join("")}</div>`+(o.q.some(q=>q[3]&&!S.clues.includes(q[3]))?`<p class="hint" style="margin-top:10px">Ершов явно что-то скрывает. Нужна улика, которой его можно прижать.</p>`:""));
+  const ch=m.querySelector(".chat");m.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{const q=o.q[+b.dataset.i];b.disabled=true;b.style.opacity=.5;
+   ch.insertAdjacentHTML("beforeend",`<div class="me">${q[0]}</div><div class="say">${q[1]}</div>`);ch.scrollTop=1e5;if(q[2])setTimeout(()=>mgWin(m,cb),900)})},
+
+ hold(cb){const m=mgOpen(`<h3>Чашка</h3><p class="hint">Наклонитесь и осторожно вдохните. Удерживайте кнопку.</p><button class="hold"><i></i><span>Вдохнуть…</span></button>`);
+  const b=m.querySelector(".hold"),bar=b.querySelector("i");let v=0,t=null;
+  const down=e=>{e.preventDefault();clearInterval(t);t=setInterval(()=>{v+=4;bar.style.width=v+"%";if(v>=100){clearInterval(t);b.querySelector("span").textContent="Горький миндаль!";mgWin(m,cb)}},50)};
+  const up=()=>{if(v<100){clearInterval(t);v=0;bar.style.width="0"}};
+  b.addEventListener("pointerdown",down);b.addEventListener("pointerup",up);b.addEventListener("pointerleave",up)},
+ scratch(cb){const m=mgOpen(`<h3>Копирка</h3><p class="hint">Заштрихуйте копирку карандашом — проступит последнее письмо.</p><div class="scr"><div>Министру электронной промышленности СССР<br>от гл. инженера з-да «Импульс» Лебедева А.П.<br>…сообщаю о систематическом хищении радиодеталей<br>по указанию зам. главного инженера <b>Г. Сомова</b>…<br>14 ноября 1978 г.</div><canvas></canvas></div>`);
+  const c=m.querySelector("canvas"),box=c.parentNode;c.width=box.offsetWidth;c.height=box.offsetHeight;const x=c.getContext("2d");
+  x.fillStyle="#2f2d33";x.fillRect(0,0,c.width,c.height);x.strokeStyle="rgba(255,255,255,.05)";for(let i=0;i<c.width+c.height;i+=6){x.beginPath();x.moveTo(i,0);x.lineTo(i-c.height,c.height);x.stroke()}
+  x.globalCompositeOperation="destination-out";let dn=false,n=0,won=false;
+  const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+  const rub=e=>{if(!dn||won)return;const[a,b]=pt(e);x.beginPath();x.arc(a,b,20,0,7);x.fill();if(++n%8==0){const d=x.getImageData(0,0,c.width,c.height).data;let cl=0,tot=0;for(let i=3;i<d.length;i+=64){tot++;if(d[i]<40)cl++}if(cl/tot>.55){won=true;c.style.transition="opacity .6s";c.style.opacity=0;mgWin(m,cb)}}};
+  c.addEventListener("pointerdown",e=>{dn=true;c.setPointerCapture(e.pointerId);rub(e)});c.addEventListener("pointermove",rub);c.addEventListener("pointerup",()=>dn=false)},
+ lens(cb){const T=`13.11.78 · Калий цианистый · 5 г<br>Назначение: гальваника, цех №2<br>Получил: <b style="font-size:19px">Сомов Г.В.</b> &nbsp;<i>(подпись)</i>`;
+  const m=mgOpen(`<h3>Журнал реактивов</h3><p class="hint">Почерк мелкий. Водите лупой по записи и прочитайте, кто получил яд.</p><div class="lens"><div class="blur">${T}</div><div class="clear">${T}</div><span class="ring"></span></div><p style="margin:14px 0 4px"><b>Кто расписался?</b></p><div>${["Кравец Л.","Сомов Г.В.","Лебедев А.П."].map(n=>`<button class="mgbtn" data-n="${n}">${n}</button>`).join("")}</div>`);
+  const L=m.querySelector(".lens"),cl=L.querySelector(".clear"),ring=L.querySelector(".ring");
+  L.addEventListener("pointermove",e=>{const r=L.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;cl.style.clipPath=`circle(55px at ${a}px ${b}px)`;ring.style.display="block";ring.style.left=a+"px";ring.style.top=b+"px"});
+  L.addEventListener("pointerleave",()=>{cl.style.clipPath="circle(0 at 0 0)";ring.style.display="none"});
+  m.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{if(b.dataset.n=="Сомов Г.В.")mgWin(m,cb);else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300);toast("Присмотритесь ещё раз")}})},
+ flip(cb){const m=mgOpen(`<h3>Билет из пиджака</h3><p class="hint">Сомов говорит, что был в кино. Переверните билет.</p><div class="flipw"><div class="flip"><div><b>Кинотеатр «Октябрь»</b>Сеанс 21:00 · Зал 1<br>Ряд 7 · Место 12 · Цена 30 коп.</div><div class="back"><b>Дата сеанса: 12.11.78</b>Контроль оторван.<br>А убийство — вечером 14-го…</div></div></div>`);
+  const f=m.querySelector(".flip");m.querySelector(".flipw").onclick=()=>{if(f.classList.contains("on"))return;f.classList.add("on");setTimeout(()=>mgWin(m,cb),1300)}},
+ find(cb){const J=["📦","🪵","🔩","📎","🧱","🪨","🧰","🔧","🗞️","🥫"];let h="";for(let i=0;i<46;i++)h+=`<span style="left:${Math.random()*92}%;top:${Math.random()*86}%;font-size:${22+Math.random()*20}px;transform:rotate(${Math.random()*60-30}deg)">${J[i%J.length]}</span>`;
+  h+=`<span data-k style="left:${8+Math.random()*80}%;top:${10+Math.random()*75}%;font-size:15px;filter:saturate(.4) brightness(.8)">🔑</span>`;
+  const m=mgOpen(`<h3>Пол у выхода со склада</h3><p class="hint">Между досками что-то блеснуло. Найдите это среди хлама.</p><div class="junk">${h}</div>`);
+  m.querySelectorAll(".junk span").forEach(sp=>sp.onclick=()=>{if(sp.hasAttribute("data-k")){sp.style.transform="scale(2.4)";sp.style.filter="none";mgWin(m,cb)}else{sp.classList.add("shake");setTimeout(()=>sp.classList.remove("shake"),300)}})},
+ inv(cb){const m=mgOpen(`<h3>Опись вещей погибшего</h3><p class="hint">Лебедев каждое утро сам отпирал свой кабинет. Чего не хватает?</p><div class="inv"><span>⌚ Часы «Полёт»</span><span>👛 Бумажник, 14 руб.</span><span>🚬 «Беломорканал»</span><span>🔥 Спички</span><span>🪪 Удостоверение</span><span>🖊 Авторучка</span></div><div>${["Очков","Ключей","Денег","Записной книжки"].map(n=>`<button class="mgbtn" data-n="${n}">${n}</button>`).join("")}</div>`);
+  m.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{if(b.dataset.n=="Ключей")mgWin(m,cb);else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300);toast("Подумайте: дверь заперта снаружи")}})}
+};
+
+/* ===== CITY DATA ===== */
+const CATS={zavod:["Завод"],people:["Жители"],shop:["Магазины"],gov:["Учреждения"],fun:["Досуг"],med:["Здоровье"],trans:["Транспорт"]};
+const CI={"zavod": "M3 21V10l5 3V10l5 3V6h4v15zM7 17h2m3 0h2m3 0h2", "people": "M4 11l8-7 8 7M6 9.5V20h12V9.5M10 20v-5h4v5", "shop": "M5 8h14l-1.5 12h-11zM9 8a3 3 0 0 1 6 0", "gov": "M3 9l9-5 9 5M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18", "fun": "M4 5h16v9a8 8 0 0 1-16 0zM9 10h.01M15 10h.01M9 14c1.5 1.5 4.5 1.5 6 0", "med": "M12 5v14M5 12h14", "trans": "M6 4h12a2 2 0 0 1 2 2v10H4V6a2 2 0 0 1 2-2zM4 11h16M7 19v1m10-1v1M7.5 14.5h.01m9 0h.01"};
+const ico=(c,sz=16,col="currentColor")=>`<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${CI[c]}"/></svg>`;
+const P=[
+ // key places
+ {id:"office",n:"Кабинет 214 (гл. инженер)",a:"з-д «Импульс», корпус А",c:"zavod",x:1080,y:250,t:"Кабинет пахнет остывшим табаком. На столе — чашка, папки, печатная машинка «Ятрань». Окно закрыто изнутри.",act:[["Экспертиза: определить яд","cup",null,"poison"],["Осмотреть комнату","cup2",null,"spot"],["Опись вещей погибшего","nokey",null,"inv"],["Заглянуть в печатную машинку",null,"Ленты нет, копирку вынули — кто-то торопился. Зато корзина для бумаг под столом полна обрывков."],["Собрать обрывки из корзины","type",null,"strips"],["Перебрать папки на столе",null,"Отчёты по плану. Ничего необычного."]]},
+ {id:"secr",n:"Приёмная гл. инженера",a:"з-д «Импульс», корпус А",c:"zavod",x:1010,y:210,t:"Аккуратный стол, фикус, стопка писем. Секретарь Лида Кравец сегодня отпросилась домой.",act:[["Осмотреть стол","letters",null,"spot"]]},
+ {id:"gate",n:"Проходная завода",a:"ул. Заводская, 1",c:"zavod",x:990,y:500,t:"Вахтёрша Зинаида Ивановна вяжет носок и неохотно отрывается от дела.",act:[["Журнал проходной","pass",null,"pick"],["Расспросить вахтёршу","loud",null,"talk"]]},
+ {id:"lab",n:"Химлаборатория",a:"з-д «Импульс», корпус Б",c:"zavod",x:1260,y:330,t:"Колбы, вытяжной шкаф, сейф с реактивами на висячем замке. Лаборантка нервничает.",act:[["Открыть сейф и журнал реактивов","lab",null,"labchain"],["Поговорить с лаборанткой",null,"«Глеб Викторович сказал — для гальваники. Я не посмела спорить с начальством... Меня теперь посадят?»"],["Спросить о цехе гальваники",null,"«Гальваника с октября на ремонте, там даже ванны слиты»."]]},
+ {id:"store",n:"Склад №3",a:"з-д «Импульс», задний двор",c:"zavod",x:1360,y:190,t:"Двор, заваленный ящиками. От склада идёт проход прямо к корпусу А, минуя проходную.",act:[["Проверить дверь склада","skirt",null,"spot"],["Осмотреть пол у выхода","key",null,"find"]]},
+ {id:"guard",n:"Сторожка",a:"з-д «Импульс», у ворот",c:"zavod",x:930,y:410,who:"petr",t:"Пётр Ильич, ночной сторож, пьёт чай из подстаканника.",act:[["Расспросить о вечере 14-го","watch",null,"talk"]]},
+ {id:"kadry",n:"Отдел кадров завода",a:"з-д «Импульс», корпус В",c:"zavod",x:1170,y:450,t:"Начальница отдела кадров неохотно достаёт личные дела.",act:[["Личное дело Сомова",null,"Сомов Глеб Викторович, 44 года, холост. На заводе 12 лет. В 1977 г. — выговор «за недостачу радиодеталей на складе №3». Дело замяли."],["Личное дело Кравец",null,"Кравец Лидия Михайловна, 26 лет. Секретарь с 1975 г. Характеристика отличная."]]},
+ {id:"hostel",n:"Сомов Глеб Викторович",a:"ул. Ленина, 18, кв. 4",c:"people",x:720,y:170,who:"somov",t:"Холостяцкая квартира. На вешалке — пиджак и фетровая шляпа. Сомов встречает вас в дверях, улыбается слишком широко.",act:[["Обыскать карманы пиджака","ticket",null,"flipq"],["Осмотреть шляпу",null,"Серая фетровая шляпа. На полях — складская пыль. Под подкладкой что-то шуршит..."],["Достать записку из-под подкладки","cipher",null,"cipher"]]},
+ {id:"home",n:"Лебедева Вера Андреевна",a:"ул. Гагарина, 12, кв. 9",c:"people",x:380,y:300,who:"vera",t:"Двухкомнатная квартира. Вдова держится холодно. На серванте — папка с документами.",act:[["Папка с документами","insurance",null,"pick"],["Поговорить с соседкой","neighbor",null,"talk"]]},
+ {id:"lidahome",n:"Кравец Лидия Михайловна",a:"ул. Мира, 7, кв. 31",c:"people",x:600,y:830,who:"lida",t:"Маленькая комната в коммуналке. Лида с заплаканными глазами.",act:[]},
+ {id:"cinema",n:"Кинотеатр «Октябрь»",a:"пл. Революции, 2",c:"fun",x:530,y:430,t:"Пахнет попкорном и мокрыми пальто. Кассирша скучает за окошком.",act:[["Спросить про сеанс 14-го в 21:00","cinema",null,"talk"]]},
+ {id:"militia",n:"Отделение милиции №1",a:"ул. Советская, 5",c:"gov",x:250,y:470,t:"Дежурный лейтенант: «Дело у прокуратуры, наше дело — тело увезли. Протокол осмотра вы читали»."},
+ {id:"morgue",n:"Городская больница, морг",a:"ул. Пирогова, 3",c:"med",x:780,y:900,t:"Судмедэксперт протирает очки: «Цианистый калий, в чае. Смерть — между 20:30 и 22:00. Без сахара пил, бедолага — горечь не замаскировать»."},
+ {id:"ershov",n:"Комиссионный магазин",a:"ул. Речная, 9",c:"shop",x:180,y:560,t:"Тесный магазинчик: приёмники, магнитофоны, коробки с радиолампами. Приёмщик Ершов В.П. нервно протирает прилавок.",act:[["Осмотреть витрину",null,"Радиолампы и транзисторы с маркировкой завода «Импульс» — в магазине их быть не должно."],["Прижать Ершова","fence",null,"talk"]]},
+ {id:"post",n:"Почта, отделение №2",a:"ул. Ленина, 2",c:"gov",x:450,y:190,t:"Начальница почты листает журнал: «От Лебедева писем в Москву не было. Ни 14-го, ни 15-го». Значит, письмо в министерство так и не отправили."},
+];
+// filler places
+const FN={shop:["Гастроном №3","Булочная «Колосок»","Овощной магазин","Универмаг «Заря»","Комиссионный магазин","Магазин «Культтовары»","Галантерея","Рынок","Хозмаг","Пивной ларёк","Книжный магазин","Магазин «Ткани»"],
+ gov:["Горисполком","Сберкасса №41","Библиотека им. Горького","Школа №2","Детский сад «Ромашка»","ЖЭК №4","Загс","Военкомат","Химчистка","Ремонт часов","Ателье «Силуэт»","Парикмахерская «Локон»"],
+ fun:["ДК «Энергетик»","Ресторан «Север»","Столовая №5","Кафе «Снежинка»","Стадион «Труд»","Баня №1","Парк культуры","Гостиница «Зарека»"],
+ med:["Аптека №12","Поликлиника","Стоматология","Аптека №3"],
+ trans:["Ж/д вокзал","Автостанция","Остановка «Завод»","Таксопарк","Речной причал"],
+ people:["Иванов П.С.","Петрова А.И.","Козлов Н.Н.","Морозова Е.В.","Гусев П.Н.","Орлова Т.К.","Белов С.А.","Зайцева М.Ф.","Тихонов В.П.","Никитина О.Л.","Фёдоров И.Г.","Соколова Р.А.","Медведев Ю.Б.","Ковалёва Н.С."]};
+const ST=["ул. Ленина","ул. Мира","ул. Гагарина","ул. Советская","ул. Речная","пр. Октября","ул. Садовая","ул. Пушкина","пер. Тихий","ул. Космонавтов"];
+const FT=["Вы ничего не нашли.","Здесь о Лебедеве знают только из сплетен. Пусто.","Закрыто на учёт. Зря съездили.","Обычный день, обычные люди. Ничего полезного.","Вас вежливо выслушали и развели руками.","«Ничего не видели, ничего не знаем», — и дверь закрылась."];
+(function(){let sd=7;const r=()=>(sd=(sd*9301+49297)%233280)/233280;
+ const zones=[[120,90,880,560],[880,560,1500,580],[100,700,1500,960]];
+ Object.entries(FN).forEach(([c,arr])=>arr.forEach(n=>{let x,y,ok,tries=0;do{const z=zones[c=="people"?(r()<.6?2:0):(r()<.5?0:2)];x=z[0]+r()*(z[2]-z[0]);y=z[1]+r()*(z[3]-z[1]);
+  ok=!(x>860&&x<1480&&y<540)&&P.every(p=>Math.hypot(p.x-x,p.y-y)>46);}while(!ok&&++tries<200);
+  P.push({id:"f_"+[...n].reduce((h,ch)=>(h*31+ch.charCodeAt(0))>>>0,7).toString(36),n,a:ST[Math.floor(r()*ST.length)]+", "+(1+Math.floor(r()*40)),c,x:Math.round(x),y:Math.round(y),t:FT[Math.floor(r()*FT.length)],filler:1})}))})();
+const PL=Object.fromEntries(P.map(p=>[p.id,p]));
+const WHO={
+ somov:{n:"Глеб Сомов",qs:[["Где вы были вечером 14-го?",null,"«Ушёл в семь, а в девять был в кино, в “Октябре”. Можете проверить»."],["Какие у вас были отношения с Лебедевым?",null,"«Рабочие. Он был человек сложный, но я его уважал»."],["Вы пили с ним чай вечером?","cup2","«Я? Я ушёл в семь, вам же сказали на проходной»."],["Ключ Лебедева нашли у выхода со склада.","key","«При чём тут я? Ключи от склада есть и у кладовщика». — Кладовщик в отпуске с 1 ноября. Сомов молчит."],["Зачем вы брали цианид в лаборатории?","lab","«Для гальваники, по плану». — Гальваника на ремонте. — «...Я... не знал»."],["Ваш билет в кино — за 12-е число.","ticket","Сомов бледнеет. «Перепутал билеты, бывает»."],["Сеанс 14-го в 21:00 отменили.","cinema","Долгое молчание. «...Я гулял. Один. Это не преступление»."],["Лебедев писал на вас в министерство.","type","Долгая пауза. «Я требую адвоката»."]]},
+ vera:{n:"Вера Лебедева",qs:[["Где вы были вечером 14-го?",null,"«У сестры. Мы с мужем давно живём каждый своей жизнью»."],["Вы знали о романе мужа?","letters","«Знала. И мне было всё равно. Так даже спокойнее»."],["Вы получите страховку.","insurance","«Три тысячи? За двадцать лет брака? Не смешите меня»."]]},
+ lida:{n:"Лида Кравец",qs:[["Когда вы ушли с работы?",null,"«Около шести. Аркадий Петрович попросил чаю и остался работать»."],["Где вы были вечером?",null,"«Дома. Одна. Знаю, звучит плохо... Но я на завод не возвращалась, спросите на проходной».","alibiL"],["Вы заваривали ему чай?",null,"«В шесть — да. Он выпил при мне, я вымыла чашку и ушла»."],["Сколько чашек было в кабинете?","cup2","«Две. Его и гостевая. Обе я вымыла и поставила в шкаф. На подоконник — никогда»."],["У вас был роман с Лебедевым.","letters","Плачет. «Он обещал уйти от жены... Я бы никогда ему не навредила»."],["Что он печатал в последние дни?","type","«Какое-то письмо, сам, без меня. Сказал: “Это пойдёт выше головы Сомова”»."]]},
+ petr:{n:"Пётр Ильич",qs:[["Видели кого-нибудь ночью?",null,"«Свет горел в 214-м около девяти. И мужик в шляпе через склад шёл».","watch"],["Узнали мужчину в шляпе?","skirt","«Лица не видел. Но ключ от склада только у начальства... у Сомова точно есть»."]]}
+};
+MGO.fence={t:"Приёмщик Ершов В.П.",intro:"«Я честный приёмщик! Всё по квитанциям!»",q:[["Откуда у вас детали с «Импульса»?","«Люди сдают... я не спрашиваю»."],["Кто такой «Г.» из записки про субботу у склада?","Ершов бледнеет. «Глеб... Глеб Сомов. Возил мне детали два года. Неделю назад сказал: инженер нас сдаст, но он всё уладит. Я не знал, что так!»",1,"cipher"],["Вы знали Лебедева?","«В лицо. Строгий был мужик»."]]};
+MGO.cinema={t:"Касса кинотеатра «Октябрь»",intro:"«Билетов на “Экипаж” нет, не спрашивайте»",q:[["Что шло на этой неделе?","«“Экипаж”. Весь город ходит»."],["Был ли сеанс 14-го в 21:00?","«Четырнадцатого? Так не было вечернего! Проектор сгорел в восемь, всех по домам отправили. Зал пустой стоял».",1],["Вы знаете Сомова с завода?","«Это который в шляпе? Бывает, ходит. А что?»"]]};
+const HINTS=[[3,"Начните с места преступления — кабинет 214 на заводе «Импульс». Найдите его в адресной книге."],[7,"Кто уходил с завода последним? На проходной ведут журнал."],[11,"Цианид не продают в гастрономе. Где на заводе хранят реактивы?"],[15,"Ночной сторож видел больше, чем кажется. А склад стоит проверить."],[20,"У Сомова алиби — кино. Кинотеатр «Октябрь» на площади Революции."],[26,"Почта и морг тоже могут кое-что рассказать."],[32,"Шифр Сомова — сдвиг букв по алфавиту. Число сдвига — цена газеты, она мелко в шапке."],[38,"Кто покупает краденые радиодетали? Загляните в комиссионный магазин."]];
+const QA=[["Кто отравил Аркадия Лебедева? (фамилия)",["сомов"]],["Чем его отравили?",["циан"]],["Из-за чего убийца решился на убийство?",["хищ","донос","письм","министер","разоблач","краж","ворова","недостач"]],["Как убийца попал на завод мимо проходной?",["склад"]]];
+
+/* ===== STATE ===== */
+let S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null};
+try{const v=localStorage.getItem("tihoe3");if(v)S=Object.assign(S,JSON.parse(v))}catch(e){}
+(function(){const ok=id=>!!PL[id];S.log=(S.log||[]).filter(ok);if(S.pos&&!ok(S.pos))S.pos=S.log[0]||null;S.clues=(S.clues||[]).filter(c=>CLUES[c]);S.asked=S.asked||[];S.trips=Math.max(S.trips||0,S.log.length);if(typeof S.el!=="number"||isNaN(S.el))S.el=0})();
+function save(){try{localStorage.setItem("tihoe3",JSON.stringify(S))}catch(e){}}
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2400)}
+function addClue(c){if(!S.clues.includes(c)){S.clues.push(c);save();toast("Улика: "+CLUES[c].t);bump();const nq=Object.values(WHO).filter(w=>w.qs.some(q=>q[1]===c));if(nq.length)setTimeout(()=>toast("Новый вопрос: "+nq.map(w=>w.n).join(", ")),2600);renderPanel();try{pins()}catch(e){}}}
+function bump(){const n=$("nbadge");if(n){n.textContent=S.clues.length;n.classList.remove("bump");void n.offsetWidth;n.classList.add("bump")}}
+let tick=null,last=0;
+function fmtT(ms){const s=Math.floor(ms/1000);return[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(v=>String(v).padStart(2,"0")).join(":")}
+function clock(){$("clk").textContent=fmtT(S.el);$("trc").textContent="Поездки: "+S.trips;$("grade").textContent=S.trips<=12?"оценка сейчас: отлично":S.trips<=20?"оценка сейчас: хорошо":"оценка сейчас: удовл.";
+ const got=HINTS.filter(h=>S.el>=h[0]*60000).length;const hb=$("hbadge");hb.style.display=got>S.hseen?"block":"none";
+ if(got>(hb._n||0)){const first=hb._n===undefined;hb._n=got;if(!first||got>S.hseen)toast("Птички нашептали новую подсказку");if(cur=="hint")renderPanel()}}
+var openGame;openGame=function(){const g=$("game");g.style.display="grid";requestAnimationFrame(()=>g.classList.add("show"));document.body.style.overflow="hidden";
+ last=Date.now();clearInterval(tick);tick=setInterval(()=>{if(!S.done){const n=Date.now();S.el+=n-last;last=n;save()}clock()},1000);drawMap();panel(S.log.length?"hist":"case");clock()};
+function closeGame(){const g=$("game");g.classList.remove("show");setTimeout(()=>g.style.display="none",350);document.body.style.overflow="";clearInterval(tick)}
+
+/* ===== MAP ===== */
+let vb={x:0,y:0,w:1600,h:1000},filt=new Set(Object.keys(CATS)),sel=null;
+function drawMap(){const m=$("cmap");
+ const roads=[[60,380,1540,380],[60,640,1540,640],[300,40,300,980],[640,40,640,980],[880,40,880,560],[1480,40,1480,980],[60,860,1540,860],[1000,640,1000,980],[60,160,880,160]];
+ m.innerHTML=`<defs><pattern id="blk" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#d9d6cc"/><rect x="3" y="3" width="34" height="34" rx="3" fill="#cfcbbe"/></pattern></defs>
+ <rect x="-2000" y="-2000" width="5600" height="5000" fill="#d4d1c5"/>
+ <rect x="40" y="30" width="1520" height="950" fill="url(#blk)"/>
+ <path d="M-100 590 C250 540 420 700 760 650 S1250 560 1700 640 L1700 720 C1250 640 1000 760 760 730 S250 620 -100 670Z" fill="#9fb8c6"/>
+ <text x="1200" y="660" font-family="IBM Plex Sans" font-style="italic" font-size="22" fill="#5d7c8c">р. Зарека</text>
+ <ellipse cx="200" cy="260" rx="120" ry="70" fill="#b9c9a9"/><ellipse cx="1300" cy="880" rx="150" ry="60" fill="#b9c9a9"/>
+ <rect x="880" y="110" width="580" height="430" rx="10" fill="#c3bfb1" stroke="#8e887a" stroke-width="3" stroke-dasharray="12 8"/>
+ <text x="900" y="140" font-family="IBM Plex Sans" font-size="22" fill="#6e685c" letter-spacing="3">ЗАВОД «ИМПУЛЬС»</text>
+ <g stroke="#f4f2ea" stroke-width="16" stroke-linecap="round">${roads.map(r=>`<line x1="${r[0]}" y1="${r[1]}" x2="${r[2]}" y2="${r[3]}"/>`).join("")}</g>
+ <g stroke="#f4f2ea" stroke-width="22"><line x1="640" y1="560" x2="640" y2="760"/><line x1="1000" y1="560" x2="1000" y2="760"/></g>
+ ${[["ЦЕНТР",360,90],["ЗАРЕЧЬЕ",360,950],["СЛОБОДА",1150,950]].map(d=>`<text x="${d[1]}" y="${d[2]}" font-family="IBM Plex Sans" font-size="26" fill="#a49e8f" letter-spacing="6">${d[0]}</text>`).join("")}
+ <g id="pins"></g>`;
+ pins();applyVB()}
+function pins(){const g=$("pins");g.innerHTML=P.filter(p=>filt.has(p.c)&&(!onlyV||S.log.includes(p.id))).map(p=>{const v=S.log.includes(p.id),s=sel===p.id;
+ const st=v?(p.filler?"e":!clueTotal(p.id)||isFull(p.id)?"full":"v"):"";return `<g class="mp ${st} ${s?'s':''} ${hlId===p.id?'h':''}" data-id="${p.id}" transform="translate(${p.x},${p.y})"><circle r="${s?20:15}"/><g transform="translate(-9,-9) scale(.75)" fill="none" stroke="#f4f2ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${CI[p.c]}"/></g></g>`}).join("");
+ if(S.pos&&PL[S.pos])g.insertAdjacentHTML("beforeend",`<g transform="translate(${PL[S.pos].x},${PL[S.pos].y-30})"><path d="M0 0 l-9 -16 a10 10 0 1 1 18 0z" fill="#e9c46a" stroke="#14110f" stroke-width="2"/></g>`);
+ g.querySelectorAll(".mp").forEach(el=>el.onclick=e=>{e.stopPropagation();select(el.dataset.id)})}
+function applyVB(){if(vb.w<1650){vb.x=Math.max(-40,Math.min(1640-vb.w,vb.x))}if(vb.h<1050){vb.y=Math.max(-40,Math.min(1040-vb.h,vb.y))}$("cmap").setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);popPos()}
+function select(id,center){sel=id;pins();const p=PL[id];if(center){vb.w=Math.min(vb.w,900);vb.h=vb.w*.625;vb.x=p.x-vb.w/2;vb.y=p.y-vb.h/2;applyVB();if(innerWidth<=820)$("side").classList.remove("open");}
+ const v=S.log.includes(id);$("pop").innerHTML=`<button class="px" onclick="unsel()">✕</button>${ART[id]?ART[id].replace('class="art"','class="art sm"'):`<div class="ph">${ico(p.c,36,"#8a7f70")}</div>`}<b>${esc(p.n)}</b><small>${esc(p.a)} · ${CATS[p.c][0]}</small><button class="btn go" onclick="trip('${id}')">${v?"Повторная поездка":"Поехать"}</button>`;
+ $("pop").style.display="block";popPos()}
+function unsel(){sel=null;$("pop").style.display="none";pins()}
+function popPos(){if(!sel)return;const p=PL[sel],m=$("cmap"),r=m.getBoundingClientRect(),w=$("mapbox").getBoundingClientRect();
+ const k=Math.min(r.width/vb.w,r.height/vb.h),ox=(r.width-vb.w*k)/2,oy=(r.height-vb.h*k)/2;
+ let x=r.left-w.left+ox+(p.x-vb.x)*k,y=r.top-w.top+oy+(p.y-vb.y)*k;const pp=$("pop");
+ x=Math.max(130,Math.min(w.width-130,x));pp.style.left=x+"px";pp.style.top=Math.max(10,y-pp.offsetHeight-26)+"px";if(y-pp.offsetHeight-26<10)pp.style.top=(y+30)+"px"}
+function zoom(f,cx,cy){const nw=Math.max(300,Math.min(2400,vb.w*f));cx=cx??vb.x+vb.w/2;cy=cy??vb.y+vb.h/2;
+ vb.x=cx-(cx-vb.x)*nw/vb.w;vb.y=cy-(cy-vb.y)*nw/vb.w;vb.h=vb.h*nw/vb.w;vb.w=nw;applyVB()}
+function initPan(){const m=$("cmap");let d=null;
+ m.addEventListener("pointerdown",e=>{if(e.target.closest(".mp"))return;d={x:e.clientX,y:e.clientY,vx:vb.x,vy:vb.y,mv:0};m.setPointerCapture(e.pointerId)});
+ m.addEventListener("pointermove",e=>{if(!d)return;const r=m.getBoundingClientRect(),k=vb.w/r.width;vb.x=d.vx-(e.clientX-d.x)*k;vb.y=d.vy-(e.clientY-d.y)*k;d.mv++;applyVB()});
+ m.addEventListener("pointerup",()=>{if(d&&d.mv<3)unsel();d=null});
+ m.addEventListener("wheel",e=>{e.preventDefault();const r=m.getBoundingClientRect();zoom(e.deltaY>0?1.15:.87,vb.x+(e.clientX-r.left)/r.width*vb.w,vb.y+(e.clientY-r.top)/r.height*vb.h)},{passive:false})}
+
+
+let hlId=null,onlyV=false;
+function clueIds(id){const p=PL[id];const a=(p.act||[]).filter(x=>x[1]).map(x=>x[1]);if(p.who)WHO[p.who].qs.forEach(q=>q[3]&&a.push(q[3]));return [...new Set(a)]}
+function clueTotal(id){return clueIds(id).length}
+function clueGot(id){return clueIds(id).filter(c=>S.clues.includes(c)).length}
+function isFull(id){const t=clueTotal(id);return t>0&&clueGot(id)>=t}
+function hl(id){if(hlId===id)return;hlId=id;pins()}
+function whereAmI(){if(!S.pos){toast("Вы ещё в прокуратуре — никуда не ездили");return}select(S.pos,1)}
+function onlyVisited(){onlyV=!onlyV;$("onlyv").classList.toggle("on",onlyV);pins();if(onlyV&&!S.log.length)toast("Поездок пока нет")}
+function confirmBox(title,text,yes,cb){const m=mgOpen(`<h3>${title}</h3><p class="hint">${text}</p><button class="mgbtn" data-yes>${yes}</button>`);m.querySelector("[data-close]").textContent="Отмена";m.querySelector("[data-yes]").onclick=()=>{mgClose(m);cb()}}
+function askSubmit(){if(!$("qa0"))return;if(QA.some((q,i)=>!$("qa"+i).value.trim())){toast("Заполните все поля");return}confirmBox("Отправить ответы?","Ответ можно отправить только один раз. Изменить его потом будет нельзя.","Отправить",submitA)}
+const GROUPS=[["Место преступления",["cup","cup2","nokey"]],["Глеб Сомов",["type","cipher","fence","lab","ticket","cinema","loud","pass","watch","skirt","key","chrono"]],["Вера Лебедева",["insurance","neighbor"]],["Лида Кравец",["letters","alibiL"]]];
+function star(c){S.star=S.star||[];S.star.includes(c)?S.star=S.star.filter(x=>x!==c):S.star.push(c);save();renderPanel()}
+function notesHTML(){const cl=c=>`<div class="clue"><button class="star ${(S.star||[]).includes(c)?'on':''}" title="Пометить как важное" onclick="star('${c}')">★</button><b>${CLUES[c].t}</b><br>${CLUES[c].d}</div>`;
+ const st=(S.star||[]).filter(c=>S.clues.includes(c)),used=new Set(GROUPS.flatMap(g=>g[1]));
+ let h=`<h3>Улики <span class="muted" style="font-size:15px">${S.clues.length} из ${Object.keys(CLUES).length}</span></h3>`;
+ if(!S.clues.length)return h+`<p class="muted">Пока пусто. Улики появятся после поездок.</p>`;
+ if(st.length)h+=`<div class="ngrp">Важное</div>`+st.map(cl).join("");
+ h+=GROUPS.map(([t,ids])=>{const g=ids.filter(c=>S.clues.includes(c));return g.length?`<div class="ngrp">${t}</div>`+g.map(cl).join(""):""}).join("");
+ return h+S.clues.filter(c=>!used.has(c)).map(cl).join("")}
+const TOUR=[["#side","Материалы дела","Здесь описано, что случилось. Прочитайте внимательно — от этого зависит, куда ехать."],
+ ['.rail button[data-p="book"]',"Адресная книга","Ищите людей и места по фамилии или названию. Нажмите на адрес — карта покажет его."],
+ ["#mapbox","Карта города","Каждая точка — адрес. Нажмите на неё и выберите «Поехать». Двигайте карту мышкой или пальцем, приближайте колёсиком."],
+ [".clockb","Часы и поездки","Время не ограничено, но каждая новая поездка учитывается. Чем меньше поездок — тем выше оценка."],
+ ['.rail button[data-p="hist"]',"Поездки и улики","После поездки здесь появится текст места, действия и допросы. Кнопки в красной рамке — мини-игры. Все находки собираются в «Уликах»."],
+ ['.rail button[data-p="hint"]',"Подсказки","Застряли — со временем «птички нашептают» подсказку. Жёлтая точка значит, что появилась новая."],
+ ['.rail button[data-p="ans"]',"Бланк ответов","Когда будете уверены, впишите ответы: кто, чем, зачем и как. Отправить можно только один раз. Удачи, следователь!"]];
+function tour(i){document.querySelector(".tour")?.remove();if(i>=TOUR.length){S.tut=1;save();return}
+ if(i==0){panel("case");if(innerWidth<=820)$("side").classList.add("open")}
+ if(innerWidth<=820&&(TOUR[i][0]=="#mapbox"||TOUR[i][0]==".clockb"))$("side").classList.remove("open");
+ const el=document.querySelector(TOUR[i][0]);if(!el){tour(i+1);return}const r=el.getBoundingClientRect(),d=document.createElement("div");d.className="tour";
+ d.innerHTML=`<div class="spot" style="left:${r.left-4}px;top:${r.top-4}px;width:${r.width+8}px;height:${r.height+8}px"></div><div class="tb"><b>${TOUR[i][1]}</b><p>${TOUR[i][2]}</p><button class="mgbtn" data-n>${i==TOUR.length-1?"Начать игру":"Далее"}</button><button class="mgbtn x" data-s>Пропустить</button><span class="n">${i+1} / ${TOUR.length}</span></div>`;
+ document.body.appendChild(d);const tb=d.querySelector(".tb"),w=tb.offsetWidth;let x=r.right+16,y=r.top;
+ if(x+w>innerWidth-10)x=r.left-w-16;if(x<10||r.width>innerWidth*.5){x=r.left+r.width/2-w/2;y=r.top+r.height/2-80}
+ tb.style.left=Math.max(10,Math.min(innerWidth-w-10,x))+"px";tb.style.top=Math.max(10,Math.min(innerHeight-tb.offsetHeight-10,y))+"px";
+ d.querySelector("[data-n]").onclick=()=>tour(i+1);d.querySelector("[data-s]").onclick=()=>{d.remove();S.tut=1;save()}}
+function chrono(){if(S.clues.includes("chrono")){toast("Уже восстановлено — смотрите в уликах");return}if(S.clues.length<9){toast("Пока мало фактов. Соберите хотя бы 9 улик");return}
+ MG.order(()=>{addClue("chrono");renderPanel()},{t:"Хронология вечера 14 ноября",h:"Расставьте события по порядку: нажмите на два события, чтобы поменять их местами, затем «Проверить». Игра скажет только, сколько стоит на своих местах.",tip:"Подсказка: сторож видел, как мужчина уходил через склад, уже после того, как в 214-м горел свет.",
+  items:["Лида заваривает Лебедеву чай, моет чашку и уходит","Сомов громко прощается с вахтёршей и уходит через проходную","Сомов возвращается на завод через склад своим ключом","Сомов предлагает Лебедеву выпить чаю «мировую» и подсыпает цианид","Сомов моет свою чашку, ставит её на подоконник и запирает кабинет ключом Лебедева","Мужчина в шляпе уходит через склад и роняет ключ от 214-го","Секретарь открывает кабинет своим ключом и находит тело"],start:[4,1,6,0,5,3,2]})}
+/* ===== TRIPS ===== */
+function trip(id){if(S.done){toast("Дело закрыто");return}
+ if(!S.log.includes(id)){S.trips++;S.log.unshift(id)}else{S.log=[id,...S.log.filter(x=>x!==id)]}
+ S.pos=id;save();unsel();pins();clock();panel("hist");setTimeout(()=>{const e=document.querySelector(".hent");e&&e.classList.add("flash")},50)}
+function act(id,i){const h=PL[id].act[i];if(h[1]){const fin=()=>{addClue(h[1]);renderPanel()};if(h[3]&&!S.clues.includes(h[1]))MG[h[3]](fin,MGO[h[1]]);else fin()}else{const k="t"+id+i;if(!S.asked.includes(k)){S.asked.push(k);save()}renderPanel()}}
+function ask(w,i){const k=w+i,q=WHO[w].qs[i];if(!S.asked.includes(k)){S.asked.push(k);save();if(q[3])addClue(q[3])}renderPanel()}
+function entry(id){const p=PL[id];if(!p)return"";const tt=clueTotal(id),gg=clueGot(id);let h=`<div class="hent" onmouseenter="hl('${id}')" onmouseleave="hl(null)"><div class="hh"><b>${esc(p.n)}${tt?`<span class="prog ${gg>=tt?'full':''}">${gg>=tt?'✓ изучено':`найдено ${gg} из ${tt}`}</span>`:p.filler?'<span class="prog" style="color:#8a7f70">пусто</span>':''}</b><span>${ico(p.c)}</span></div><small class="addr">${esc(p.a)}</small><p>${p.t}</p>`;
+ if(p.act&&p.act.length)h+=`<div>`+p.act.map((a,i)=>{const got=a[1]&&S.clues.includes(a[1]),told=!a[1]&&S.asked.includes("t"+id+i);
+  return `<span class="hot ${got||told?'got':''} ${a[3]&&!got?'mgh':''}" onclick="act('${id}',${i})">${a[0]}${a[3]&&!got?" · мини-игра":""}</span>${got?`<div class="ans">${CLUES[a[1]].d}</div>`:told?`<div class="ans">${a[2]}</div>`:""}`}).join("")+`</div>`;
+ if(p.who){const w=WHO[p.who];h+=`<div class="intg"><div class="av sm">${PORT[p.who]}</div><b>Допрос: ${w.n}</b>`+w.qs.map((q,i)=>{if(q[1]&&!S.clues.includes(q[1]))return"";const a=S.asked.includes(p.who+i);
+  return `<button class="q ${a?'asked':''}" onclick="ask('${p.who}',${i})">${q[0]}</button>${a?`<div class="ans">${q[2]}</div>`:""}`}).join("")+`</div>`}
+ return h+`<button class="lnk" onclick="select('${id}',1)">Показать на карте</button></div>`}
+
+/* ===== PANELS ===== */
+let cur="case";
+function panel(n){cur=n;document.querySelectorAll(".rail button[data-p]").forEach(b=>b.classList.toggle("on",b.dataset.p==n));$("side").classList.add("open");if(n=="hint"){S.hseen=HINTS.filter(h=>S.el>=h[0]*60000).length;save();clock()}renderPanel()}
+function renderPanel(){try{renderPanel_()}catch(e){console.error(e);$("pbody").innerHTML=`<h3>Что-то пошло не так</h3><p class="muted">Сохранение повреждено.</p><button class="btn wide" onclick="reset()">Начать сначала</button>`}}
+function renderPanel_(){const b=$("pbody");if(!b)return;let h="";
+ if(cur=="case")h=`<h3>Материалы дела</h3><div class="file sm"><p><b>Заречинск, 15 ноября 1978 года, 8:40.</b> В своём кабинете на радиозаводе «Импульс» найден мёртвым главный инженер <b>Аркадий Петрович Лебедев</b>, 52 года. Тело обнаружила секретарь, открыв кабинет своим ключом.</p><p>Предварительно: отравление. На столе — чашка недопитого чая. Следов борьбы нет. Последней его видела секретарь — она ушла около 18:00. Смерть наступила <b>между 20:30 и 22:00</b>. Дверь была заперта снаружи.</p><p>Найдите нужные адреса в адресной книге или на карте и поезжайте. Чем меньше поездок — тем выше оценка. Когда будете уверены — заполните бланк ответов.</p></div><button class="btn wide" onclick="select('office',1)">Начать с места преступления</button><button class="btn ghost wide" onclick="paper()">Газета «Заречинская правда»</button><button class="btn ghost wide" onclick="chrono()">${S.clues.includes('chrono')?'✓ Хронология восстановлена':S.clues.length>=9?'Восстановить хронологию вечера':'Хронология — нужно 9 улик, у вас '+S.clues.length+')'}</button><button class="btn ghost wide" onclick="panel('book')">Адресная книга</button><button class="btn ghost wide" onclick="tour(0)">Как играть</button><button class="btn ghost wide" style="opacity:.7" onclick="confirmBox('Начать заново?','Весь прогресс, улики и поездки будут удалены.','Да, начать заново',reset)">Начать заново</button>`;
+ if(cur=="book"){h=`<h3>Адресная книга</h3><input id="bq" class="srch" placeholder="Поиск: фамилия, место, улица…" oninput="bookList()"><div id="blist"></div>`}
+ if(cur=="hist")h=`<h3>История поездок</h3>`+(S.log.length?S.log.map(entry).join(""):`<p class="muted">Вы ещё никуда не ездили.</p>`);
+ if(cur=="notes")h=notesHTML();
+ if(cur=="hint"){const got=HINTS.filter(x=>S.el>=x[0]*60000);h=`<h3>Птички нашептали</h3>`+(got.length?got.map(x=>`<div class="tip"><small>${String(x[0]).padStart(2,"0")}:00</small>${x[1]}</div>`).join(""):"")+(got.length<HINTS.length?`<p class="muted">Следующая подсказка — через ${Math.max(1,Math.ceil(HINTS[got.length][0]-S.el/60000))} мин.</p>`:"")}
+ if(cur=="ans"){if(S.done)h=`<h3>Бланк ответов</h3>`+S.done;else h=`<h3>Бланк ответов</h3><p class="muted">Ответ можно отправить только один раз.</p>`+QA.map((q,i)=>`<label class="ql">${q[0]}</label><input class="srch" id="qa${i}" placeholder="Ответ" value="${esc((S.draft||[])[i]||"")}" oninput="S.draft=S.draft||[];S.draft[${i}]=this.value;save()">`).join("")+`<button class="btn wide" onclick="askSubmit()">Сохранить и отправить</button>`}
+ b.innerHTML=`<button class="btn ghost backmap" onclick="document.getElementById('side').classList.remove('open')">← К карте</button>`+h;if(cur=="book")bookList();$("nbadge").textContent=S.clues.length}
+function bookList(){const q=($("bq")?.value||"").toLowerCase().replace(/ё/g,"е");const f=p=>(p.n+" "+p.a).toLowerCase().replace(/ё/g,"е").includes(q);
+ const grp=[["Жители",P.filter(p=>p.c=="people"&&f(p))],["Предприятия и учреждения",P.filter(p=>p.c!="people"&&f(p))]];
+ $("blist").innerHTML=grp.map(([t,a])=>`<div class="bg">${t} <span>${a.length}</span></div>`+a.sort((x,y)=>x.n.localeCompare(y.n,"ru")).map(p=>`<div class="bi ${S.log.includes(p.id)?'v':''}" onmouseenter="hl('${p.id}')" onmouseleave="hl(null)" onclick="select('${p.id}',1)"><span>${esc(p.n)}</span><small>${esc(p.a)}</small></div>`).join("")).join("")}
+function submitA(){if(!$("qa0")){panel("ans");return}const an=QA.map((q,i)=>($("qa"+i).value||"").toLowerCase().replace(/ё/g,"е"));if(an.some(a=>!a.trim())){toast("Заполните все поля");return}
+ const ok=QA.map((q,i)=>q[1].some(k=>an[i].includes(k)));const n=ok.filter(Boolean).length;
+ const grade=n<4?"":S.trips<=12?"Блестящая работа, товарищ следователь!":S.trips<=20?"Хорошая работа.":"Дело раскрыто, но вы изъездили полгорода.";
+ S.done=`<div class="result"><h3 style="font-family:'Playfair Display'">${ok[0]?(n==4?"Дело раскрыто":"Убийца назван, но обвинение неполное"):"Дело развалилось"}</h3>${QA.map((q,i)=>`<p>${ok[i]?"<span class=ok>✓</span>":"<span class=no>✗</span>"} ${q[0]}<br><i>${esc(an[i])}</i></p>`).join("")}<p>Время: <b>${fmtT(S.el)}</b> · Поездки: <b>${S.trips}</b>. ${grade}</p>${ok[0]?`<p><b>Как всё было.</b> Глеб Сомов годами списывал и продавал радиодетали со склада №3. Узнав, что Лебедев 14 ноября подготовил письмо в министерство, он взял в лаборатории цианид «для гальваники», в 19:10 демонстративно ушёл через проходную, громко объявив про кино, и вернулся через склад, ключ от которого был только у него. Около 21:00 он предложил Лебедеву выпить чаю «мировую» и подсыпал яд в его чашку. Свою чашку вымыл и второпях поставил на подоконник, дверь запер ключом Лебедева и обронил его на складе. Билет был старый, а сеанс в «Октябре» в тот вечер и вовсе отменили.</p>`:""}<button class="btn ghost" onclick="reset()">Сыграть заново</button></div>`;
+ save();renderPanel()}
+function reset(){S={el:0,trips:0,log:[],clues:[],asked:[],done:null,hseen:0,pos:null,tut:0,star:[],draft:[]};save();last=Date.now();const hb=$("hbadge");hb._n=0;hb.style.display="none";
+ filt=new Set(Object.keys(CATS));onlyV=false;$("onlyv")?.classList.remove("on");sel=null;$("pop").style.display="none";vb={x:0,y:0,w:1600,h:1000};document.querySelectorAll(".mg,.tour").forEach(e=>e.remove());
+ chipsR();drawMap();clock();panel("case");setTimeout(()=>tour(0),400)}
+function paper(){const m=mgOpen(`<div class="paper"><div class="mast">ЗАРЕЧИНСКАЯ ПРАВДА</div><div class="pd">Орган Заречинского горкома КПСС · №218 · 14 ноября 1978 г. · Цена 2 коп.</div>
+ <div class="cols"><div><h4>«Импульс» досрочно выполнил план</h4><p>Коллектив радиозавода «Импульс» рапортует о досрочном выполнении плана третьего квартала. Почётной грамотой награждён заместитель главного инженера тов. <b>Г.В. Сомов</b>. Главный инженер тов. А.П. Лебедев отметил, однако, «серьёзные вопросы к учёту на складах», которые будут рассмотрены отдельно.</p></div>
+ <div><h4>В кино на этой неделе</h4><p>Кинотеатр «Октябрь» показывает фильм «Экипаж». Сеансы: 15:00, 18:00, 21:00. Дирекция приносит извинения за неполадки с проекционной аппаратурой.</p><h4>Новости коротко</h4><p>На ремонт закрыт гальванический цех завода «Импульс» — работы продлятся до декабря. В Доме культуры «Энергетик» — вечер танцев.</p></div></div></div>`);m.querySelector("[data-close]").textContent="Закрыть"}
+
+function chipsR(){$("chips").innerHTML=Object.entries(CATS).map(([k,v])=>`<span class="chip ${filt.has(k)?'':'off'}" onclick="tg('${k}')">${ico(k,14)} ${v[0]}</span>`).join("")}
+function tg(k){filt.has(k)?filt.delete(k):filt.add(k);chipsR();pins()}
+const _og=openGame;openGame=function(){_og();chipsR();if(!S.tut)setTimeout(()=>tour(0),500);else if(S.log.length||S.done)setTimeout(()=>{const m=mgOpen(`<h3>С возвращением, следователь</h3><p class="hint">${S.done?"Это дело уже закрыто.":`У вас есть начатое расследование: поездок — ${S.trips}, улик — ${S.clues.length} из ${Object.keys(CLUES).length}, время — ${fmtT(S.el)}.`}</p><button class="mgbtn" data-c>${S.done?"Посмотреть итог":"Продолжить"}</button><button class="mgbtn" data-n style="background:#b3261e">Начать сначала</button>`);m.querySelector("[data-close]").style.display="none";m.onclick=null;m.querySelector("[data-c]").onclick=()=>{mgClose(m);if(S.done)panel("ans")};m.querySelector("[data-n]").onclick=()=>{mgClose(m);reset()}},350)};
+initPan();if(location.hash=="#new"){try{localStorage.removeItem("tihoe3")}catch(e){}location.hash="";location.reload()}addEventListener("resize",popPos);
+addEventListener("scroll",()=>document.querySelector("header.top").classList.toggle("scrolled",scrollY>20),{passive:true});
+document.querySelectorAll("section h2, .feat, .case, .steps div, details").forEach((el,i)=>{el.classList.add("reveal");el.style.transitionDelay=(i%4)*90+"ms"});
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});document.querySelectorAll(".reveal").forEach(el=>io.observe(el))}else document.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));
+</script>
+</body>
+</html>

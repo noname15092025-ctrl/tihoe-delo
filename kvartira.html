@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тихий переулок, 13</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0a08;--paper:#e8e0cc;--ink:#211d17;--red:#a8221a;--muted:#7f776a;--card:#15130f;--line:#2e2a23;--gold:#d9b25a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg)}
+body{color:#ddd6c8;font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.55;overflow:hidden}
+button{font:inherit}
+#game{display:grid;grid-template-rows:auto 1fr;height:100%;transition:filter .6s}
+.bar{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line);background:#080706;flex-wrap:wrap;position:relative;z-index:3}
+.ttl{font-family:'Playfair Display';font-size:18px;margin-right:6px}.ttl span{color:var(--red)}
+.pill{font-family:'IBM Plex Mono';font-size:13px;background:#13110e;border:1px solid var(--line);border-radius:10px;padding:5px 11px}
+.pill b{color:var(--gold)}
+.sanity{letter-spacing:3px;color:var(--red)}
+.sp{flex:1}
+.tb{background:#13110e;border:1px solid var(--line);color:#d4ccbc;border-radius:10px;padding:6px 11px;cursor:pointer;font-size:14px;position:relative}
+.tb:hover{border-color:#5d5547}.tb .dot{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:var(--red);display:none}.tb.new .dot{display:block}
+#body{display:grid;grid-template-columns:230px 1fr;min-height:0}
+#nav{border-right:1px solid var(--line);overflow:auto;padding:14px 10px;background:#0d0c0a}
+#nav h4{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.2em;color:var(--muted);margin:14px 6px 6px;text-transform:uppercase}
+#nav button{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;color:#d8d0c1;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14.5px}
+#nav button:hover{background:#17140f}#nav button.on{background:#221c15;border-color:#3d3529}
+#nav button:disabled{opacity:.35;cursor:default}
+#scene{position:relative;overflow:auto;padding:22px 26px 80px}
+#scene h2{font-family:'Playfair Display';font-size:30px;margin:0 0 6px}
+.desc{color:#b8af9f;max-width:720px;margin-bottom:16px}
+.acts{display:grid;gap:8px;max-width:720px}
+.act{display:flex;justify-content:space-between;gap:10px;text-align:left;background:var(--card);border:1px solid var(--line);color:#e4ddcf;border-radius:10px;padding:12px 14px;cursor:pointer}
+.act:hover{border-color:#5d5547}.act small{color:var(--muted);font-family:'IBM Plex Mono';font-size:12px;white-space:nowrap}.act.done{opacity:.55}
+.who{font-family:'Playfair Display';font-size:17px;margin:18px 0 8px;color:#c9c0ae}
+/* dark rooms */
+.dark{position:relative;height:420px;max-width:760px;border-radius:12px;overflow:hidden;background:#1d1a15;border:1px solid var(--line);cursor:none;touch-action:none}
+.dark .obj{position:absolute;font-size:34px;cursor:pointer;filter:grayscale(.3);user-select:none}
+.dark .obj span{display:block;font-size:11px;font-family:'IBM Plex Mono';color:#cfc6b4;text-align:center;margin-top:-4px}
+.dark .wall{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#2a251d 0 60px,#26211a 60px 120px)}
+.dark .floor{position:absolute;left:0;right:0;bottom:0;height:90px;background:repeating-linear-gradient(0deg,#1a1611 0 8px,#15120e 8px 16px)}
+.dark .torch{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle 90px at var(--x,50%) var(--y,50%),rgba(0,0,0,0) 0,rgba(0,0,0,.25) 60%,rgba(0,0,0,.985) 100%)}
+.dark .hint{position:absolute;bottom:8px;left:12px;font-size:12px;color:#6a6253;font-family:'IBM Plex Mono';pointer-events:none}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-start;justify-content:center;z-index:40;overflow:auto;padding:28px 12px}
+.modal.on{display:flex}
+.mbox{background:var(--paper);color:var(--ink);border-radius:6px;max-width:660px;width:100%;padding:24px 26px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.mbox h3{font-family:'Playfair Display';font-size:24px;margin:0 0 4px}.mbox .sub{color:#6b6253;font-size:13px;margin-bottom:12px}
+.x{position:absolute;top:8px;right:12px;background:none;border:0;font-size:26px;cursor:pointer;color:#6b6253}
+.doc{background:#f6f1e4;border:1px solid #cdc2a8;border-radius:4px;padding:14px 16px;font-family:'IBM Plex Mono';font-size:13.8px;line-height:1.7;white-space:pre-wrap}
+.doc.hand{font-family:'Playfair Display';font-style:italic;font-size:17px}
+table.mt{border-collapse:collapse;font-family:'IBM Plex Mono';font-size:13.5px;width:100%}
+table.mt td{border:1px solid #cdc2a8;padding:3px 6px}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;margin:8px 8px 0 0;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink)}.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.chat{display:grid;gap:8px;margin:10px 0}.say{background:#f6f1e4;border-radius:10px;padding:10px 12px;border-left:3px solid #8a7f6c}.me{background:#e0dbd0;border-radius:10px;padding:10px 12px;border-left:3px solid #5a4a3a;font-style:italic}
+.qs button{display:block;width:100%;text-align:left;background:#fff;border:1px solid #cdc2a8;border-radius:8px;padding:9px 12px;margin-top:6px;cursor:pointer;color:var(--ink)}
+.qs button.used{opacity:.45}.qs button.press{border-color:var(--red);color:var(--red)}
+.list{display:grid;gap:6px}.list button{text-align:left;background:#fff;border:1px solid #cdc2a8;border-radius:8px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.inp{width:100%;padding:10px;border:1px solid #a99c80;border-radius:8px;font-family:'IBM Plex Mono';font-size:16px;background:#fff;margin-top:8px}
+.err{color:var(--red);font-size:14px;min-height:1.2em;margin-top:6px}
+.ded{border:1px solid #cdc2a8;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#f6f1e4}
+.ded h4{margin:0 0 6px;font-family:'Playfair Display';font-size:17px}.ded.ok{border-color:#5a8a58}.ded.ok h4:after{content:" ✓";color:#3f7a3d}
+.ded .fact{display:none;margin-top:8px;padding:8px 10px;border-left:3px solid #5a8a58;background:#eef1e6;font-size:14px}.ded.ok .fact{display:block}.ded.ok .opts,.ded.ok .row{display:none}
+.ded .opts button{background:#fff;border:1px solid #cdc2a8;border-radius:8px;padding:7px 11px;margin:4px 6px 0 0;cursor:pointer;font-size:14px}
+.ded .row{display:flex;gap:8px;align-items:center}.ded .row .inp{margin:0}
+.dials{display:flex;gap:10px;justify-content:center;background:#2c2924;padding:16px;border-radius:12px;margin-top:10px}
+.dial{display:flex;flex-direction:column;align-items:center;gap:4px}.dial span{width:56px;height:58px;background:#111;color:var(--gold);font-family:'IBM Plex Mono';font-size:30px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.dial button{background:#3a362f;color:#ddd;border:0;width:56px;border-radius:6px;cursor:pointer;padding:3px}
+.knockbox{background:#2a251d;border-radius:10px;height:140px;position:relative;overflow:hidden;margin:12px 0;display:flex;align-items:center;justify-content:center}
+.knockbox .k{font-family:'Playfair Display';font-size:34px;color:#d9cfbb;opacity:0;transition:opacity .08s}
+.knockbox .k.on{opacity:1}
+/* full screens */
+.full{position:fixed;inset:0;z-index:60;background:#050403;color:#ddd6c8;display:none;align-items:center;justify-content:center;padding:24px;text-align:center;overflow:auto}
+.full.on{display:flex}.full .in{max-width:640px}
+.full h1{font-family:'Playfair Display';font-size:42px;margin:6px 0 10px}.full p{color:#b8af9f;font-size:17px}
+.full .tag{font-family:'IBM Plex Mono';letter-spacing:.25em;font-size:12px;color:var(--gold)}
+.full .btn{background:var(--red);border-color:var(--red);color:#fff}.full .btn.ghost{background:transparent;border-color:#5d5547;color:#ddd6c8}
+.warn{border:1px solid var(--red);color:#e7b3ad;border-radius:10px;padding:12px 14px;margin:16px 0;font-size:15px;text-align:left}
+.tog{display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0;font-size:15px;cursor:pointer}
+/* effects */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:70}
+#grain{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.08;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.75) 100%)}
+#flick{position:fixed;inset:0;pointer-events:none;z-index:65;background:#000;opacity:0}
+#cracks{position:fixed;inset:0;pointer-events:none;z-index:66;opacity:0;transition:opacity 2.5s}
+#cracks.on{opacity:1;transition:opacity .05s}
+#scream{position:fixed;inset:0;z-index:90;display:none;background:#000;align-items:center;justify-content:center}
+#scream.on{display:flex;animation:shake .08s infinite}
+#scream svg{width:min(90vw,90vh);height:min(90vw,90vh)}
+@keyframes shake{0%{transform:translate(4px,-3px) scale(1.04)}50%{transform:translate(-5px,4px) scale(1.08)}100%{transform:translate(3px,5px) scale(1.02)}}
+#shadow{position:fixed;top:18%;height:70%;width:120px;left:-200px;z-index:64;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,0,0,.95) 0 25%,rgba(0,0,0,.8) 40%,rgba(0,0,0,0) 70%);filter:blur(6px);opacity:0}
+#shadow.go{animation:walk 2.6s ease-in-out}
+@keyframes walk{0%{left:-200px;opacity:0}20%{opacity:.9}80%{opacity:.9}100%{left:110vw;opacity:0}}
+#fog{position:fixed;inset:0;z-index:50;pointer-events:none;display:none}
+#fog.on{display:block}
+#fogt{position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:55;background:rgba(168,34,26,.92);color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;display:none}
+#fogt.on{display:block}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#13110e;border:1px solid var(--gold);color:#eee;padding:10px 16px;border-radius:10px;z-index:80;display:none;max-width:90vw}.toast.on{display:block}
+@media(max-width:760px){body{overflow:auto}#game{height:auto;min-height:100%}#body{grid-template-columns:1fr}#nav{border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px}#nav h4{width:100%;margin:6px 4px 2px}#nav button{width:auto}.dark{height:340px}}
+</style>
+</head>
+<body>
+<div id="grain"></div><div id="vig"></div>
+<div id="game">
+ <div class="bar">
+  <div class="ttl">Тихий переулок, <span>13</span></div>
+  <div class="pill" id="phase"></div>
+  <div class="pill">Рассудок <span class="sanity" id="san"></span></div>
+  <span class="sp"></span>
+  <button class="tb" id="bF" onclick="openFolder()">🗂 Улики<span class="dot"></span></button>
+  <button class="tb" onclick="openBoard()">📌 Доска</button>
+  <button class="tb" onclick="openReport()">✍️ Отчёт</button>
+  <button class="tb" id="bSnd" onclick="toggleSound()">🔊</button>
+  <button class="tb" onclick="askReset()" title="Сначала">↺</button>
+ </div>
+ <div id="body"><div id="nav"></div><div id="scene"></div></div>
+</div>
+<div id="flick"></div><div id="shadow"></div>
+<svg id="cracks" viewBox="0 0 1000 700" preserveAspectRatio="none"></svg>
+<div id="fog"></div><div id="fogt"></div>
+<div id="scream"></div>
+<div class="modal" id="modal"><div class="mbox"><button class="x" onclick="closeM()">×</button><div id="mb"></div></div></div>
+<div class="full" id="full"><div class="in" id="fullin"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================
+   ТИХИЙ ПЕРЕУЛОК, 13 — психологический хоррор-детектив
+   ====================================================== */
+const DATES=[``,`10 ноября 1979`,`11 ноября 1979`,`12 ноября 1979`];
+const BUDGET={day:8,night:6};
+
+/* ---------- места ---------- */
+const PLACES={
+ mine:{n:`Ваша комната`,g:`Квартира`,d:`Бывшая комната Шилова. Узкая кровать, стол, на нём портфель следователя Лагутина. Стена у изголовья общая с торцом коридора — за ней, по плану, ничего нет.`},
+ kor:{n:`Коридор`,g:`Квартира`,d:`Длинный тёмный коридор. Одна лампочка под потолком, мигает. В самом конце — старый стенной шкаф с облезлой дверцей.`},
+ kitch:{n:`Кухня`,g:`Квартира`,d:`Пять столов, пять плит, пять бельевых верёвок. На стене — график дежурств, написанный крупным аккуратным почерком.`},
+ bath:{n:`Ванная`,g:`Квартира`,d:`Чугунная ванна, над ней газовая колонка, гудит синим пламенем. Под потолком — вентиляционная решётка и маленькая форточка. Над раковиной мутное зеркало.`},
+ nura:{n:`Комната бабы Нюры`,g:`Квартира`,d:`Иконы, вязаные салфетки, запах валерьянки. Баба Нюра сидит у окна и, кажется, никогда не спит.`},
+ sych:{n:`Комната Сычёва`,g:`Квартира`,d:`Чертежи, логарифмическая линейка, пустые бутылки из-под кефира.`},
+ ira:{n:`Комната Иры`,g:`Квартира`,d:`Студентка педучилища. Учебники, проигрыватель, на столе толстая тетрадь в клеточку.`},
+ kot:{n:`Комната Котовых`,g:`Квартира`,d:`Тесно: двое взрослых, двое детей, раскладушки. Котов-старший смотрит волком.`},
+ fomin:{n:`Комната Фомина`,g:`Квартира`,d:`Опечатана с февраля. Ключ — в портфеле Лагутина. Электричество отключено.`,dark:1},
+ zhek:{n:`ЖЭК №4`,g:`Город (днём)`,d:`Контора на первом этаже соседнего дома. Пахнет мокрыми валенками и чернилами. За стойкой — техник-смотритель Люба.`,day:1},
+ pasp:{n:`Паспортный стол`,g:`Город (днём)`,d:`Очередь, плакаты о прописке, строгая паспортистка Тамара Ивановна.`,day:1}
+};
+
+/* ---------- документы ---------- */
+const MORSE=[[`А`,`·−`],[`Б`,`−···`],[`В`,`·−−`],[`Г`,`−−·`],[`Д`,`−··`],[`Е`,`·`],[`Ж`,`···−`],[`З`,`−−··`],[`И`,`··`],[`Й`,`·−−−`],[`К`,`−·−`],[`Л`,`·−··`],[`М`,`−−`],[`Н`,`−·`],[`О`,`−−−`],[`П`,`·−−·`],[`Р`,`·−·`],[`С`,`···`],[`Т`,`−`],[`У`,`··−`],[`Ф`,`··−·`],[`Х`,`····`],[`Ц`,`−·−·`],[`Ч`,`−−−·`],[`Ш`,`−−−−`],[`Щ`,`−−·−`],[`Ы`,`−·−−`],[`Ь`,`−··−`],[`Э`,`··−··`],[`Ю`,`··−−`],[`Я`,`·−·−`]];
+const DOCS={
+ zayav:{t:`Заявления о пропаже`,s:`Из портфеля Лагутина`,b:`<div class="doc">1. Фомин Василий Ильич, 58 лет, пенсионер.
+   Утром <b>14 февраля</b> не обнаружен в комнате. Дверь заперта изнутри? — нет, просто прикрыта.
+2. Ланская Елена Марковна, 41 год, бухгалтер.
+   Утром <b>9 июня</b> не вышла на работу. Вещи на месте.
+3. Шилов Пётр Андреевич, 33 года, шофёр.
+   Утром <b>23 сентября</b> исчез, пальто на вешалке.
+4. Лагутин И.С., следователь, временно проживал в комнате Шилова.
+   Утром <b>3 ноября</b> не явился в прокуратуру. Портфель найден на кухне.</div>`},
+ plan:{t:`Обмерный план Лагутина`,s:`Карандаш, клетчатая бумага`,b:`<div class="doc">Кв. 13 — обмерил рулеткой сам, 31.Х.79
+
+Комната Фомина ........ 4,1 × 3,6
+Комната Шилова (моя) .. 3,8 × 3,2
+Кухня ................. 4,5 × 3,4
+Ванная ................ 2,1 × 1,7
+<b>Коридор: от входной двери до задней стенки шкафа — 8,20 м</b>
+(мерил дважды! не сходится с чем-то — проверить в БТИ)</div>`},
+ morse:{t:`Таблица Морзе`,s:`Вырвана из «Справочника радиолюбителя»`,b:``},
+ lagnote:{t:`Записка Лагутина`,s:`Последняя страница блокнота`,b:`<div class="doc hand">Стучат в стену ночью, около двух. Не трубы — ритм.
+После ванны голова как чугунная и мерещится. Не мыться вечером.
+Г. слишком любезен. Сам предложил мне комнату Шилова.
+Любит повторять: «У меня всё по графику — и люди, и замки».
+Проверить: график, БТИ, паспортный стол.</div>`},
+ graph:{t:`График дежурств, ноябрь`,s:`Кухня, на стене`,b:`<div class="doc">ГРАФИК ДЕЖУРСТВ ПО КУХНЕ И МЕСТАМ ОБЩЕГО ПОЛЬЗОВАНИЯ
+Кв. 13 · ноябрь 1979 · дежурный последним ложится, гасит свет, проверяет газ.
+
+1.XI — Котова        2.XI — <b>Лагутин (вр. прож.)</b>
+...
+10.XI — Ира          11.XI — Сычёв
+<b>12.XI — Следователь (вр. прож.)</b>
+
+Составил: упр. домами <b>Гаврилов Н.П.</b></div>`},
+ graphs:{t:`Папка графиков за 1979 год`,s:`Архив ЖЭК`,b:`<div class="doc">Графики дежурств кв. 13 (составитель — Гаврилов Н.П.), выписка:
+
+13.II — <b>Фомин</b>
+8.VI — <b>Ланская</b>
+22.IX — <b>Шилов</b>
+2.XI — <b>Лагутин (вр. прож.)</b>
+
+Остальные дни — по очереди, без замечаний.</div>`},
+ bti:{t:`Технический паспорт БТИ`,s:`1956 год, архив ЖЭК`,b:`<div class="doc">Дом 13, Тихий пер. Кв. 13, планировка коммунальная.
+...
+Коридор: длина <b>9,60 м</b>, ширина 1,4 м.
+Отметка 1956 г.: в торце коридора <b>заложен дверной проём</b> в кв. 14 (второй подъезд). Кв. 14 с 1977 г. нежилая, на ремонте.</div>`},
+ gaz:{t:`Журнал проверки газовых колонок`,s:`Архив ЖЭК`,b:`<div class="doc">Кв. 13, колонка «Нева», ванная
+12.V.78 — горгаз: тяга в норме, вытяжка чистая.
+<b>10.I.79 — вытяжку прочистил сам, горгаз не вызывали. Упр. Гаврилов.</b>
+С января 1979 г. проверок горгаза по кв. 13 не было.</div>`},
+ rag:{t:`Тряпка из вентиляции`,s:`Ванная, за решёткой`,b:`<div class="doc">Вентиляционный канал над колонкой туго забит промасленной ветошью.
+Внутри комка — обрывок газеты «Заречинская правда» за <b>9 января 1979</b>.
+Без вытяжки угарный газ от колонки остаётся в ванной: головная боль, тошнота, <b>видения</b>, провалы в памяти.</div>`},
+ iradiary:{t:`Дневник Иры`,s:`Тетрадь в клеточку`,b:`<div class="doc hand">13.II — ночью стучали в стену, долго. Утром нет дяди Васи Фомина.
+8.VI — вечером мылась, в зеркале стояла женщина. Наутро нет Ланской.
+22.IX — Сычёв после ванной орал про тень в коридоре. 23-го нет Шилова.
+2.XI — опять стук. Следователь вечером мылся.
+С тех пор моюсь только в бане. Баба Нюра не моется дома вообще, и ей «ничего не является».</div>`},
+ propis:{t:`Выписка о прописке`,s:`Паспортный стол`,b:`<div class="doc">Кв. 13, Тихий пер., 13 — изменения 1979 г.
+
+Комната Фомина → <b>Бурова Зинаида Павловна</b>
+Комната Ланской → <b>Буров Кирилл Семёнович</b>
+Комната Шилова → оформляется на <b>Бурову Анну Кирилловну</b>
+
+Прежняя прописка всех троих: <b>ул. Садовая, 7, кв. 2</b>.
+Документы подавал: упр. домами Гаврилов Н.П., «как на очередников».</div>`},
+ lichnoe:{t:`Слова Любы из ЖЭК`,s:`Техник-смотритель`,b:`<div class="doc">«Николай Петрович у нас золотой человек. Жена у него — Бурова в девичестве, а тёща на Садовой живёт, в седьмом доме. Он к ней каждое воскресенье ездит».</div>`},
+ fominroom:{t:`Находка в комнате Фомина`,s:`Под кроватью, с фонарём`,b:`<div class="doc">Под кроватью — тапок Фомина, носком к двери, будто его стащили с ноги, когда волокли.
+На полу от кровати к двери — две параллельные борозды в пыли.
+На двери изнутри — свежая царапина на уровне колена.</div>`},
+ shkaf:{t:`Задняя стенка шкафа`,s:`Коридор, ночью, с фонарём`,b:`<div class="doc">Задняя стенка шкафа — не кирпич, а щит из досок, покрашенный под стену.
+По краям — свежая штукатурка. Щит изнутри держит щеколда, а снаружи на скобе висит <b>навесной кодовый замок</b> с четырьмя дисками. На каждом диске — числа от 1 до 12.</div>`},
+ vstrecha:{t:`Ночная встреча`,s:`Кухня, 2:40`,b:`<div class="doc">На кухне без света стоит Гаврилов и что-то делает у двери в ванную. Увидев вас, улыбается:
+«Не спится? Колонку проверял, газ — дело серьёзное. Завтра ваше дежурство, товарищ следователь. Последним ляжете».</div>`}
+};
+DOCS.morse.b=`<table class="mt">${(()=>{let r="";for(let i=0;i<MORSE.length;i+=4){r+="<tr>"+MORSE.slice(i,i+4).map(m=>`<td><b>${m[0]}</b> ${m[1]}</td>`).join("")+"</tr>"}return r})()}</table><p class="sub" style="margin-top:8px">· — короткий сигнал, − — длинный. Между буквами — пауза, между словами — длинная пауза.</p>`;
+
+/* ---------- люди ---------- */
+const PPL={
+ gav:{n:`Управдом Гаврилов`,at:{day:`kitch`},intro:`Полный, румяный, в пиджаке поверх свитера. «Всё, что нужно следствию, товарищ следователь! Я тут каждый гвоздь знаю. Квартира у нас, конечно, несчастливая… Но порядок у меня железный».`,
+  q:[{t:`Кто составляет график дежурств?`,a:`«Я, конечно. Порядок есть порядок, у меня всё по графику»`},
+     {t:`Почему вы сами чистили вытяжку, без горгаза?`,need:`gaz`,press:1,a:`«Горгаз не дозовёшься! Я руками, по-хозяйски. А что, тяга плохая?» Улыбка на секунду пропадает.`},
+     {t:`Кто такие Буровы?`,need:`propis`,press:1,a:`«Очередники. Фамилия частая». Он встаёт. «Вы бы, товарищ следователь, отдохнули. Вид у вас нездоровый».`,flag:`gavAlarm`}]},
+ nura:{n:`Баба Нюра`,at:{day:`nura`,night:`nura`},intro:`«Они после ванны ходят, покойнички. Я не моюсь — мне и не являются. А шкаф в коридоре по ночам плачет, плачет…»`,
+  q:[{t:`Что значит «шкаф плачет»?`,a:`«Скребётся. И стучит, как будто человек. Я молюсь, а оно стучит»`},
+     {t:`Что вы знаете про Гаврилова?`,a:`«Колька-то? Сладкий, как патока. А на всех замках у него один секрет. Говорит: всё по графику — когда кто ушёл, так и закрыто»`},
+     {t:`Кто такие Буровы с Садовой?`,need:`propis`,press:1,a:`«Так это ж тёща его, Бурова! Злая баба. И сын её, и внучка. Все в наши комнаты прописались, а никто их тут в глаза не видел»`}]},
+ sych:{n:`Инженер Сычёв`,at:{day:`sych`},intro:`Худой, небритый. «Да, я ругался с Фоминым — храпел он, как трактор. И с Шиловым ругался. И что? Я теперь убийца?»`,
+  q:[{t:`Где вы были в ночь на 14 февраля?`,a:`«В ночной смене на ТЭЦ. Двенадцать часов у пульта, журнал есть, проверяйте»`},
+     {t:`Что вы видели 22 сентября?`,a:`«Помылся вечером — и в коридоре тень, высокая, без лица. До сих пор трясёт. С тех пор моюсь в бане, и никаких теней»`}]},
+ ira:{n:`Студентка Ира`,at:{day:`ira`},intro:`Спокойная, внимательная. «Я записываю всё, что здесь происходит. Так не страшно. Хотите почитать?»`,
+  q:[{t:`Можно ваш дневник?`,a:`«Берите. Только верните»`,doc:`iradiary`},
+     {t:`Кто мылся перед пропажами?`,need:`iradiary`,a:`«Не знаю, как другие, но каждый раз, когда кто-то видел "призрака", он перед этим мылся. Я это только сейчас поняла, пока вам рассказываю»`}]},
+ kot:{n:`Котов`,at:{day:`kot`},intro:`«Нам Гаврилов комнату обещал. Шиловскую. Как очередь подойдёт. Четверо в одной — сами видите».`,
+  q:[{t:`И что с комнатой?`,a:`«А то! Я в паспортный стол ходил — она уже на какую-то Бурову оформляется. Обманул нас Гаврилов»`}]},
+ luba:{n:`Люба, техник ЖЭК`,at:{day:`zhek`},intro:`«Архив? Конечно, товарищ следователь. Что ищем?»`,
+  q:[{t:`Технический паспорт на квартиру 13`,a:`«Вот, пятьдесят шестой год, БТИ»`,doc:`bti`},
+     {t:`Графики дежурств кв. 13 за год`,a:`«Николай Петрович всё сдаёт аккуратно. Держите папку»`,doc:`graphs`},
+     {t:`Журнал проверки газа`,a:`«Вот журнал»`,doc:`gaz`},
+     {t:`Расскажите о Гаврилове`,a:`«Золотой человек!»`,doc:`lichnoe`}]},
+ pasp:{n:`Паспортистка Тамара Ивановна`,at:{day:`pasp`},intro:`«Следователь? Документ покажите. Что нужно?»`,
+  q:[{t:`Кто прописан в комнатах пропавших?`,a:`«Вот выписка. Всё законно, документы управдом приносил»`,doc:`propis`}]}
+};
+
+/* ---------- доска выводов ---------- */
+const BOARD=[
+ {id:`b1`,t:`На сколько коридор короче, чем по документам?`,type:`num`,ans:1.4,unit:`м`,need:[`plan`,`bti`],
+  f:`По БТИ коридор — 9,60 м, по рулетке Лагутина — 8,20 м. <b>1,4 метра</b> пропали за задней стенкой стенного шкафа — там, где в 1956 году заложили проход в пустую кв. 14.`},
+ {id:`b2`,t:`Что общего у всех пропавших?`,opts:[`Все ссорились с Сычёвым`,`Каждый был дежурным в ночь перед пропажей`,`Все жили в одной комнате`,`Все мылись по утрам`],a:1,need:[`zayav`,`graphs`],
+  f:`Каждый пропавший <b>накануне был дежурным</b>: последним ложится, гасит свет — и до утра его никто не хватится. График составляет Гаврилов. <b>12 ноября дежурный — вы.</b>`},
+ {id:`b3`,t:`Почему жильцы видят «призраков»?`,opts:[`Квартира проклята`,`Массовая истерия от страха`,`Угарный газ: вытяжку над колонкой заткнули`,`Кто-то переодевается в простыню`],a:2,need:[`gaz`,`rag`],
+  f:`Вытяжку заткнул ветошью сам Гаврилов — 10 января, по газете от 9-го. Кто моется вечером, дышит угаром: видения, провалы. Испуганные жильцы ничего не ищут, а «видевших» никто не слушает.`},
+ {id:`b4`,t:`На кого переписывают комнаты пропавших?`,opts:[`На очередников ЖЭК`,`На семью Гаврилова — тёщу и её родню`,`На Котовых`,`На родственников пропавших`],a:1,need:[`propis`],
+  f:`Буровы с Садовой, 7 — <b>тёща Гаврилова</b> и её родня. Комнаты в коммуналке — огромные деньги. Вот мотив.`},
+ {id:`b5`,t:`Что выстукивают в стене? (обе ночи подряд)`,type:`txt`,ans:`ЖИВШКАФГАВРИЛОВ`,need:[`knock1`,`knock2`],
+  f:`«<b>Жив. Шкаф. Гаврилов</b>». Это не призрак. За стеной — живой человек, и он говорит, кто его туда упрятал.`}
+];
+
+/* ---------- состояние ---------- */
+const KEY=`td_kv13`;
+const fresh=()=>({day:1,ph:`day`,left:BUDGET.day,loc:`mine`,docs:[],flags:{},asked:{},board:[],san:3,soft:0,started:0,ended:0,newF:0,scr:{},wrong:0,lockTries:0});
+let S=fresh();try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&v.day)S=v}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const has=k=>S.docs.includes(k)||!!S.flags[k];
+
+/* ---------- звук ---------- */
+let AC=null,master=null,hum=null,sndOn=true;
+function audio(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.8;master.connect(AC.destination);
+ const b=AC.createBuffer(1,AC.sampleRate*3,AC.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3}
+ const s=AC.createBufferSource();s.buffer=b;s.loop=true;const f=AC.createBiquadFilter();f.type=`lowpass`;f.frequency.value=180;hum=AC.createGain();hum.gain.value=.35;s.connect(f);f.connect(hum);hum.connect(master);s.start();
+ const o=AC.createOscillator();o.frequency.value=50;const og=AC.createGain();og.gain.value=.02;o.connect(og);og.connect(master);o.start()}catch(e){}}
+function noise(dur,freq,q,vol,type=`bandpass`){if(!AC||!sndOn)return;const n=AC.createBuffer(1,AC.sampleRate*dur,AC.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ const s=AC.createBufferSource();s.buffer=n;const f=AC.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;const g=AC.createGain();g.gain.setValueAtTime(vol,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+dur);s.connect(f);f.connect(g);g.connect(master);s.start()}
+const sKnock=()=>noise(.12,180,3,1.6);
+const sScrape=()=>noise(.5,900,1.2,.6);
+function sScream(){if(!AC||!sndOn)return;noise(1.2,1500,.5,1.4,`highpass`);const o=AC.createOscillator();o.type=`sawtooth`;o.frequency.setValueAtTime(900,AC.currentTime);o.frequency.exponentialRampToValueAtTime(180,AC.currentTime+1.1);const g=AC.createGain();g.gain.setValueAtTime(.5,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+1.2);o.connect(g);g.connect(master);o.start();o.stop(AC.currentTime+1.3)}
+function sCreak(){if(!AC||!sndOn)return;const o=AC.createOscillator();o.type=`square`;o.frequency.setValueAtTime(120,AC.currentTime);o.frequency.linearRampToValueAtTime(70,AC.currentTime+.9);const f=AC.createBiquadFilter();f.type=`bandpass`;f.frequency.value=600;const g=AC.createGain();g.gain.setValueAtTime(.12,AC.currentTime);g.gain.linearRampToValueAtTime(0,AC.currentTime+.9);o.connect(f);f.connect(g);g.connect(master);o.start();o.stop(AC.currentTime+1)}
+function sGlass(){noise(.6,3200,.7,1.2,`highpass`);setTimeout(()=>noise(.3,5000,.5,.6,`highpass`),80)}
+function toggleSound(){audio();sndOn=!sndOn;$(`bSnd`).textContent=sndOn?`🔊`:`🔇`;if(master)master.gain.value=sndOn?.8:0}
+
+/* ---------- эффекты ---------- */
+const FACE=`<svg viewBox="0 0 400 400"><defs><radialGradient id="fg" cx=".5" cy=".42" r=".55"><stop offset="0" stop-color="#d9d2c2"/><stop offset=".7" stop-color="#8f877a"/><stop offset="1" stop-color="#1a1714"/></radialGradient><filter id="fr"><feTurbulence baseFrequency=".04" numOctaves="3"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter></defs>
+<rect width="400" height="400" fill="#000"/><g filter="url(#fr)"><ellipse cx="200" cy="200" rx="135" ry="175" fill="url(#fg)"/>
+<ellipse cx="148" cy="170" rx="34" ry="44" fill="#000"/><ellipse cx="252" cy="170" rx="34" ry="44" fill="#000"/>
+<circle cx="150" cy="176" r="4" fill="#c22"/><circle cx="250" cy="176" r="4" fill="#c22"/>
+<path d="M150 270 Q200 250 250 270 Q245 345 200 360 Q155 345 150 270Z" fill="#000"/>
+<path d="M160 278 l8 18 l8-16 l8 18 l8-17 l8 18 l8-17 l8 17 l8-18" stroke="#ddd" stroke-width="3" fill="none"/>
+<path d="M120 120 Q150 100 180 125 M220 125 Q250 100 280 120" stroke="#2a2420" stroke-width="5" fill="none"/></g></svg>`;
+function scream(){if(S.soft){flicker(3);return}audio();const e=$(`scream`);e.innerHTML=FACE;e.classList.add(`on`);sScream();if(navigator.vibrate)try{navigator.vibrate([200,50,300])}catch(x){}
+ setTimeout(()=>e.classList.remove(`on`),900)}
+function flicker(n=4){if(S.soft)n=1;const f=$(`flick`);let i=0;const t=setInterval(()=>{f.style.opacity=i%2?0:(S.soft?.3:.92);if(++i>n*2){clearInterval(t);f.style.opacity=0}},70)}
+function cracks(){const c=$(`cracks`);let h=``;const cx=200+Math.random()*600,cy=150+Math.random()*400;
+ for(let k=0;k<14;k++){let x=cx,y=cy,a=Math.random()*6.28,p=`M${x} ${y}`;for(let j=0;j<7;j++){a+=Math.random()-.5;x+=Math.cos(a)*(40+Math.random()*60);y+=Math.sin(a)*(40+Math.random()*60);p+=` L${x|0} ${y|0}`}
+  h+=`<path d="${p}" stroke="rgba(255,255,255,.85)" stroke-width="${1+Math.random()*1.6}" fill="none"/><path d="${p}" stroke="rgba(0,0,0,.6)" stroke-width="1" fill="none" transform="translate(1.5 1.5)"/>`}
+ h+=`<circle cx="${cx}" cy="${cy}" r="18" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2"/>`;
+ c.innerHTML=h;c.classList.add(`on`);audio();sGlass();if(!S.soft){document.body.style.animation=`shake .08s 4`;setTimeout(()=>document.body.style.animation=``,400)}
+ setTimeout(()=>c.classList.remove(`on`),1600)}
+function shadow(){const s=$(`shadow`);s.classList.remove(`go`);void s.offsetWidth;s.classList.add(`go`);sCreak()}
+function dmg(){S.san--;save();drawBar();if(S.san<=0)faint()}
+function faint(){full(`<div class="tag">ОБМОРОК</div><h1>Темнота</h1><p>Вы приходите в себя на полу. Голова раскалывается. Время ушло — эту часть суток придётся прожить заново.</p><p style="font-size:14px">Найденные улики остались при вас.</p><button class="btn" onclick="S.san=3;S.left=BUDGET[S.ph];save();hideFull();render()">Подняться</button>`)}
+
+/* угар: размытие + форточка */
+let fogT=null,fogLvl=0;
+function startFog(){if(S.flags.ragOut||fogT)return;fogLvl=0;const g=$(`game`);$(`fogt`).textContent=`Голова кружится… Найдите, как проветрить!`;$(`fogt`).classList.add(`on`);
+ fogT=setInterval(()=>{fogLvl++;g.style.filter=`blur(${Math.min(fogLvl*.45,7)}px) hue-rotate(${fogLvl*4}deg) saturate(${1+fogLvl*.05})`;
+  if(fogLvl%5===0&&!S.soft)flicker(1);if(fogLvl===12&&!S.soft)shadow();
+  if(fogLvl>=20){stopFog();scream();dmg();toast(`Вы потеряли сознание от угара.`)}},750)}
+function stopFog(){clearInterval(fogT);fogT=null;$(`game`).style.filter=``;$(`fogt`).classList.remove(`on`)}
+function openWindow(){if(fogT){stopFog();toast(`Холодный воздух. Голова проясняется.`)}else toast(`Форточка открыта. Свежо.`)}
+
+/* случайные страхи ночью */
+function randomFear(){if(S.ph!==`night`||S.ended)return;const r=Math.random();
+ if(r<.18)flicker(3);else if(r<.3)shadow();else if(r<.38){audio();sKnock();setTimeout(sKnock,300);toast(`Где-то в стене постучали.`)}
+ else if(r<.42&&!S.scr[`n`+S.day]){S.scr[`n`+S.day]=1;save();setTimeout(scream,400)}}
+
+/* ---------- время ---------- */
+function drawBar(){$(`phase`).innerHTML=`${S.ph===`day`?`☀ День`:`☾ Ночь`} <b>${S.day}</b> · ${DATES[S.day]} · осталось действий: <b>${S.left}</b>`;
+ $(`san`).textContent=`●`.repeat(Math.max(S.san,0))+`○`.repeat(3-Math.max(S.san,0));$(`bF`).classList.toggle(`new`,!!S.newF)}
+function spend(n=1){S.left-=n;save();drawBar();if(S.left<=0){setTimeout(endPhase,350);return true}if(S.ph===`night`)randomFear();return false}
+function endPhase(){if(S.ended)return;
+ if(S.ph===`day`){S.ph=`night`;S.left=BUDGET.night;if(PLACES[S.loc].day)S.loc=`mine`;save();
+  full(`<div class="tag">${DATES[S.day]} · НОЧЬ</div><h1>Свет гаснет</h1><p>${S.day===3?`Сегодня дежурный — вы. Вы последним гасите свет на кухне. Квартира затихает. Кто-то в ней не спит.`:`Жильцы расходятся по комнатам. В коридоре мигает лампочка. Около двух часов ночи слушайте стену у изголовья.`}</p><button class="btn" onclick="hideFull();render()">Дальше</button>`)}
+ else{if(S.day===3){badEnd();return}S.day++;S.ph=`day`;S.left=BUDGET.day;S.loc=`mine`;save();
+  full(`<div class="tag">${DATES[S.day]} · УТРО</div><h1>Вы живы</h1><p>${S.day===3?`Последний день. Сегодня ночью — ваше дежурство.`:`Утро серое и холодное. Все на месте. Пока.`}</p><button class="btn" onclick="hideFull();render()">Дальше</button>`)}}
+
+/* ---------- сцены ---------- */
+function give(k){if(!S.docs.includes(k)){S.docs.push(k);S.newF=1;save();drawBar()}}
+function showDoc(k){const d=DOCS[k];openM(`<h3>${d.t}</h3><div class="sub">${d.s}</div>${d.b}`)}
+function act(id,cost,fn){if(S.ended)return;const first=!S.flags[`a_`+id];if(first&&cost){S.flags[`a_`+id]=1;fn();if(spend(cost))return}else{S.flags[`a_`+id]=1;fn()}render()}
+
+const SCENES={
+ mine:()=>[
+  [`Открыть портфель Лагутина`,`p1`,0,()=>{[`zayav`,`plan`,`morse`,`lagnote`].forEach(give);openFolder()}],
+  ...(S.ph===`night`?[[`Прислушаться к стене (около 2:00)`,`knock`+S.day,1,()=>knock()]]:[])],
+ kor:()=>S.ph===`night`?[[`Осмотреть стенной шкаф с фонарём`,`shk`,0,()=>darkShkaf()]]:[[`Открыть стенной шкаф`,`shd`,1,()=>toast(`Пальто, банки, старые лыжи. Пахнет мышами. Днём ничего не видно — задняя стенка в тени.`)]],
+ kitch:()=>[[`Прочитать график дежурств`,`gr`,1,()=>{give(`graph`);showDoc(`graph`)}],
+  ...(S.ph===`night`&&S.day===2?[[`Зайти на кухню без света`,`vs`,1,()=>{give(`vstrecha`);shadow();setTimeout(()=>showDoc(`vstrecha`),900)}]]:[])],
+ bath:()=>[[`Открыть форточку`,`win`,0,()=>openWindow()],[`Посмотреть в зеркало`,`mir`,0,()=>mirror()],[`Осмотреть вентиляционную решётку`,`rag`,1,()=>{give(`rag`);S.flags.ragOut=1;stopFog();showDoc(`rag`)}]],
+ fomin:()=>[],
+ nura:()=>[],sych:()=>[],ira:()=>[],kot:()=>[],zhek:()=>[],pasp:()=>[]
+};
+function mirror(){if(!S.flags.ragOut&&fogT&&fogLvl>5){scream();toast(`В зеркале за вашим плечом кто-то стоял. Или показалось?`)}else toast(`Мутное стекло, ваше усталое лицо. Больше ничего.`)}
+
+function render(){if(!S.started)return;drawBar();
+ const nav=$(`nav`);let groups={};for(const k in PLACES){const p=PLACES[k];(groups[p.g]=groups[p.g]||[]).push(k)}
+ nav.innerHTML=Object.entries(groups).map(([g,ks])=>`<h4>${g}</h4>`+ks.map(k=>{const p=PLACES[k],off=p.day&&S.ph===`night`;return `<button class="${S.loc===k?`on`:``}" ${off?`disabled`:``} onclick="go('${k}')">${p.n}</button>`}).join(``)).join(``);
+ const P=PLACES[S.loc];let h=`<h2>${P.n}</h2><div class="desc">${P.d}${S.ph===`night`&&!P.day?` <i>Ночь. Почти ничего не видно.</i>`:``}</div>`;
+ if(P.dark){h+=darkRoom()}
+ const acts=(SCENES[S.loc]||(()=>[]))();
+ if(acts.length)h+=`<div class="acts">`+acts.map((a,i)=>`<button class="act ${S.flags[`a_`+a[1]]?`done`:``}" onclick="runAct(${i})"><span>${a[0]}</span><small>${S.flags[`a_`+a[1]]||!a[2]?``:`−${a[2]} действие`}</small></button>`).join(``)+`</div>`;
+ const ppl=Object.keys(PPL).filter(k=>PPL[k].at[S.ph]===S.loc);
+ if(ppl.length)h+=`<div class="who">Здесь</div><div class="acts">`+ppl.map(k=>`<button class="act" onclick="talk('${k}')"><span>💬 ${PPL[k].n}</span><small>разговор −1</small></button>`).join(``)+`</div>`;
+ else if(S.ph===`night`&&!P.day&&[`sych`,`ira`,`kot`].includes(S.loc))h+=`<p class="desc"><i>Все спят. Будить людей ночью — не лучшая мысль.</i></p>`;
+ h+=`<p style="color:#6d6558;font-size:13px;margin-top:22px">Переходы по квартире бесплатны. Выйти в город можно только днём (−1 действие). Возьмите листок и ручку.</p>`;
+ $(`scene`).innerHTML=h;window._acts=acts;bindDark();
+ if(S.loc===`bath`&&!S.flags.ragOut&&!fogT)setTimeout(startFog,1200);
+ if(S.loc!==`bath`&&fogT)stopFog();
+}
+function runAct(i){const a=_acts[i];act(a[1],a[2],a[3])}
+function go(k){if(S.ended)return;const p=PLACES[k];if(k===`fomin`&&!S.flags.a_p1){toast(`Комната опечатана. Ключ должен быть в портфеле Лагутина.`);return}if(p.day&&S.ph===`night`)return;const was=S.loc;S.loc=k;
+ if(p.day&&!PLACES[was].day){if(spend(1)){render();return}}
+ if(S.ph===`night`&&Math.random()<.25)randomFear();render()}
+
+/* тёмная комната с фонарём */
+function darkRoom(){const objs=S.loc===`fomin`?[[`🛏`,`кровать`,18,48,`bed`],[`🪑`,`стул`,62,55,`chair`],[`🚪`,`дверь`,85,30,`door`],[`🖼`,`портрет`,40,14,`pic`]]:[];
+ return `<div class="dark" id="dark"><div class="wall"></div><div class="floor"></div>${objs.map(o=>`<div class="obj" style="left:${o[2]}%;top:${o[3]}%" onclick="darkObj('${o[4]}')">${o[0]}<span>${o[1]}</span></div>`).join(``)}<div class="torch" id="torch"></div><div class="hint">водите фонарём (мышью или пальцем)</div></div>`}
+function bindDark(){const d=$(`dark`);if(!d)return;const mv=e=>{const r=d.getBoundingClientRect(),p=e.touches?e.touches[0]:e;$(`torch`).style.setProperty(`--x`,(p.clientX-r.left)+`px`);$(`torch`).style.setProperty(`--y`,(p.clientY-r.top)+`px`)};
+ d.addEventListener(`pointermove`,mv);d.addEventListener(`touchmove`,mv,{passive:true});$(`torch`).style.setProperty(`--x`,`-200px`)}
+function darkObj(o){
+ if(o===`bed`){act(`fbed`,1,()=>{give(`fominroom`);showDoc(`fominroom`)})}
+ else if(o===`pic`){if(!S.flags.picScare&&!S.soft){S.flags.picScare=1;save();scream()}else toast(`Портрет Фомина. Глаза будто следят за фонарём.`)}
+ else if(o===`door`)toast(`Изнутри на двери царапина, на уровне колена.`);
+ else toast(`Ничего интересного.`)}
+function darkShkaf(){openM(`<h3>Стенной шкаф</h3><div class="sub">Ночь. Только фонарь.</div><div class="dark" id="dark" style="height:300px"><div class="wall" style="background:repeating-linear-gradient(0deg,#3a2f22 0 26px,#2f261b 26px 28px)"></div>
+ <div class="obj" style="left:12%;top:20%" onclick="toast('Старое пальто Шилова. Карманы пусты.')">🧥<span>пальто</span></div>
+ <div class="obj" style="left:70%;top:55%" onclick="toast('Свежая штукатурка по краю щита. Ещё пахнет известью.')">🧱<span>щель</span></div>
+ <div class="obj" style="left:44%;top:40%" onclick="closeM();shkafLock()">🔒<span>замок</span></div>
+ <div class="torch" id="torch"></div><div class="hint">водите фонарём</div></div>`);bindDark();give(`shkaf`)}
+
+/* стуки */
+const KN={1:`ЖИВ ШКАФ`,2:`ГАВРИЛОВ`,3:`ЖИВ ШКАФ ГАВРИЛОВ`};
+function knock(){audio();const msg=KN[S.day];if(S.day<3)give(`knock`+S.day);S.flags[`knock`+S.day]=1;save();
+ openM(`<h3>Стена у изголовья</h3><div class="sub">Около двух часов ночи. Запишите на листок: «тук» — короткий, «скр-р» — длинный.</div><div class="knockbox"><div class="k" id="kk"></div></div><button class="btn" id="kbtn" onclick="playKnock()">▶ Слушать</button><p class="sub">Слушать можно сколько угодно раз. Расшифровка — на Доске.</p>`);
+ window._kmsg=msg}
+let kPlaying=0;
+function playKnock(){if(kPlaying)return;kPlaying=1;audio();const seq=[];for(const w of _kmsg.split(` `)){for(const ch of w){const m=MORSE.find(x=>x[0]===ch)[1];for(const s of m)seq.push(s===`·`?`d`:`D`);seq.push(`L`)}seq.push(`W`)}
+ let t=0;const k=$(`kk`);seq.forEach(s=>{if(s===`d`){setTimeout(()=>{sKnock();k.textContent=`тук`;k.classList.add(`on`);setTimeout(()=>k.classList.remove(`on`),160)},t);t+=420}
+  else if(s===`D`){setTimeout(()=>{sScrape();k.textContent=`скр-р-р`;k.classList.add(`on`);setTimeout(()=>k.classList.remove(`on`),500)},t);t+=800}
+  else if(s===`L`)t+=900;else t+=1500});setTimeout(()=>kPlaying=0,t)}
+
+/* финальный замок */
+function shkafLock(){openM(`<h3>Кодовый замок</h3><div class="sub">Четыре диска, на каждом числа от 1 до 12.</div><div class="dials">${[0,1,2,3].map(i=>`<div class="dial"><button onclick="dl(${i},1)">▲</button><span id="d${i}">1</span><button onclick="dl(${i},-1)">▼</button></div>`).join(``)}</div><button class="btn red" onclick="tryShkaf()">Дёрнуть дужку</button><div class="err" id="lerr"></div>`);window._d=[1,1,1,1]}
+function dl(i,v){_d[i]=((_d[i]-1+v+12)%12)+1;$(`d`+i).textContent=_d[i]}
+function tryShkaf(){if(_d.join(`,`)===`2,6,9,11`){closeM();opened();return}
+ S.lockTries++;save();cracks();$(`lerr`).textContent=`Замок не поддаётся. Где-то в квартире скрипнула дверь.`;if(S.lockTries%2===0){setTimeout(()=>{closeM();scream();dmg()},500)}}
+function opened(){S.flags.opened=1;save();audio();sCreak();
+ full(`<div class="tag">КОРИДОР · ЗА ШКАФОМ</div><h1>Щит поддаётся</h1><p>За ним — узкий проход шириной в ладонь больше плеч, в пустую квартиру 14. Пахнет сыростью. Вдалеке, в темноте, кто-то слабо стучит.</p><button class="btn" onclick="hideFull();passage()">Войти с фонарём</button>`)}
+function passage(){openM(`<h3>Проход в квартиру 14</h3><div class="sub">Найдите источник стука.</div><div class="dark" id="dark" style="height:320px"><div class="wall" style="background:#1e1914"></div>
+ <div class="obj" style="left:20%;top:60%" onclick="toast('Пустые бутылки, верёвка, рулон мешковины.')">🪢<span>верёвка</span></div>
+ <div class="obj" style="left:55%;top:25%" onclick="passScare()">🚪<span>дверь</span></div>
+ <div class="obj" style="left:82%;top:62%" onclick="found()">🧍<span>человек</span></div>
+ <div class="torch" id="torch"></div><div class="hint">водите фонарём</div></div>`);bindDark()}
+function passScare(){if(!S.flags.ps){S.flags.ps=1;save();scream()}else toast(`Дверь заперта снаружи.`)}
+function found(){S.flags.lagutin=1;save();closeM();
+ full(`<div class="tag">КВАРТИРА 14</div><h1>Лагутин жив</h1><p>На полу, у трубы отопления, сидит заросший человек с разбитыми костяшками пальцев. Он шепчет: «Я стучал… каждую ночь… Он придёт сегодня — за дежурным».</p><p>Из коридора квартиры 13 доносятся тяжёлые шаги. Дверца шкафа скрипит.</p><button class="btn" onclick="finale()">Обернуться</button>`)}
+function finale(){scream();setTimeout(()=>{full(`<div class="tag">3:00</div><h1>Гаврилов</h1><p>В проёме стоит управдом с мешком и верёвкой. Улыбки больше нет. Увидев Лагутина рядом с вами, он бросается назад, в коридор, — и упирается в бабу Нюру с кочергой и Сычёва, разбуженных грохотом.</p><button class="btn" onclick="hideFull();openReport()">Написать отчёт</button>`)},1000)}
+function badEnd(){S.ended=1;save();scream();setTimeout(()=>full(`<div class="tag">12 НОЯБРЯ · 3:00</div><h1>Дежурный</h1><p>Вы последним гасите свет. Ложитесь. В три часа ночи дверца стенного шкафа тихо скрипит…</p><p>Утром в прокуратуру приходит заявление: пропал временно проживающий следователь. Портфель найден на кухне. Стук в стене продолжается.</p><button class="btn" onclick="reset()">Начать заново</button>`),900)}
+
+/* ---------- разговоры ---------- */
+function talk(k){const p=PPL[k];
+ if(!S.flags[`t_`+k+S.day+S.ph]){S.flags[`t_`+k+S.day+S.ph]=1;if(spend(1)){return}}
+ const qs=p.q.map((q,i)=>{if(q.need&&!has(q.need))return``;return `<button class="${S.asked[k+i]?`used`:``} ${q.press?`press`:``}" onclick="ask('${k}',${i})">${q.press?`⚑ `:``}${q.t}</button>`}).join(``);
+ openM(`<h3>${p.n}</h3><div class="chat" id="chat"><div class="say">${p.intro}</div></div><div class="qs">${qs}</div><p class="sub" style="margin-top:10px">⚑ — вопрос, который открыла найденная улика.</p>`);render()}
+function ask(k,i){const q=PPL[k].q[i];S.asked[k+i]=1;S.flags[k+`_q`+i]=1;if(q.flag)S.flags[q.flag]=1;if(q.doc)give(q.doc);save();
+ $(`chat`).insertAdjacentHTML(`beforeend`,`<div class="me">${q.t}</div><div class="say">${q.a}${q.doc?` <i>(в уликах: «${DOCS[q.doc].t}»)</i>`:``}</div>`);
+ if(q.flag===`gavAlarm`&&!S.soft)setTimeout(()=>{flicker(2)},600)}
+
+/* ---------- доска ---------- */
+function openBoard(){const ok=S.board.length;
+ openM(`<h3>Доска следователя</h3><div class="sub">Выводы проверяются. Ошибка — бьёт по нервам. Решено: ${ok} из ${BOARD.length}.</div>`+BOARD.map((b,i)=>{const done=S.board.includes(b.id),ready=b.need.every(has);
+  if(!ready&&!done)return `<div class="ded" style="opacity:.5"><h4>${b.t}</h4><div class="sub">Пока не хватает материалов.</div></div>`;
+  let body=b.opts?`<div class="opts">${b.opts.map((o,j)=>`<button onclick="dAns(${i},${j})">${o}</button>`).join(``)}</div>`:`<div class="row"><input class="inp" id="bi${i}" placeholder="${b.type===`num`?`число, `+b.unit:`без пробелов`}"><button class="btn" onclick="dAns(${i})">Проверить</button></div>`;
+  return `<div class="ded ${done?`ok`:``}"><h4>${b.t}</h4>${body}<div class="fact">${b.f}</div></div>`}).join(``))}
+function dAns(i,j){const b=BOARD[i];let ok;
+ if(b.opts)ok=j===b.a;else{const v=$(`bi`+i).value.toUpperCase().replace(/Ё/g,`Е`).replace(/,/g,`.`);ok=b.type===`num`?Math.abs(parseFloat(v.replace(/[^0-9.]/g,``))-b.ans)<.01:v.replace(/[^А-Я]/g,``)===b.ans}
+ if(ok){if(!S.board.includes(b.id))S.board.push(b.id);save();openBoard()}
+ else{S.wrong++;save();closeM();cracks();if(S.wrong%3===0){setTimeout(()=>{scream();dmg()},700)}else toast(`Не сходится. Ещё раз посмотрите документы.`)}}
+
+/* ---------- папка ---------- */
+function openFolder(){S.newF=0;save();drawBar();openM(`<h3>Улики</h3><div class="sub">Документы и находки. Выводы — на вашем листке и на Доске.</div><div class="list">${S.docs.filter(k=>DOCS[k]).map(k=>`<button onclick="showDoc('${k}')">📄 ${DOCS[k].t} <span style="color:#7a7062;font-size:13px">— ${DOCS[k].s}</span></button>`).join(``)||`<p>Пока пусто. Начните с портфеля в вашей комнате.</p>`}</div>`)}
+
+/* ---------- отчёт ---------- */
+const FORM=[
+ {l:`1. Кто похищал жильцов?`,o:[`Инженер Сычёв`,`Управдом Гаврилов`,`Котов`,`Призрак Фомина`],a:1},
+ {l:`2. Как жертвы исчезали из квартиры?`,o:[`Через окно`,`Через заложенный проход за стенкой шкафа в кв. 14`,`Через входную дверь`,`Через подвал`],a:1},
+ {l:`3. Почему жильцы видели «призраков»?`,o:[`Проклятие`,`Угар от колонки: вытяжку заткнули`,`Им снились кошмары`,`Гаврилов наряжался`],a:1},
+ {l:`4. Почему пропадали именно эти люди?`,o:[`Случайно`,`Каждый был дежурным в ночь пропажи`,`Ссорились с соседями`,`Были богаты`],a:1},
+ {l:`5. Ради чего?`,o:[`Месть`,`Захват комнат для семьи жены (Буровых)`,`Безумие`,`Страх разоблачения кражи`],a:1}
+];
+function openReport(){openM(`<h3>Отчёт</h3><div class="sub">${S.flags.lagutin?`Лагутин спасён. Осталось изложить всё на бумаге.`:`Сдав отчёт, вы закроете дело.`}</div>${FORM.map((q,i)=>`<label style="display:block;margin:14px 0 6px;font-weight:600">${q.l}</label><select id="f${i}" style="width:100%;padding:9px;border-radius:8px"><option value="">—</option>${q.o.map((t,j)=>`<option value="${j}">${t}</option>`).join(``)}</select>`).join(``)}<button class="btn red" onclick="submit()">Подписать</button><div class="err" id="ferr"></div>`)}
+function submit(){const v=FORM.map((q,i)=>$(`f`+i).value);if(v.some(x=>x===``)){$(`ferr`).textContent=`Заполните всё.`;return}
+ const r=FORM.filter((q,i)=>+v[i]===q.a).length;closeM();S.ended=1;save();
+ const stat=`Ошибок на доске: ${S.wrong} · Рассудок: ${S.san}/3 · Решено выводов: ${S.board.length}/${BOARD.length}`;
+ if(r===5&&S.flags.lagutin)full(`<div class="tag">ДЕЛО ЗАКРЫТО</div><h1>Стук прекратился</h1><p>Гаврилов признался во всём. Фомина, Ланскую и Шилова он вывозил ночью через пустую квартиру 14, а комнаты оформлял на тёщу и её родню. Вытяжку заткнул, чтобы жильцы боялись призраков и не верили друг другу.</p><p>Лагутина держал живым, чтобы узнать, кому тот успел рассказать. Не успел — никому, кроме стены.</p><p style="font-size:14px">${stat}</p><button class="btn" onclick="reset()">Сыграть снова</button>`);
+ else if(r===5)full(`<div class="tag">ВЕРНО, НО…</div><h1>Слишком поздно</h1><p>Вы всё поняли правильно, но так и не открыли шкаф. Когда милиция вскрыла проход, Лагутина там уже не было.</p><p style="font-size:14px">${stat}</p><button class="btn" onclick="reset()">Попробовать ещё</button>`);
+ else{scream();setTimeout(()=>full(`<div class="tag">ВЕРНО ${r} ИЗ 5</div><h1>Дело закрыто… неверно</h1><p>Отчёт ушёл в прокуратуру. Гаврилов пожал вам руку на прощание. Той же ночью в стене снова постучали.</p><p style="font-size:14px">${stat}</p><button class="btn" onclick="reset()">Начать заново</button>`),900)}}
+
+/* ---------- окна ---------- */
+function openM(h){$(`mb`).innerHTML=h;$(`modal`).classList.add(`on`)}
+function closeM(){$(`modal`).classList.remove(`on`)}
+$(`modal`).onclick=e=>{if(e.target.id===`modal`)closeM()};document.addEventListener(`keydown`,e=>{if(e.key===`Escape`)closeM()});
+function full(h){$(`fullin`).innerHTML=h;$(`full`).classList.add(`on`)}
+function hideFull(){$(`full`).classList.remove(`on`)}
+function toast(t){const e=$(`toast`);e.textContent=t;e.classList.add(`on`);clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove(`on`),3500)}
+function askReset(){openM(`<h3>Начать заново?</h3><p>Весь прогресс будет потерян.</p><button class="btn red" onclick="reset()">Да</button><button class="btn ghost" onclick="closeM()">Нет</button>`)}
+function reset(){const soft=S.soft;stopFog();S=fresh();S.soft=soft;save();closeM();hideFull();intro()}
+
+function intro(){full(`<div class="tag">ЗАРЕЧИНСК · НОЯБРЬ 1979</div><h1>Тихий переулок, 13</h1>
+ <p>За год из коммунальной квартиры №13 бесследно исчезли трое жильцов. Неделю назад пропал и следователь, который вёл дело. Остался только его портфель.</p>
+ <p>Вас поселили в его комнату. У вас три дня и три ночи.</p>
+ <div class="warn">⚠ Игра содержит резкие звуки, мигание экрана и скримеры. Не рекомендуется людям с эпилепсией и сердечными заболеваниям — для них есть мягкий режим. Лучше играть в наушниках и в темноте.</div>
+ <label class="tog"><input type="checkbox" id="softc" ${S.soft?`checked`:``}> Мягкий режим (без скримеров и мигания)</label>
+ <p style="color:var(--gold)">✎ Возьмите листок и ручку. Без них не пройти.</p>
+ <button class="btn" onclick="S.soft=$('softc').checked?1:0;S.started=1;save();audio();hideFull();render();openM('<h3>Вы на месте</h3><p>Ваша комната. На столе — портфель Лагутина. Начните с него.</p>')">Войти в квартиру</button>`)}
+
+if(!S.started)intro();else{render();if(S.ended)openReport()}
+</script>
+</body>
+</html>
